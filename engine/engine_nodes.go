@@ -88,8 +88,8 @@ func IsDescendant(parent, node *Node) bool {
 	return IsDescendant(parent, node.Parent)
 }
 
-func FindComponent[T any](Components []NodeComponent) *T {
-	for _, c := range Components {
+func FindComponent[T any](components []NodeComponent) *T {
+	for _, c := range components {
 		if c, ok := c.(T); ok {
 			return &c
 		}
