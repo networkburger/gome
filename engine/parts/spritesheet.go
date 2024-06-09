@@ -1,4 +1,4 @@
-package engine
+package parts
 
 import (
 	"log/slog"

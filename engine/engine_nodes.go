@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"jamesraine/grl/engine/util"
 	"log/slog"
 	"slices"
 )
@@ -48,12 +49,11 @@ func (e *Engine) RemoveNodeFromParent(killnode *Node) {
 		// fire for each node in a sensible order
 		for i := len(nodeTree) - 1; i >= 0; i-- {
 			n := nodeTree[i]
-			for componentIndex, component := range n.Components {
-				n.Components = SliceRemoveIndex(n.Components, componentIndex)
+			for _, component := range n.Components {
 				component.Event(NodeEventUnload, n)
 			}
 			index := slices.Index(n.Parent.Children, n)
-			n.Parent.Children = SliceRemoveIndex(n.Parent.Children, index)
+			n.Parent.Children = util.SliceRemoveIndex(n.Parent.Children, index)
 			n.Parent = nil
 		}
 	}
@@ -61,20 +61,20 @@ func (e *Engine) RemoveNodeFromParent(killnode *Node) {
 
 func (e *Engine) RemoveComponentFromParent(n *Node, c NodeComponent) {
 	index := slices.Index(n.Parent.Children, n)
-	n.Components = SliceRemoveIndex(n.Components, index)
+	n.Components = util.SliceRemoveIndex(n.Components, index)
 
 	if IsDescendant(e.scene, n) {
 		c.Event(NodeEventUnload, n)
 	}
 }
 
-// delve returns a list of all nodes in the tree rooted at n
+// delve returns a list of all nodes in the tree rooted at n, depth-first
 func delve(n *Node) []*Node {
 	nodes := make([]*Node, 0)
-	nodes = append(nodes, n)
 	for _, c := range n.Children {
 		nodes = append(nodes, delve(c)...)
 	}
+	nodes = append(nodes, n)
 	return nodes
 }
 

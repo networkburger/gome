@@ -1,4 +1,4 @@
-package engine
+package parts
 
 import (
 	"log/slog"
@@ -7,11 +7,17 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+type PixelBuffer struct {
+	*rl.Image
+	Pixels []rl.Color
+}
+
 type Assets struct {
 	Folder       string
 	Textures     map[string]rl.Texture2D
-	SpriteSheets map[string]*Spritesheet
+	SpriteSheets map[string]Spritesheet
 	Sounds       map[string]rl.Sound
+	Images       map[string]PixelBuffer
 }
 
 func NewAssets(folder string) Assets {
@@ -21,8 +27,9 @@ func NewAssets(folder string) Assets {
 	return Assets{
 		Folder:       folder,
 		Textures:     make(map[string]rl.Texture2D),
-		SpriteSheets: make(map[string]*Spritesheet),
+		SpriteSheets: make(map[string]Spritesheet),
 		Sounds:       make(map[string]rl.Sound),
+		Images:       make(map[string]PixelBuffer),
 	}
 }
 
@@ -47,14 +54,36 @@ func (a *Assets) Texture(fname string) rl.Texture2D {
 	return tex
 }
 
+func (a *Assets) Pixels(fname string) PixelBuffer {
+	t, ok := a.Images[fname]
+	if ok {
+		return t
+	}
+	fpath := a.Path(fname)
+	slog.Info("Assets.Image", "fname", fname, "fpath", fpath)
+	tex := rl.LoadImage(fpath)
+	pix := rl.LoadImageColors(tex)
+	buf := PixelBuffer{
+		Image:  tex,
+		Pixels: pix,
+	}
+	if tex.Format == 0 {
+		slog.Warn("Assets.Image FAIL", "fname", fname)
+	} else {
+		slog.Info("Assets.Image DONE", "fname", fname, "Formast", tex.Format, "W", tex.Width, "H", tex.Height)
+	}
+	a.Images[fname] = buf
+	return buf
+}
+
 func (a *Assets) SpriteSheet(fname string) *Spritesheet {
 	existing, ok := a.SpriteSheets[fname]
 	if ok {
-		return existing
+		return &existing
 	}
 	sheetData, _ := a.FileBytes(fname)
 	s := SpritesheetRead(sheetData)
-	a.SpriteSheets[fname] = &s
+	a.SpriteSheets[fname] = s
 	return &s
 }
 

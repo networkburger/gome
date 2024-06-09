@@ -5,4 +5,5 @@ type GameState struct {
 	T                 float64
 	WindowPixelHeight int
 	WindowPixelWidth  int
+	Camera            *Camera
 }

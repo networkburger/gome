@@ -1,13 +1,16 @@
-package engine
+package component
 
 import (
+	"fmt"
+	en "jamesraine/grl/engine"
+	pt "jamesraine/grl/engine/parts"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type SpritesheetComponent struct {
-	Spritesheet           *Spritesheet
+	Spritesheet           *pt.Spritesheet
 	Texture               rl.Texture2D
 	FlipX                 bool
 	spritename            string
@@ -15,13 +18,16 @@ type SpritesheetComponent struct {
 	FrameTimeMilliseconds int
 }
 
-func (s *SpritesheetComponent) Event(e NodeEvent, n *Node) {}
+func (s *SpritesheetComponent) Event(e en.NodeEvent, n *en.Node) {}
 
-func (s *SpritesheetComponent) Tick(gs *GameState, n *Node) {
+func (s *SpritesheetComponent) Tick(gs *en.GameState, n *en.Node) {
 	if len(s.spritename) < 1 {
 		return
 	}
-	pos := rl.Vector2Transform(rl.NewVector2(0, 0), n.Transform())
+	if n.Name == "Player" {
+		fmt.Println("Player")
+	}
+	pos := gs.Camera.Transform(n.AbsolutePosition())
 	a := n.AbsoluteRotation()
 	scale := n.AbsoluteScale()
 	frametime := s.FrameTimeMilliseconds

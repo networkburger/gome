@@ -1,4 +1,4 @@
-package engine
+package parts
 
 import (
 	"encoding/json"
@@ -38,16 +38,16 @@ type TilemapChunk struct {
 }
 
 type TilemapObject struct {
-	Height   int    `json:"height"`
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Point    bool   `json:"point"`
-	Rotation int    `json:"rotation"`
-	Type     string `json:"type"`
-	Visible  bool   `json:"visible"`
-	Width    int    `json:"width"`
-	X        int    `json:"x"`
-	Y        int    `json:"y"`
+	Height   int     `json:"height"`
+	ID       int     `json:"id"`
+	Name     string  `json:"name"`
+	Point    bool    `json:"point"`
+	Rotation int     `json:"rotation"`
+	Type     string  `json:"type"`
+	Visible  bool    `json:"visible"`
+	Width    int     `json:"width"`
+	X        float32 `json:"x"`
+	Y        float32 `json:"y"`
 }
 
 type TilemapLayer struct {
@@ -132,30 +132,39 @@ func (t Tileset) SourceRect(i int) rl.Rectangle {
 	return r
 }
 
-func (m Tilemap) TilePosition(layer, chunk, tile int, sc float32) rl.Rectangle {
+func (m Tilemap) TilePosition(layer, chunk, tile int, xf rl.Matrix) rl.Rectangle {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
 	col := tile % int(ch.Width)
 	row := tile / int(ch.Width)
-	r := rl.NewRectangle(
-		sc*(float32(ch.X)*tw+float32(col)*tw),
-		sc*(float32(ch.Y)*th+float32(row)*th),
-		sc*float32(m.TileWidth),
-		sc*float32(m.TileHeight))
+	topLeft := rl.NewVector2(float32(ch.X)*tw+float32(col)*tw, float32(ch.Y)*th+float32(row)*th)
+	bottomRight := rl.NewVector2(topLeft.X+tw, topLeft.Y+th)
+	topLeft = rl.Vector2Transform(topLeft, xf)
+	bottomRight = rl.Vector2Transform(bottomRight, xf)
+	r := rl.Rectangle{
+		X:      topLeft.X,
+		Y:      topLeft.Y,
+		Width:  bottomRight.X - topLeft.X,
+		Height: bottomRight.Y - topLeft.Y,
+	}
 	return r
 }
 
-func (m Tilemap) ChunkPosition(layer, chunk int, sc float32) rl.Rectangle {
+func (m Tilemap) ChunkPosition(layer, chunk int, xf rl.Matrix) rl.Rectangle {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
-	r := rl.NewRectangle(
-		sc*tw*float32(ch.X),
-		sc*th*float32(ch.Y),
-		sc*tw*float32(ch.Width),
-		sc*th*float32(ch.Height),
-	)
+	topLeft := rl.NewVector2(float32(ch.X)*tw, float32(ch.Y)*th)
+	bottomRight := rl.NewVector2(float32(ch.X+ch.Width)*tw, float32(ch.Y+ch.Height)*th)
+	topLeft = rl.Vector2Transform(topLeft, xf)
+	bottomRight = rl.Vector2Transform(bottomRight, xf)
+	r := rl.Rectangle{
+		X:      topLeft.X,
+		Y:      topLeft.Y,
+		Width:  bottomRight.X - topLeft.X,
+		Height: bottomRight.Y - topLeft.Y,
+	}
 	return r
 }
 

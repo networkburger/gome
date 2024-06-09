@@ -1,4 +1,4 @@
-package engine
+package util
 
 func SliceIndexOf[T comparable](a []T, b T) int {
 	for i, v := range a {

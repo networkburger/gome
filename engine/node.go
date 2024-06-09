@@ -31,9 +31,9 @@ type Node struct {
 
 var _nid = 0
 
-func NewNode(name string) Node {
+func NewNode(name string) *Node {
 	_nid = _nid + 1
-	return Node{
+	return &Node{
 		id:    NodeID(_nid),
 		Name:  name,
 		Scale: 1,
@@ -47,12 +47,12 @@ func (n *Node) ID() NodeID {
 var _up = rl.NewVector2(0, -1)
 var _right = rl.NewVector2(1, 0)
 
-func (n Node) Forward() rl.Vector2 {
+func (n *Node) Forward() rl.Vector2 {
 	r := float32(n.AbsoluteRotation().Rad())
 	return rl.Vector2Rotate(_up, r)
 }
 
-func (n Node) Right() rl.Vector2 {
+func (n *Node) Right() rl.Vector2 {
 	r := float32(n.AbsoluteRotation().Rad())
 	return rl.Vector2Rotate(_right, r)
 }
@@ -77,7 +77,7 @@ func (n *Node) AbsolutePosition() rl.Vector2 {
 	if n.Parent == nil {
 		return n.Position
 	} else {
-		return rl.Vector2Transform(rl.NewVector2(0, 0), n.Parent.Transform())
+		return rl.Vector2Transform(n.Position, n.Parent.Transform())
 	}
 }
 
@@ -88,7 +88,7 @@ func (n *Node) Transform() rl.Matrix {
 	}
 	return m
 }
-func (n Node) applyTransform(m rl.Matrix) rl.Matrix {
+func (n *Node) applyTransform(m rl.Matrix) rl.Matrix {
 	m = rl.MatrixMultiply(m, rl.MatrixScale(n.Scale, n.Scale, 1))
 	m = rl.MatrixMultiply(m, rl.MatrixRotateZ(float32(-n.Rotation.Rad())))
 	m = rl.MatrixMultiply(m, rl.MatrixTranslate(n.Position.X, n.Position.Y, 0))

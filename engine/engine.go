@@ -9,8 +9,8 @@ type Engine struct {
 	scene *Node
 }
 
-func NewEngine() {
-	G = &Engine{}
+func NewEngine() *Engine {
+	return &Engine{}
 }
 
 func (e *Engine) Scene() *Node {

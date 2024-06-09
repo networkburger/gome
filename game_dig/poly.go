@@ -24,7 +24,8 @@ func NewLineStripComponent(col rl.Color, verts []rl.Vector2) LineStripComponent 
 func (s *LineStripComponent) Event(e en.NodeEvent, n *en.Node) {}
 
 func (c *LineStripComponent) Tick(gs *en.GameState, node *en.Node) {
-	xf := node.Transform()
+	nodeXf := node.Transform()
+	xf := rl.MatrixMultiply(nodeXf, gs.Camera.Matrix)
 
 	for i := 0; i < len(c._xfv); i++ {
 		c._xfv[i] = rl.Vector2Transform(c.Vertices[i], xf)
@@ -39,6 +40,6 @@ type CircleComponent struct {
 }
 
 func (c *CircleComponent) Tick(gs *en.GameState, node *en.Node) {
-	pos := node.AbsolutePosition()
+	pos := gs.Camera.Transform(node.AbsolutePosition())
 	rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius, c.Color)
 }

@@ -1,6 +1,7 @@
 package engine
 
 func (e *Engine) Run(gs *GameState) {
+	gs.Camera.cache()
 	run(gs, e.scene)
 }
 
