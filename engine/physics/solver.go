@@ -3,6 +3,7 @@ package physics
 import (
 	en "jamesraine/grl/engine"
 	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/util"
 	"log/slog"
 
@@ -23,7 +24,6 @@ type PhysicsObstacleInfo struct {
 	*en.Node
 	*cm.PhysicsObstacleComponent
 }
-
 type PhysicsContactNotifier func(PhysicsBodyInfo, PhysicsSignalInfo)
 
 type PhysicsSolver struct {
@@ -31,7 +31,7 @@ type PhysicsSolver struct {
 	obstacles []PhysicsObstacleInfo
 	bodies    []PhysicsBodyInfo
 	signals   []PhysicsSignalInfo
-	hits      []rl.Rectangle
+	hits      []contact.CollisionSurface
 }
 
 func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
@@ -40,7 +40,7 @@ func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
 		bodies:                 make([]PhysicsBodyInfo, 0),
 		signals:                make([]PhysicsSignalInfo, 0),
 		obstacles:              make([]PhysicsObstacleInfo, 0),
-		hits:                   make([]rl.Rectangle, 32),
+		hits:                   make([]contact.CollisionSurface, 32),
 	}
 }
 
@@ -95,6 +95,16 @@ func (s *PhysicsSolver) Unregister(n *en.Node) {
 	})
 }
 
+func velocityCorrection(inputVelocity, contactNormal rl.Vector2, restitution float32) rl.Vector2 {
+	velm := rl.Vector2Length(inputVelocity)
+	veln := rl.Vector2Normalize(inputVelocity)
+	d := rl.Vector2DotProduct(contactNormal, veln)
+	scaled := rl.Vector2Scale(contactNormal, velm*d*(1+restitution))
+	delta := rl.Vector2Add(scaled, inputVelocity)
+	correction := rl.Vector2Subtract(inputVelocity, delta)
+	return correction
+}
+
 func (s *PhysicsSolver) Solve(gs *en.GameState) {
 	nhits := 0
 
@@ -103,29 +113,25 @@ func (s *PhysicsSolver) Solve(gs *en.GameState) {
 		radius := b.PhysicsBodyComponent.Radius * b.Node.AbsoluteScale()
 
 		for _, o := range s.obstacles {
-			o.ObstacleProvider.Obstacles(o.Node, bpos, radius, s.hits, &nhits)
+			o.CollisionSurfaceProvider.Surfaces(o.Node, bpos, radius, s.hits, &nhits)
 		}
+
+		closest := -1
+		closestDist := float32(999999999)
 
 		for i := 0; i < nhits; i++ {
 			hit := s.hits[i]
-			dt := bpos.Y - hit.Y
-			db := hit.Y + hit.Height - bpos.Y
-			dl := bpos.X - hit.X
-			dr := hit.X + hit.Width - bpos.X
-			if dt < db && dt < dl && dt < dr { // TOP
-				b.Node.Position = rl.NewVector2(b.Node.Position.X, hit.Y-radius)
-				b.BallisticComponent.Velocity = rl.NewVector2(b.BallisticComponent.Velocity.X, 0)
-				b.OnGround = gs.T
-			} else if db < dt && db < dl && db < dr { // BOTTOM
-				b.Node.Position = rl.NewVector2(b.Node.Position.X, hit.Y+hit.Height+radius)
-				b.BallisticComponent.Velocity = rl.NewVector2(b.BallisticComponent.Velocity.X, 0)
-			} else if dl < dt && dl < db && dl < dr { // LEFT
-				b.Node.Position = rl.NewVector2(hit.X-radius, b.Node.Position.Y)
-				b.BallisticComponent.Velocity = rl.NewVector2(0, b.BallisticComponent.Velocity.Y)
-			} else if dr < dt && dr < db && dr < dl { // RIGHT
-				b.Node.Position = rl.NewVector2(hit.X+hit.Width+radius, b.Node.Position.Y)
-				b.BallisticComponent.Velocity = rl.NewVector2(0, b.BallisticComponent.Velocity.Y)
+			dist := rl.Vector2DistanceSqr(bpos, hit.ContactPoint)
+			if dist < closestDist {
+				closest = i
+				closestDist = dist
 			}
+		}
+		if closest > -1 {
+			hit := s.hits[closest]
+			b.Node.Position = rl.Vector2Add(hit.ContactPoint, rl.Vector2Scale(hit.Normal, radius))
+			correction := velocityCorrection(b.BallisticComponent.Velocity, hit.Normal, 0.85)
+			b.BallisticComponent.Velocity = rl.Vector2Add(b.BallisticComponent.Velocity, correction)
 		}
 
 		// check for colliding signals

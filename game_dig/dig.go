@@ -33,9 +33,7 @@ func GameLoop(screenWidth, screenHeight int) {
 		WindowPixelHeight: int(screenHeight),
 		WindowPixelWidth:  int(screenWidth),
 		Camera: &en.Camera{
-			Position: rl.NewVector2(0, 0),
-			Zoom:     1,
-			Rotation: en.AngleD(0),
+			Position: rl.NewRectangle(0, 0, float32(screenWidth), float32(screenHeight)),
 		},
 	}
 

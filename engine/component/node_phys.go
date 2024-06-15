@@ -2,9 +2,8 @@ package component
 
 import (
 	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine/contact"
 	"log/slog"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type PhysicsManager interface {
@@ -12,22 +11,15 @@ type PhysicsManager interface {
 	Unregister(n *en.Node)
 }
 
-type ObstacleProvider interface {
-	// Not in love with this interface - puts a lot of responsibility on the implementor
-	// to know the internal workings of the solver.
-	// Better perhaps to provide a function for the implementor to call with each hit rectangle
-	Obstacles(n *en.Node, pos rl.Vector2, radius float32, hits []rl.Rectangle, nhits *int)
-}
-
 type PhysicsObstacleComponent struct {
 	PhysicsManager
-	ObstacleProvider
+	contact.CollisionSurfaceProvider
 }
 
 func (s *PhysicsObstacleComponent) Tick(gs *en.GameState, n *en.Node) {}
 func (s *PhysicsObstacleComponent) Event(e en.NodeEvent, n *en.Node) {
 	if e == en.NodeEventLoad {
-		if s.ObstacleProvider == nil {
+		if s.CollisionSurfaceProvider == nil {
 			slog.Warn("PhysicsObstacleComponent: no ObstacleProvider; ignoring")
 		} else {
 			s.PhysicsManager.Register(n)

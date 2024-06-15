@@ -87,15 +87,6 @@ func (p *Player) Tick(gs *en.GameState, n *en.Node) {
 		p.ballistics.VelocityDamping = rl.NewVector2(0.2, 0)
 	}
 
-	gs.Camera.Position.X = n.Position.X - float32(gs.WindowPixelWidth)/2
-	gs.Camera.Position.Y = n.Position.Y - float32(gs.WindowPixelHeight)/2
-	if gs.Camera.Position.X < 0 {
-		gs.Camera.Position.X = 0
-	}
-	if gs.Camera.Position.Y < 0 {
-		gs.Camera.Position.Y = 0
-	}
-
 	moving := rl.Vector2LenSqr(p.ballistics.Velocity) > 0.1
 	if !p.body.IsOnGround(gs.T) {
 		p.sprite.SetSprite("roll")

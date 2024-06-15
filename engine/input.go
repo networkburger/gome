@@ -19,6 +19,17 @@ const (
 )
 
 const (
+	MouseButtonNone = iota
+	MouseButtonLeft
+	MouseButtonRight
+	MouseButtonMiddle
+	MouseButtonSide
+	MouseButtonExtra
+	MouseButtonForward
+	MouseButtonBack
+)
+
+const (
 	GamepadAxisNone = iota
 	GamepadAxisLeftX
 	GamepadAxisLeftY
@@ -64,13 +75,13 @@ func ProcessInputs(mapping []InputActionMapping, process func(ActionID, float32)
 			process(mapping[i].ActionID, mapping[i].Const)
 		}
 
-		if rl.IsMouseButtonDown(int32(mapping[i].MouseButtonDown)) {
+		if mapping[i].MouseButtonDown != MouseButtonNone && rl.IsMouseButtonDown(int32(mapping[i].MouseButtonDown)-1) {
 			process(mapping[i].ActionID, mapping[i].Const)
 		}
-		if rl.IsMouseButtonPressed(int32(mapping[i].MouseButtonPressed)) {
+		if mapping[i].MouseButtonDown != MouseButtonNone && rl.IsMouseButtonPressed(int32(mapping[i].MouseButtonPressed)-1) {
 			process(mapping[i].ActionID, mapping[i].Const)
 		}
-		if rl.IsMouseButtonReleased(int32(mapping[i].MouseButtonReleased)) {
+		if mapping[i].MouseButtonDown != MouseButtonNone && rl.IsMouseButtonReleased(int32(mapping[i].MouseButtonReleased)-1) {
 			process(mapping[i].ActionID, mapping[i].Const)
 		}
 

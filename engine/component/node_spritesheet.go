@@ -1,7 +1,6 @@
 package component
 
 import (
-	"fmt"
 	en "jamesraine/grl/engine"
 	pt "jamesraine/grl/engine/parts"
 	"math"
@@ -23,9 +22,6 @@ func (s *SpritesheetComponent) Event(e en.NodeEvent, n *en.Node) {}
 func (s *SpritesheetComponent) Tick(gs *en.GameState, n *en.Node) {
 	if len(s.spritename) < 1 {
 		return
-	}
-	if n.Name == "Player" {
-		fmt.Println("Player")
 	}
 	pos := gs.Camera.Transform(n.AbsolutePosition())
 	a := n.AbsoluteRotation()

@@ -176,3 +176,38 @@ func (m Tilemap) Layer(layertype string) *TilemapLayer {
 	}
 	return nil
 }
+
+func (m Tilemap) Bounds(xf rl.Matrix) rl.Rectangle {
+	left := TileSpaceInt(0)
+	top := TileSpaceInt(0)
+	right := TileSpaceInt(0)
+	bottom := TileSpaceInt(0)
+	layer := m.Layers[0]
+	for _, chunk := range layer.Chunks {
+		if chunk.X < left {
+			left = chunk.X
+		}
+		if top < chunk.Y {
+			top = chunk.Y
+		}
+		if right < chunk.X+chunk.Width {
+			right = chunk.X + chunk.Width
+		}
+		if bottom < chunk.Y+chunk.Height {
+			bottom = chunk.Y + chunk.Height
+		}
+	}
+	tw := float32(m.TileWidth)
+	th := float32(m.TileHeight)
+	topLeft := rl.NewVector2(float32(left)*tw, float32(top)*th)
+	bottomRight := rl.NewVector2(float32(right)*tw, float32(bottom)*th)
+	topLeft = rl.Vector2Transform(topLeft, xf)
+	bottomRight = rl.Vector2Transform(bottomRight, xf)
+	r := rl.Rectangle{
+		X:      topLeft.X,
+		Y:      topLeft.Y,
+		Width:  bottomRight.X - topLeft.X,
+		Height: bottomRight.Y - topLeft.Y,
+	}
+	return r
+}

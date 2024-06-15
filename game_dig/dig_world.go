@@ -3,9 +3,9 @@ package game_dig
 import (
 	en "jamesraine/grl/engine"
 	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/contact"
 	pt "jamesraine/grl/engine/parts"
 	ph "jamesraine/grl/engine/physics"
-	"jamesraine/grl/engine/util"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -25,7 +25,7 @@ func NewDigMap(solver *ph.PhysicsSolver, assets *pt.Assets) *en.Node {
 
 	obstacle := cm.PhysicsObstacleComponent{
 		PhysicsManager: solver,
-		ObstacleProvider: &PixelObstacleProvider{
+		CollisionSurfaceProvider: &PixelObstacleProvider{
 			PixelBuffer: mapPixels,
 		},
 	}
@@ -43,7 +43,7 @@ type PixelObstacleProvider struct {
 	pt.PixelBuffer
 }
 
-func (p *PixelObstacleProvider) Obstacles(n *en.Node, pos rl.Vector2, radius float32, hits []rl.Rectangle, nhits *int) {
+func (p *PixelObstacleProvider) Surfaces(n *en.Node, pos rl.Vector2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	sc := n.AbsoluteScale()
 	sx := int32(pos.X / sc)
 	sy := int32(pos.Y / sc)
@@ -76,10 +76,7 @@ func (p *PixelObstacleProvider) Obstacles(n *en.Node, pos rl.Vector2, radius flo
 		for x := left; x <= right; x++ {
 			if p.PixelBuffer.Pixels[y*w+x].A > 0 {
 				blockRect := rl.NewRectangle(float32(x)*sc, float32(y)*sc, sc, sc)
-				if util.CircleOverlapsRect(pos, radius, blockRect) {
-					hits[*nhits] = blockRect
-					*nhits++
-				}
+				contact.GenHitsForSquare(pos, radius, blockRect, hits, nhits)
 			}
 		}
 	}

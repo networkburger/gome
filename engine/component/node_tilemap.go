@@ -2,8 +2,8 @@ package component
 
 import (
 	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine/contact"
 	pt "jamesraine/grl/engine/parts"
-	"jamesraine/grl/engine/util"
 	"log/slog"
 	"strings"
 
@@ -12,10 +12,11 @@ import (
 
 type TilemapComponent struct {
 	PhysicsManager
-	tilemap    pt.Tilemap
-	textures   []rl.Texture2D
-	drawlayers []int
-	hits       []rl.Rectangle
+	tilemap        pt.Tilemap
+	textures       []rl.Texture2D
+	drawlayers     []int
+	hits           []rl.Rectangle
+	collisionLayer int
 }
 
 func (t *TilemapComponent) GetTilemap() *pt.Tilemap {
@@ -34,6 +35,9 @@ func (t *TilemapComponent) SetTilemap(assets *pt.Assets, tilemap pt.Tilemap) {
 	for layerIndex, layer := range t.tilemap.Layers {
 		if strings.Compare(layer.Type, "tilelayer") == 0 {
 			t.drawlayers = append(t.drawlayers, layerIndex)
+		}
+		if strings.Compare(layer.Name, "Terrain") == 0 {
+			t.collisionLayer = layerIndex
 		}
 	}
 }
@@ -88,35 +92,24 @@ func (s *TilemapComponent) Tick(gs *en.GameState, n *en.Node) {
 	}
 }
 
-func (t *TilemapComponent) Obstacles(n *en.Node, pos rl.Vector2, radius float32, hits []rl.Rectangle, nhits *int) {
+func (t *TilemapComponent) Surfaces(n *en.Node, pos rl.Vector2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	if t.hits == nil {
 		t.hits = make([]rl.Rectangle, 0)
 	}
 
 	xf := n.Transform()
 
-	for layeri, layer := range t.tilemap.Layers {
-		if layeri > 0 {
-			// TODO: decide whether this is a collidable layer
-			continue
-		}
-		for chunki, chunk := range layer.Chunks {
-			chunkArea := t.tilemap.ChunkPosition(layeri, chunki, xf)
-			hitsChunk := util.CircleOverlapsRect(pos, radius, chunkArea)
-			if hitsChunk {
-				for tilei := range chunk.Data {
-					if chunk.Data[tilei] == 0 {
-						continue
-					}
-					// if layeri == 0 && chunki == 0 && tilei == 210 {
-					// 	fmt.Println("??")
-					// }
-					tileArea := t.tilemap.TilePosition(layeri, chunki, tilei, xf)
-					if util.CircleOverlapsRect(pos, radius, tileArea) {
-						hits[*nhits] = tileArea
-						*nhits = (*nhits) + 1
-					}
+	layer := t.tilemap.Layers[t.collisionLayer]
+	for chunki, chunk := range layer.Chunks {
+		chunkArea := t.tilemap.ChunkPosition(t.collisionLayer, chunki, xf)
+		hitsChunk := contact.CircleOverlapsRect(pos, radius, chunkArea)
+		if hitsChunk {
+			for tilei := range chunk.Data {
+				if chunk.Data[tilei] == 0 {
+					continue
 				}
+				tileArea := t.tilemap.TilePosition(t.collisionLayer, chunki, tilei, xf)
+				contact.GenHitsForSquare(pos, radius, tileArea, hits, nhits)
 			}
 		}
 	}
