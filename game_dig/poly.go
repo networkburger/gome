@@ -2,18 +2,19 @@ package game_dig
 
 import (
 	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type LineStripComponent struct {
 	Color    rl.Color
-	Vertices []rl.Vector2
+	Vertices []v.Vec2
 
 	_xfv []rl.Vector2
 }
 
-func NewLineStripComponent(col rl.Color, verts []rl.Vector2) LineStripComponent {
+func NewLineStripComponent(col rl.Color, verts []v.Vec2) LineStripComponent {
 	return LineStripComponent{
 		Color:    col,
 		Vertices: verts,
@@ -25,10 +26,11 @@ func (s *LineStripComponent) Event(e en.NodeEvent, n *en.Node) {}
 
 func (c *LineStripComponent) Tick(gs *en.GameState, node *en.Node) {
 	nodeXf := node.Transform()
-	xf := rl.MatrixMultiply(nodeXf, gs.Camera.Matrix)
+	xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
 
 	for i := 0; i < len(c._xfv); i++ {
-		c._xfv[i] = rl.Vector2Transform(c.Vertices[i], xf)
+		x := c.Vertices[i].Xfm(xf)
+		c._xfv[i] = rl.NewVector2(x.X, x.Y)
 	}
 
 	rl.DrawLineStrip(c._xfv, c.Color)

@@ -4,6 +4,7 @@ import (
 	en "jamesraine/grl/engine"
 	"jamesraine/grl/engine/contact"
 	pt "jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/v"
 	"log/slog"
 	"strings"
 
@@ -15,7 +16,6 @@ type TilemapComponent struct {
 	tilemap        pt.Tilemap
 	textures       []rl.Texture2D
 	drawlayers     []int
-	hits           []rl.Rectangle
 	collisionLayer int
 }
 
@@ -67,7 +67,7 @@ func (s *TilemapComponent) Event(e en.NodeEvent, n *en.Node) {
 }
 
 func (s *TilemapComponent) Tick(gs *en.GameState, n *en.Node) {
-	xf := rl.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
+	xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
 	screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
 	for _, layerIndex := range s.drawlayers {
 		tileset := s.tilemap.Tilesets[0]
@@ -92,11 +92,7 @@ func (s *TilemapComponent) Tick(gs *en.GameState, n *en.Node) {
 	}
 }
 
-func (t *TilemapComponent) Surfaces(n *en.Node, pos rl.Vector2, radius float32, hits []contact.CollisionSurface, nhits *int) {
-	if t.hits == nil {
-		t.hits = make([]rl.Rectangle, 0)
-	}
-
+func (t *TilemapComponent) Surfaces(n *en.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	xf := n.Transform()
 
 	layer := t.tilemap.Layers[t.collisionLayer]
@@ -109,7 +105,10 @@ func (t *TilemapComponent) Surfaces(n *en.Node, pos rl.Vector2, radius float32, 
 					continue
 				}
 				tileArea := t.tilemap.TilePosition(t.collisionLayer, chunki, tilei, xf)
-				contact.GenHitsForSquare(pos, radius, tileArea, hits, nhits)
+				contact.GenHitsForSquare(pos, radius, tileArea, contact.SurfaceProperties{
+					Friction:    0,
+					Restitution: 0.5,
+				}, hits, nhits)
 			}
 		}
 	}

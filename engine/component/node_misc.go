@@ -14,7 +14,7 @@ type CircleComponent struct {
 func (s *CircleComponent) Event(e en.NodeEvent, n *en.Node) {}
 
 func (c *CircleComponent) Tick(gs *en.GameState, node *en.Node) {
-	pos := node.AbsolutePosition()
+	pos := gs.Camera.Transform(node.AbsolutePosition())
 	sc := node.AbsoluteScale()
 	rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius*sc, c.Color)
 }

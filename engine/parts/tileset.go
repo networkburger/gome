@@ -2,6 +2,7 @@ package parts
 
 import (
 	"encoding/json"
+	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -132,16 +133,16 @@ func (t Tileset) SourceRect(i int) rl.Rectangle {
 	return r
 }
 
-func (m Tilemap) TilePosition(layer, chunk, tile int, xf rl.Matrix) rl.Rectangle {
+func (m Tilemap) TilePosition(layer, chunk, tile int, xf v.Mat) rl.Rectangle {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
 	col := tile % int(ch.Width)
 	row := tile / int(ch.Width)
-	topLeft := rl.NewVector2(float32(ch.X)*tw+float32(col)*tw, float32(ch.Y)*th+float32(row)*th)
-	bottomRight := rl.NewVector2(topLeft.X+tw, topLeft.Y+th)
-	topLeft = rl.Vector2Transform(topLeft, xf)
-	bottomRight = rl.Vector2Transform(bottomRight, xf)
+	topLeft := v.V2(float32(ch.X)*tw+float32(col)*tw, float32(ch.Y)*th+float32(row)*th)
+	bottomRight := v.V2(topLeft.X+tw, topLeft.Y+th)
+	topLeft = topLeft.Xfm(xf)
+	bottomRight = bottomRight.Xfm(xf)
 	r := rl.Rectangle{
 		X:      topLeft.X,
 		Y:      topLeft.Y,
@@ -151,14 +152,14 @@ func (m Tilemap) TilePosition(layer, chunk, tile int, xf rl.Matrix) rl.Rectangle
 	return r
 }
 
-func (m Tilemap) ChunkPosition(layer, chunk int, xf rl.Matrix) rl.Rectangle {
+func (m Tilemap) ChunkPosition(layer, chunk int, xf v.Mat) rl.Rectangle {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
-	topLeft := rl.NewVector2(float32(ch.X)*tw, float32(ch.Y)*th)
-	bottomRight := rl.NewVector2(float32(ch.X+ch.Width)*tw, float32(ch.Y+ch.Height)*th)
-	topLeft = rl.Vector2Transform(topLeft, xf)
-	bottomRight = rl.Vector2Transform(bottomRight, xf)
+	topLeft := v.V2(float32(ch.X)*tw, float32(ch.Y)*th)
+	bottomRight := v.V2(float32(ch.X+ch.Width)*tw, float32(ch.Y+ch.Height)*th)
+	topLeft = topLeft.Xfm(xf)
+	bottomRight = bottomRight.Xfm(xf)
 	r := rl.Rectangle{
 		X:      topLeft.X,
 		Y:      topLeft.Y,
@@ -177,7 +178,7 @@ func (m Tilemap) Layer(layertype string) *TilemapLayer {
 	return nil
 }
 
-func (m Tilemap) Bounds(xf rl.Matrix) rl.Rectangle {
+func (m Tilemap) Bounds(xf v.Mat) v.Rect {
 	left := TileSpaceInt(0)
 	top := TileSpaceInt(0)
 	right := TileSpaceInt(0)
@@ -199,15 +200,10 @@ func (m Tilemap) Bounds(xf rl.Matrix) rl.Rectangle {
 	}
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
-	topLeft := rl.NewVector2(float32(left)*tw, float32(top)*th)
-	bottomRight := rl.NewVector2(float32(right)*tw, float32(bottom)*th)
-	topLeft = rl.Vector2Transform(topLeft, xf)
-	bottomRight = rl.Vector2Transform(bottomRight, xf)
-	r := rl.Rectangle{
-		X:      topLeft.X,
-		Y:      topLeft.Y,
-		Width:  bottomRight.X - topLeft.X,
-		Height: bottomRight.Y - topLeft.Y,
-	}
+	topLeft := v.V2(float32(left)*tw, float32(top)*th)
+	bottomRight := v.V2(float32(right)*tw, float32(bottom)*th)
+	topLeft = topLeft.Xfm(xf)
+	bottomRight = bottomRight.Xfm(xf)
+	r := v.R(topLeft.X, topLeft.Y, bottomRight.X-topLeft.X, bottomRight.Y-topLeft.Y)
 	return r
 }

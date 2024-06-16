@@ -6,6 +6,7 @@ import (
 	"jamesraine/grl/engine/contact"
 	pt "jamesraine/grl/engine/parts"
 	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -15,9 +16,9 @@ func NewDigMap(solver *ph.PhysicsSolver, assets *pt.Assets) *en.Node {
 	mapSprite := cm.NewBillboard(assets.Texture("map.png"))
 	mapPixels := assets.Pixels("map.png")
 
-	baseSize := rl.NewVector2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))
+	baseSize := v.V2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))
 	worldScale := float32(20)
-	worldSize := rl.Vector2Scale(baseSize, worldScale)
+	worldSize := baseSize.Scl(worldScale)
 	worldRect := rl.NewRectangle(0, 0, worldSize.X, worldSize.Y)
 
 	bgSprite.DstRect = worldRect
@@ -43,7 +44,7 @@ type PixelObstacleProvider struct {
 	pt.PixelBuffer
 }
 
-func (p *PixelObstacleProvider) Surfaces(n *en.Node, pos rl.Vector2, radius float32, hits []contact.CollisionSurface, nhits *int) {
+func (p *PixelObstacleProvider) Surfaces(n *en.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	sc := n.AbsoluteScale()
 	sx := int32(pos.X / sc)
 	sy := int32(pos.Y / sc)
@@ -76,7 +77,10 @@ func (p *PixelObstacleProvider) Surfaces(n *en.Node, pos rl.Vector2, radius floa
 		for x := left; x <= right; x++ {
 			if p.PixelBuffer.Pixels[y*w+x].A > 0 {
 				blockRect := rl.NewRectangle(float32(x)*sc, float32(y)*sc, sc, sc)
-				contact.GenHitsForSquare(pos, radius, blockRect, hits, nhits)
+				contact.GenHitsForSquare(pos, radius, blockRect, contact.SurfaceProperties{
+					Friction:    0,
+					Restitution: 0.5,
+				}, hits, nhits)
 			}
 		}
 	}

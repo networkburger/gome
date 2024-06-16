@@ -3,8 +3,10 @@ package game_ken
 import (
 	en "jamesraine/grl/engine"
 	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/contact"
 	pt "jamesraine/grl/engine/parts"
 	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -28,9 +30,9 @@ func NewPlayerNode(assets *pt.Assets, solver *ph.PhysicsSolver) *en.Node {
 			Texture:     assets.Texture(sheet.ImageRef),
 		},
 		ballistics: &cm.BallisticComponent{
-			VelocityDamping: rl.NewVector2(0.1, 0.1),
+			VelocityDamping: v.V2(0.1, 0.1),
 			AngularDamping:  0.8,
-			Gravity:         rl.NewVector2(0, 300),
+			Gravity:         v.V2(0, 300),
 		},
 	}
 
@@ -43,8 +45,18 @@ func NewPlayerNode(assets *pt.Assets, solver *ph.PhysicsSolver) *en.Node {
 	player.body = &cm.PhysicsBodyComponent{
 		PhysicsManager: solver,
 		Radius:         8,
+		SurfaceProperties: contact.SurfaceProperties{
+			Friction:    0,
+			Restitution: 0.025,
+		},
 	}
 	en.G.AddComponent(playerNode, player.body)
+
+	// en.G.AddComponent(playerNode, &cm.CircleComponent{
+	// 	Radius: 8,
+	// 	Color:  rl.Green,
+	// })
+
 	playerNode.Scale = 2
 	return playerNode
 }
@@ -63,7 +75,7 @@ func (p *Player) Tick(gs *en.GameState, n *en.Node) {
 		}
 		switch action {
 		case Move:
-			p.ballistics.Impulse = rl.Vector2Add(p.ballistics.Impulse, rl.NewVector2(power*thrust, 0))
+			p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(power*thrust, 0))
 		case Jump:
 			if p.body.IsOnGroundIsh(gs.T, 0.5) {
 				// cancel out any downward velocity so we get a full speed jump
@@ -71,9 +83,9 @@ func (p *Player) Tick(gs *en.GameState, n *en.Node) {
 				// a ledge and hav some downward velocity that would dampen the jump
 				// impulse
 				if p.ballistics.Velocity.Y < 0 {
-					p.ballistics.Velocity = rl.NewVector2(p.ballistics.Velocity.X, 0)
+					p.ballistics.Velocity = v.V2(p.ballistics.Velocity.X, 0)
 				}
-				p.ballistics.Impulse = rl.Vector2Add(p.ballistics.Impulse, rl.NewVector2(0, -9000))
+				p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(0, -9000))
 				// reset back to zero to avoid triggering multiple jumps
 				p.body.OnGround = 0
 				rl.PlaySound(p.snd)
@@ -82,12 +94,12 @@ func (p *Player) Tick(gs *en.GameState, n *en.Node) {
 	})
 
 	if p.body.IsOnGround(gs.T) {
-		p.ballistics.VelocityDamping = rl.NewVector2(3, 3)
+		p.ballistics.VelocityDamping = v.V2(3, 3)
 	} else {
-		p.ballistics.VelocityDamping = rl.NewVector2(0.2, 0)
+		p.ballistics.VelocityDamping = v.V2(0.2, 0)
 	}
 
-	moving := rl.Vector2LenSqr(p.ballistics.Velocity) > 0.1
+	moving := p.ballistics.Velocity.LenLen() > 0.1
 	if !p.body.IsOnGround(gs.T) {
 		p.sprite.SetSprite("roll")
 	} else if moving {

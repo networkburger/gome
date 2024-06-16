@@ -1,23 +1,23 @@
 package engine
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"jamesraine/grl/engine/v"
 )
 
 type Camera struct {
-	Position rl.Rectangle
-	Bounds   rl.Rectangle
+	Position v.Rect
+	Bounds   v.Rect
 
 	// NOTE updated at the start of each frame
 	// will NOT immediately reflect changes to position, rotation, or zoom
 	// You can always call cache() to force an update
-	Matrix rl.Matrix
+	Matrix v.Mat
 }
 
-func (c *Camera) Transform(v rl.Vector2) rl.Vector2 {
-	return rl.Vector2Transform(v, c.Matrix)
+func (c *Camera) Transform(v v.Vec2) v.Vec2 {
+	return v.Xfm(c.Matrix)
 }
 
 func (c *Camera) cache() {
-	c.Matrix = rl.MatrixTranslate(-c.Position.X, -c.Position.Y, 0)
+	c.Matrix = v.MatrixTranslate(-c.Position.X, -c.Position.Y, 0)
 }

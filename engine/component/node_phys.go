@@ -33,6 +33,7 @@ type PhysicsBodyComponent struct {
 	PhysicsManager
 	Radius   float32
 	OnGround float64
+	contact.SurfaceProperties
 }
 
 func (p *PhysicsBodyComponent) IsOnGround(t float64) bool {

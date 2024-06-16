@@ -1,6 +1,7 @@
 package parts
 
 import (
+	"jamesraine/grl/engine/v"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 type SpritesheetFrame struct {
 	SpriteName string
 	Source     rl.Rectangle
-	Origin     rl.Vector2
+	Origin     v.Vec2
 }
 
 type Spritesheet struct {
@@ -116,7 +117,7 @@ func readFrameLine(ss Spritesheet, line string) Spritesheet {
 	frame := SpritesheetFrame{
 		SpriteName: args[1],
 		Source:     rl.NewRectangle(float32(x), float32(y), float32(w), float32(h)),
-		Origin:     rl.NewVector2(float32(ox), float32(oy)),
+		Origin:     v.V2(float32(ox), float32(oy)),
 	}
 
 	ss.Frames = append(ss.Frames, frame)

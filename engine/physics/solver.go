@@ -5,9 +5,8 @@ import (
 	cm "jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/util"
+	"jamesraine/grl/engine/v"
 	"log/slog"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 // Cache types - store a node and its relevant components
@@ -95,15 +94,17 @@ func (s *PhysicsSolver) Unregister(n *en.Node) {
 	})
 }
 
-func velocityCorrection(inputVelocity, contactNormal rl.Vector2, restitution float32) rl.Vector2 {
-	velm := rl.Vector2Length(inputVelocity)
-	veln := rl.Vector2Normalize(inputVelocity)
-	d := rl.Vector2DotProduct(contactNormal, veln)
-	scaled := rl.Vector2Scale(contactNormal, velm*d*(1+restitution))
-	delta := rl.Vector2Add(scaled, inputVelocity)
-	correction := rl.Vector2Subtract(inputVelocity, delta)
+func velocityCorrection(inputVelocity, contactNormal v.Vec2, restitution float32) v.Vec2 {
+	velm := inputVelocity.Len()
+	veln := inputVelocity.Nrm()
+	d := contactNormal.Dot(veln)
+	scaled := contactNormal.Scl(velm * d * (1 + restitution))
+	delta := scaled.Add(inputVelocity)
+	correction := inputVelocity.Sub(delta)
 	return correction
 }
+
+var _up = v.V2(0, -1)
 
 func (s *PhysicsSolver) Solve(gs *en.GameState) {
 	nhits := 0
@@ -111,37 +112,57 @@ func (s *PhysicsSolver) Solve(gs *en.GameState) {
 	for _, b := range s.bodies {
 		bpos := b.Node.Position
 		radius := b.PhysicsBodyComponent.Radius * b.Node.AbsoluteScale()
-
-		for _, o := range s.obstacles {
-			o.CollisionSurfaceProvider.Surfaces(o.Node, bpos, radius, s.hits, &nhits)
-		}
-
-		closest := -1
-		closestDist := float32(999999999)
-
-		for i := 0; i < nhits; i++ {
-			hit := s.hits[i]
-			dist := rl.Vector2DistanceSqr(bpos, hit.ContactPoint)
-			if dist < closestDist {
-				closest = i
-				closestDist = dist
-			}
-		}
-		if closest > -1 {
-			hit := s.hits[closest]
-			b.Node.Position = rl.Vector2Add(hit.ContactPoint, rl.Vector2Scale(hit.Normal, radius))
-			correction := velocityCorrection(b.BallisticComponent.Velocity, hit.Normal, 0.85)
-			b.BallisticComponent.Velocity = rl.Vector2Add(b.BallisticComponent.Velocity, correction)
-		}
+		bounces := 0
 
 		// check for colliding signals
 		if s.PhysicsContactNotifier != nil {
 			for _, sig := range s.signals {
 				sigRadius := sig.Node.AbsoluteScale() * sig.PhysicsSignalComponent.Radius
 				sigPos := sig.Node.AbsolutePosition()
-				if rl.Vector2DistanceSqr(bpos, sigPos) < (radius+sigRadius)*(radius+sigRadius) {
+				if bpos.DistDist(sigPos) < (radius+sigRadius)*(radius+sigRadius) {
 					s.PhysicsContactNotifier(b, sig)
 				}
+			}
+		}
+
+		colliding := true
+		for colliding {
+			for _, o := range s.obstacles {
+				o.CollisionSurfaceProvider.Surfaces(o.Node, bpos, radius, s.hits, &nhits)
+			}
+
+			closest := -1
+			closestDist := float32(999999999)
+
+			for i := 0; i < nhits; i++ {
+				hit := s.hits[i]
+				dist := bpos.DistDist(hit.ContactPoint)
+				if dist < closestDist {
+					closest = i
+					closestDist = dist
+				}
+			}
+			if closest > -1 {
+				hit := s.hits[closest]
+				responseNormal := bpos.Sub(hit.ContactPoint).Nrm()
+
+				bpos = hit.ContactPoint.Add(responseNormal.Scl(radius))
+				b.Node.Position = bpos
+				restitution := hit.Restitution * b.PhysicsBodyComponent.SurfaceProperties.Restitution
+				correction := velocityCorrection(b.BallisticComponent.Velocity, responseNormal, restitution)
+				b.BallisticComponent.Velocity = b.BallisticComponent.Velocity.Add(correction)
+				nhits = 0
+				bounces++
+
+				if hit.Normal.Dot(_up) > 0.95 && b.BallisticComponent.Velocity.Y < 0.1 {
+					b.PhysicsBodyComponent.OnGround = gs.T
+				}
+
+				if bounces > 10 {
+					colliding = false
+				}
+			} else {
+				colliding = false
 			}
 		}
 	}

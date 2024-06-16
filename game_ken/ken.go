@@ -7,6 +7,7 @@ import (
 	cm "jamesraine/grl/engine/component"
 	pt "jamesraine/grl/engine/parts"
 	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/v"
 	"log/slog"
 	"os"
 	"time"
@@ -36,11 +37,11 @@ func GameLoop(screenWidth, screenHeight int) {
 	playerNode := NewPlayerNode(&assets, &solver)
 	en.G.AddChild(rootNode, playerNode)
 
-	playerNode.Position = rl.NewVector2(100, 100)
+	playerNode.Position = v.V2(100, 100)
 
 	spawn := tilemap.FindObject("objectgroup", "spawn")
 	if spawn.Type == "spawn" {
-		playerNode.Position = rl.NewVector2(
+		playerNode.Position = v.V2(
 			worldNode.Scale*float32(spawn.X),
 			worldNode.Scale*float32(spawn.Y))
 	}
@@ -54,7 +55,7 @@ func GameLoop(screenWidth, screenHeight int) {
 		WindowPixelHeight: screenHeight,
 		WindowPixelWidth:  screenWidth,
 		Camera: &en.Camera{
-			Position: rl.NewRectangle(0, 0, float32(screenWidth), float32(screenHeight)),
+			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
 			Bounds:   tilemap.GetTilemap().Bounds(worldNode.Transform()),
 		},
 	}
@@ -83,8 +84,8 @@ func GameLoop(screenWidth, screenHeight int) {
 			if gs.Camera.Position.X < gs.Camera.Bounds.X {
 				gs.Camera.Position.X = gs.Camera.Bounds.X
 			}
-			if gs.Camera.Position.Y+gs.Camera.Position.Height > gs.Camera.Bounds.Y+gs.Camera.Bounds.Height {
-				gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.Height) - gs.Camera.Position.Height
+			if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
+				gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
 			}
 			if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
 				gs.Camera.Position.Y = gs.Camera.Bounds.Y
@@ -118,7 +119,7 @@ func loadWorld(assets *pt.Assets, solver *ph.PhysicsSolver) (*en.Node, *cm.Tilem
 			for _, obj := range layer.Objects {
 				if obj.Visible {
 					n := Spawn(obj.Type, assets, solver)
-					n.Position = rl.NewVector2(float32(obj.X), float32(obj.Y))
+					n.Position = v.V2(float32(obj.X), float32(obj.Y))
 					n.Rotation = en.AngleD(obj.Rotation)
 					en.G.AddChild(worldNode, n)
 				}

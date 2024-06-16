@@ -5,6 +5,7 @@ import (
 	en "jamesraine/grl/engine"
 	pt "jamesraine/grl/engine/parts"
 	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -22,7 +23,7 @@ func GameLoop(screenWidth, screenHeight int) {
 	mapNode := NewDigMap(&solver, &assets)
 
 	player := StandardPlayerNode(&solver)
-	player.Position = rl.NewVector2(985*20, 35*20)
+	player.Position = v.V2(985*20, 35*20)
 	player.Rotation = 90
 
 	en.G.AddChild(rootNode, mapNode)
@@ -33,7 +34,7 @@ func GameLoop(screenWidth, screenHeight int) {
 		WindowPixelHeight: int(screenHeight),
 		WindowPixelWidth:  int(screenWidth),
 		Camera: &en.Camera{
-			Position: rl.NewRectangle(0, 0, float32(screenWidth), float32(screenHeight)),
+			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
 		},
 	}
 
