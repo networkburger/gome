@@ -2,149 +2,129 @@ package game_ken
 
 import (
 	"fmt"
-	"io/fs"
-	en "jamesraine/grl/engine"
-	cm "jamesraine/grl/engine/component"
-	pt "jamesraine/grl/engine/parts"
-	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 	"log/slog"
-	"os"
-	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func GameLoop(screenWidth, screenHeight int) {
-	en.G = en.NewEngine()
+	engine.G = engine.NewEngine()
 
-	assets := pt.NewAssets("ass")
-	rootNode := en.NewNode("RootNode")
+	assets := parts.NewAssets("ass")
+	rootNode := engine.NewNode("RootNode")
 
-	solver := ph.NewPhysicsSolver(func(b ph.PhysicsBodyInfo, s ph.PhysicsSignalInfo) {
+	solver := physics.NewPhysicsSolver(func(b physics.PhysicsBodyInfo, s physics.PhysicsSignalInfo) {
 		snd := assets.Sound("coin.wav")
 		rl.PlaySound(snd)
-		en.G.RemoveNodeFromParent(s.Node)
+		engine.G.RemoveNodeFromParent(s.Node)
 	})
 
 	///////////////////////////////////////////
 	// WORLD TILEMAP
-	worldNode, tilemap := loadWorld(&assets, &solver)
-	en.G.AddChild(rootNode, worldNode)
+	worldNodeBG := engine.NewNode("WorldBG")
+	worldNodeFG := engine.NewNode("WorldFG")
+	worldNodeGeometry := engine.NewNode("WorldGeometry")
+	worldNodeBG.Scale = 2
+	worldNodeFG.Scale = 2
+	worldNodeGeometry.Scale = 2
+
+	tilemapData, _ := assets.FileBytes("untitled.tmj")
+	tilemap, err := parts.TilemapRead(&assets, tilemapData)
+	if err != nil {
+		slog.Warn("TilemapReadFile", "error", err)
+	}
+
+	bgcomp := component.TilemapVisual(&assets, &tilemap, "BG")
+	fgcomp := component.TilemapVisual(&assets, &tilemap, "FG")
+	terrainComp := component.TilemapGeometry(&solver, &tilemap, "Terrain")
+	terrainObstacles := component.PhysicsObstacleComponent{
+		PhysicsManager:           &solver,
+		CollisionSurfaceProvider: &terrainComp,
+	}
+	terrainVisualComp := component.TilemapVisual(&assets, &tilemap, "Terrain")
+	engine.G.AddComponent(worldNodeBG, &bgcomp)
+	engine.G.AddComponent(worldNodeFG, &fgcomp)
+	engine.G.AddComponent(worldNodeGeometry, &terrainComp)
+	engine.G.AddComponent(worldNodeGeometry, &terrainObstacles)
+	engine.G.AddComponent(worldNodeGeometry, &terrainVisualComp)
 
 	///////////////////////////////////////////
 	// PLAYER
 	playerNode := NewPlayerNode(&assets, &solver)
-	en.G.AddChild(rootNode, playerNode)
 
 	playerNode.Position = v.V2(100, 100)
 
 	spawn := tilemap.FindObject("objectgroup", "spawn")
 	if spawn.Type == "spawn" {
 		playerNode.Position = v.V2(
-			worldNode.Scale*float32(spawn.X),
-			worldNode.Scale*float32(spawn.Y))
+			worldNodeGeometry.Scale*float32(spawn.X),
+			worldNodeGeometry.Scale*float32(spawn.Y))
 	}
 
 	///////////////////////////////////////////
 	// GET GOING PLZ
 
-	rl.SetTargetFPS(30)
-
-	gs := en.GameState{
-		WindowPixelHeight: screenHeight,
-		WindowPixelWidth:  screenWidth,
-		Camera: &en.Camera{
-			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
-			Bounds:   tilemap.GetTilemap().Bounds(worldNode.Transform()),
-		},
-	}
-
-	onchange := make(chan fs.FileInfo)
-	go watchFile(assets.Path("untitled.tmj"), onchange)
-
-	en.G.SetScene(rootNode)
-
-	for !rl.WindowShouldClose() {
-		select {
-		case <-onchange:
-			en.G.RemoveNodeFromParent(worldNode)
-			worldNode, tilemap = loadWorld(&assets, &solver)
-			en.G.AddChild(rootNode, worldNode)
-			gs.Camera.Bounds = tilemap.GetTilemap().Bounds(worldNode.Transform())
-		default:
-			gs.DT = rl.GetFrameTime()
-			gs.T = rl.GetTime()
-			rl.BeginDrawing()
-			rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
-			en.G.Run(&gs)
-
-			gs.Camera.Position.X = playerNode.Position.X - float32(gs.WindowPixelWidth)/2
-			gs.Camera.Position.Y = playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
-			if gs.Camera.Position.X < gs.Camera.Bounds.X {
-				gs.Camera.Position.X = gs.Camera.Bounds.X
-			}
-			if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
-				gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
-			}
-			if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
-				gs.Camera.Position.Y = gs.Camera.Bounds.Y
-			}
-
-			rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), int32(screenWidth)-160, int32(screenHeight)-20, 10, rl.Gray)
-			rl.EndDrawing()
-			solver.Solve(&gs)
-		}
-	}
-}
-
-func loadWorld(assets *pt.Assets, solver *ph.PhysicsSolver) (*en.Node, *cm.TilemapComponent) {
-	worldNode := en.NewNode("World")
-	worldNode.Scale = 2
-
-	tilemapData, _ := assets.FileBytes("untitled.tmj")
-	tilemap, err := pt.TilemapRead(assets, tilemapData)
-	if err != nil {
-		slog.Warn("TilemapReadFile", "error", err)
-	}
-
-	tilemapComp := cm.TilemapComponent{
-		PhysicsManager: solver,
-	}
-	tilemapComp.SetTilemap(assets, tilemap)
-	en.G.AddComponent(worldNode, &tilemapComp)
+	engine.G.AddChild(rootNode, worldNodeBG)
+	engine.G.AddChild(rootNode, worldNodeGeometry)
+	engine.G.AddChild(rootNode, playerNode)
 
 	for _, layer := range tilemap.Layers {
 		if layer.Type == "objectgroup" {
 			for _, obj := range layer.Objects {
 				if obj.Visible {
-					n := Spawn(obj.Type, assets, solver)
+					n := Spawn(obj.Type, &assets, &solver)
 					n.Position = v.V2(float32(obj.X), float32(obj.Y))
-					n.Rotation = en.AngleD(obj.Rotation)
-					en.G.AddChild(worldNode, n)
+					n.Rotation = engine.AngleD(obj.Rotation)
+					engine.G.AddChild(rootNode, n)
 				}
 			}
 		}
 	}
+	engine.G.AddChild(rootNode, worldNodeFG)
 
-	phys := cm.PhysicsObstacleComponent{
-		PhysicsManager:           solver,
-		CollisionSurfaceProvider: &tilemapComp,
+	rl.SetTargetFPS(30)
+
+	gs := engine.GameState{
+		WindowPixelHeight: screenHeight,
+		WindowPixelWidth:  screenWidth,
+		Camera: &engine.Camera{
+			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
+			Bounds:   tilemap.Bounds(worldNodeGeometry.Transform()),
+		},
 	}
-	en.G.AddComponent(worldNode, &phys)
-	return worldNode, &tilemapComp
-}
 
-func watchFile(filePath string, onchange chan fs.FileInfo) {
-	initialStat, _ := os.Stat(filePath)
+	engine.G.SetScene(rootNode)
 
-	for {
-		stat, _ := os.Stat(filePath)
-		if stat.Size() != initialStat.Size() || stat.ModTime() != initialStat.ModTime() {
-			onchange <- stat
-			initialStat = stat
+	for !rl.WindowShouldClose() {
+		gs.DT = rl.GetFrameTime()
+		gs.T = rl.GetTime()
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		engine.G.Run(&gs)
+
+		gs.Camera.Position.X = playerNode.Position.X - float32(gs.WindowPixelWidth)/2
+		gs.Camera.Position.Y = playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
+		if gs.Camera.Position.X < gs.Camera.Bounds.X {
+			gs.Camera.Position.X = gs.Camera.Bounds.X
+		}
+		if gs.Camera.Position.X+gs.Camera.Position.W > gs.Camera.Bounds.X+gs.Camera.Bounds.W {
+			gs.Camera.Position.X = (gs.Camera.Bounds.X + gs.Camera.Bounds.W) - gs.Camera.Position.W
 		}
 
-		time.Sleep(1 * time.Second)
+		if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
+			gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
+		}
+		if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
+			gs.Camera.Position.Y = gs.Camera.Bounds.Y
+		}
+
+		rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), int32(screenWidth)-160, int32(screenHeight)-20, 10, rl.Gray)
+		rl.EndDrawing()
+		solver.Solve(&gs)
 	}
 }

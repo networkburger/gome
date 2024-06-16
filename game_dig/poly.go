@@ -1,7 +1,7 @@
 package game_dig
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -22,9 +22,9 @@ func NewLineStripComponent(col rl.Color, verts []v.Vec2) LineStripComponent {
 	}
 }
 
-func (s *LineStripComponent) Event(e en.NodeEvent, n *en.Node) {}
+func (s *LineStripComponent) Event(e engine.NodeEvent, n *engine.Node) {}
 
-func (c *LineStripComponent) Tick(gs *en.GameState, node *en.Node) {
+func (c *LineStripComponent) Tick(gs *engine.GameState, node *engine.Node) {
 	nodeXf := node.Transform()
 	xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
 
@@ -41,7 +41,7 @@ type CircleComponent struct {
 	Radius float32
 }
 
-func (c *CircleComponent) Tick(gs *en.GameState, node *en.Node) {
+func (c *CircleComponent) Tick(gs *engine.GameState, node *engine.Node) {
 	pos := gs.Camera.Transform(node.AbsolutePosition())
 	rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius, c.Color)
 }

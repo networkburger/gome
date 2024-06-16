@@ -207,3 +207,15 @@ func (m Tilemap) Bounds(xf v.Mat) v.Rect {
 	r := v.R(topLeft.X, topLeft.Y, bottomRight.X-topLeft.X, bottomRight.Y-topLeft.Y)
 	return r
 }
+
+func (t Tilemap) FindObject(layername, objectname string) TilemapObject {
+	objectLayer := t.Layer(layername)
+	if objectLayer != nil {
+		for _, obj := range objectLayer.Objects {
+			if obj.Type == objectname {
+				return obj
+			}
+		}
+	}
+	return TilemapObject{}
+}

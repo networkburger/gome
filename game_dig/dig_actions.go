@@ -1,20 +1,20 @@
 package game_dig
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
-	Accelerate = en.ActionID(0)
-	Decelerate = en.ActionID(1)
-	TurnLeft   = en.ActionID(2)
-	TurnRight  = en.ActionID(3)
-	Turn       = en.ActionID(4)
+	Accelerate = engine.ActionID(0)
+	Decelerate = engine.ActionID(1)
+	TurnLeft   = engine.ActionID(2)
+	TurnRight  = engine.ActionID(3)
+	Turn       = engine.ActionID(4)
 )
 
-var InputOverworld = []en.InputActionMapping{
+var InputOverworld = []engine.InputActionMapping{
 	{
 		ActionID: Accelerate,
 		KeyDown:  rl.KeyW,
@@ -57,6 +57,6 @@ var InputOverworld = []en.InputActionMapping{
 	},
 	{
 		ActionID:    Turn,
-		GamePadAxis: en.GamepadAxisLeftX,
+		GamePadAxis: engine.GamepadAxisLeftX,
 	},
 }

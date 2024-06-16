@@ -1,7 +1,7 @@
 package game_ken
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -11,7 +11,7 @@ const (
 	Jump
 )
 
-var InputOverworld = []en.InputActionMapping{
+var InputOverworld = []engine.InputActionMapping{
 	{
 		ActionID:    Jump,
 		KeyReleased: rl.KeySpace,
@@ -46,6 +46,6 @@ var InputOverworld = []en.InputActionMapping{
 	},
 	{
 		ActionID:    Move,
-		GamePadAxis: en.GamepadAxisLeftX,
+		GamePadAxis: engine.GamepadAxisLeftX,
 	},
 }

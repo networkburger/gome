@@ -1,7 +1,7 @@
 package contact
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -22,7 +22,7 @@ type CollisionSurfaceProvider interface {
 	// Not in love with this interface - puts a lot of responsibility on the implementor
 	// to know the internal workings of the solver.
 	// Better perhaps to provide a function for the implementor to call with each hit rectangle
-	Surfaces(n *en.Node, pos v.Vec2, radius float32, hits []CollisionSurface, nhits *int)
+	Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []CollisionSurface, nhits *int)
 }
 
 func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle rl.Rectangle) bool {

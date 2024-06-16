@@ -1,8 +1,8 @@
 package physics
 
 import (
-	en "jamesraine/grl/engine"
-	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/util"
 	"jamesraine/grl/engine/v"
@@ -11,17 +11,17 @@ import (
 
 // Cache types - store a node and its relevant components
 type PhysicsBodyInfo struct {
-	*en.Node
-	*cm.PhysicsBodyComponent
-	*cm.BallisticComponent
+	*engine.Node
+	*component.PhysicsBodyComponent
+	*component.BallisticComponent
 }
 type PhysicsSignalInfo struct {
-	*en.Node
-	*cm.PhysicsSignalComponent
+	*engine.Node
+	*component.PhysicsSignalComponent
 }
 type PhysicsObstacleInfo struct {
-	*en.Node
-	*cm.PhysicsObstacleComponent
+	*engine.Node
+	*component.PhysicsObstacleComponent
 }
 type PhysicsContactNotifier func(PhysicsBodyInfo, PhysicsSignalInfo)
 
@@ -45,8 +45,8 @@ func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
 
 // Register a node with the solver
 // Typically a component will call this at NodeEventLoad
-func (s *PhysicsSolver) Register(n *en.Node) {
-	obstacle := en.FindComponent[*cm.PhysicsObstacleComponent](n.Components)
+func (s *PhysicsSolver) Register(n *engine.Node) {
+	obstacle := engine.FindComponent[*component.PhysicsObstacleComponent](n.Components)
 	if obstacle != nil {
 		b := PhysicsObstacleInfo{
 			Node:                     n,
@@ -55,9 +55,9 @@ func (s *PhysicsSolver) Register(n *en.Node) {
 		s.obstacles = append(s.obstacles, b)
 	}
 
-	body := en.FindComponent[*cm.PhysicsBodyComponent](n.Components)
+	body := engine.FindComponent[*component.PhysicsBodyComponent](n.Components)
 	if body != nil {
-		ballistics := en.FindComponent[*cm.BallisticComponent](n.Components)
+		ballistics := engine.FindComponent[*component.BallisticComponent](n.Components)
 		if ballistics == nil {
 			slog.Warn("PhysicsSolver.AddBody: Node has no BallisticComponent; ignoring")
 		} else {
@@ -70,7 +70,7 @@ func (s *PhysicsSolver) Register(n *en.Node) {
 		}
 	}
 
-	signal := en.FindComponent[*cm.PhysicsSignalComponent](n.Components)
+	signal := engine.FindComponent[*component.PhysicsSignalComponent](n.Components)
 	if signal != nil {
 		b := PhysicsSignalInfo{
 			Node:                   n,
@@ -82,7 +82,7 @@ func (s *PhysicsSolver) Register(n *en.Node) {
 
 // Unregister a node with the solver
 // Typically a component will call this at NodeEventUnload
-func (s *PhysicsSolver) Unregister(n *en.Node) {
+func (s *PhysicsSolver) Unregister(n *engine.Node) {
 	s.bodies = util.SliceRemoveAll(s.bodies, func(_ int, b PhysicsBodyInfo) bool {
 		return b.Node == n
 	})
@@ -106,7 +106,7 @@ func velocityCorrection(inputVelocity, contactNormal v.Vec2, restitution float32
 
 var _up = v.V2(0, -1)
 
-func (s *PhysicsSolver) Solve(gs *en.GameState) {
+func (s *PhysicsSolver) Solve(gs *engine.GameState) {
 	nhits := 0
 
 	for _, b := range s.bodies {

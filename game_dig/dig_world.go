@@ -1,19 +1,19 @@
 package game_dig
 
 import (
-	en "jamesraine/grl/engine"
-	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/contact"
-	pt "jamesraine/grl/engine/parts"
-	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func NewDigMap(solver *ph.PhysicsSolver, assets *pt.Assets) *en.Node {
-	bgSprite := cm.NewBillboard(assets.Texture("bg.png"))
-	mapSprite := cm.NewBillboard(assets.Texture("map.png"))
+func NewDigMap(solver *physics.PhysicsSolver, assets *parts.Assets) *engine.Node {
+	bgSprite := component.NewBillboard(assets.Texture("bg.png"))
+	mapSprite := component.NewBillboard(assets.Texture("map.png"))
 	mapPixels := assets.Pixels("map.png")
 
 	baseSize := v.V2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))
@@ -24,27 +24,27 @@ func NewDigMap(solver *ph.PhysicsSolver, assets *pt.Assets) *en.Node {
 	bgSprite.DstRect = worldRect
 	mapSprite.DstRect = worldRect
 
-	obstacle := cm.PhysicsObstacleComponent{
+	obstacle := component.PhysicsObstacleComponent{
 		PhysicsManager: solver,
 		CollisionSurfaceProvider: &PixelObstacleProvider{
 			PixelBuffer: mapPixels,
 		},
 	}
 
-	mapNode := en.NewNode("Map")
+	mapNode := engine.NewNode("Map")
 	mapNode.Scale = worldScale
-	en.G.AddComponent(mapNode, &bgSprite)
-	en.G.AddComponent(mapNode, &mapSprite)
-	en.G.AddComponent(mapNode, &obstacle)
+	engine.G.AddComponent(mapNode, &bgSprite)
+	engine.G.AddComponent(mapNode, &mapSprite)
+	engine.G.AddComponent(mapNode, &obstacle)
 
 	return mapNode
 }
 
 type PixelObstacleProvider struct {
-	pt.PixelBuffer
+	parts.PixelBuffer
 }
 
-func (p *PixelObstacleProvider) Surfaces(n *en.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
+func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	sc := n.AbsoluteScale()
 	sx := int32(pos.X / sc)
 	sy := int32(pos.Y / sc)

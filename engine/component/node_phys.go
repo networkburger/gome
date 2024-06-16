@@ -1,14 +1,14 @@
 package component
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/contact"
 	"log/slog"
 )
 
 type PhysicsManager interface {
-	Register(n *en.Node)
-	Unregister(n *en.Node)
+	Register(n *engine.Node)
+	Unregister(n *engine.Node)
 }
 
 type PhysicsObstacleComponent struct {
@@ -16,15 +16,15 @@ type PhysicsObstacleComponent struct {
 	contact.CollisionSurfaceProvider
 }
 
-func (s *PhysicsObstacleComponent) Tick(gs *en.GameState, n *en.Node) {}
-func (s *PhysicsObstacleComponent) Event(e en.NodeEvent, n *en.Node) {
-	if e == en.NodeEventLoad {
+func (s *PhysicsObstacleComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *PhysicsObstacleComponent) Event(e engine.NodeEvent, n *engine.Node) {
+	if e == engine.NodeEventLoad {
 		if s.CollisionSurfaceProvider == nil {
 			slog.Warn("PhysicsObstacleComponent: no ObstacleProvider; ignoring")
 		} else {
 			s.PhysicsManager.Register(n)
 		}
-	} else if e == en.NodeEventUnload {
+	} else if e == engine.NodeEventUnload {
 		s.PhysicsManager.Unregister(n)
 	}
 }
@@ -43,11 +43,11 @@ func (p *PhysicsBodyComponent) IsOnGroundIsh(t, grace float64) bool {
 	return t-p.OnGround < grace
 }
 
-func (s *PhysicsBodyComponent) Tick(gs *en.GameState, n *en.Node) {}
-func (s *PhysicsBodyComponent) Event(e en.NodeEvent, n *en.Node) {
-	if e == en.NodeEventLoad {
+func (s *PhysicsBodyComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *PhysicsBodyComponent) Event(e engine.NodeEvent, n *engine.Node) {
+	if e == engine.NodeEventLoad {
 		s.PhysicsManager.Register(n)
-	} else if e == en.NodeEventUnload {
+	} else if e == engine.NodeEventUnload {
 		s.PhysicsManager.Unregister(n)
 	}
 }
@@ -58,11 +58,11 @@ type PhysicsSignalComponent struct {
 	Kind   int
 }
 
-func (s *PhysicsSignalComponent) Tick(gs *en.GameState, n *en.Node) {}
-func (s *PhysicsSignalComponent) Event(e en.NodeEvent, n *en.Node) {
-	if e == en.NodeEventLoad {
+func (s *PhysicsSignalComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *PhysicsSignalComponent) Event(e engine.NodeEvent, n *engine.Node) {
+	if e == engine.NodeEventLoad {
 		s.PhysicsManager.Register(n)
-	} else if e == en.NodeEventUnload {
+	} else if e == engine.NodeEventUnload {
 		s.PhysicsManager.Unregister(n)
 	}
 }

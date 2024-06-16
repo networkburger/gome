@@ -1,9 +1,9 @@
 package component
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/contact"
-	pt "jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/v"
 	"log/slog"
 	"strings"
@@ -11,100 +11,112 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type TilemapComponent struct {
-	PhysicsManager
-	tilemap        pt.Tilemap
-	textures       []rl.Texture2D
-	drawlayers     []int
-	collisionLayer int
+type TilemapVisualComponent struct {
+	tilemap parts.Tilemap
+	texture rl.Texture2D
+	layer   int
 }
 
-func (t *TilemapComponent) GetTilemap() *pt.Tilemap {
-	return &t.tilemap
-}
-
-func (t *TilemapComponent) SetTilemap(assets *pt.Assets, tilemap pt.Tilemap) {
-	for range tilemap.Layers {
-		// TODO: figure out how to handle multiple tilesets
-		textureFile := tilemap.Tilesets[0].Image
-		t.textures = make([]rl.Texture2D, 0, len(tilemap.Layers))
-		t.textures = append(t.textures, assets.Texture(textureFile))
+func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) TilemapVisualComponent {
+	layerIndex := -1
+	for i, l := range tilemap.Layers {
+		if strings.Compare(l.Name, layer) == 0 {
+			layerIndex = i
+			break
+		}
 	}
-	t.tilemap = tilemap
-	t.drawlayers = make([]int, 0)
-	for layerIndex, layer := range t.tilemap.Layers {
-		if strings.Compare(layer.Type, "tilelayer") == 0 {
-			t.drawlayers = append(t.drawlayers, layerIndex)
-		}
-		if strings.Compare(layer.Name, "Terrain") == 0 {
-			t.collisionLayer = layerIndex
-		}
+
+	textureFile := tilemap.Tilesets[0].Image
+	texture := assets.Texture(textureFile)
+
+	return TilemapVisualComponent{
+		tilemap: *tilemap,
+		layer:   layerIndex,
+		texture: texture,
 	}
 }
 
-func (t *TilemapComponent) FindObject(layername, objectname string) pt.TilemapObject {
-	objectLayer := t.GetTilemap().Layer(layername)
-	if objectLayer != nil {
-		for _, obj := range objectLayer.Objects {
-			if obj.Type == objectname {
-				return obj
+func (s *TilemapVisualComponent) Event(e engine.NodeEvent, n *engine.Node) {}
+
+func (s *TilemapVisualComponent) Tick(gs *engine.GameState, n *engine.Node) {
+	xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
+	screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
+
+	tileset := s.tilemap.Tilesets[0]
+	layer := s.tilemap.Layers[s.layer]
+	for chunkIndex, chunk := range layer.Chunks {
+		chunkArea := s.tilemap.ChunkPosition(s.layer, chunkIndex, xf)
+		if !rl.CheckCollisionRecs(screenArea, chunkArea) {
+			continue
+		}
+		for tileIndex := parts.TileSpaceInt(0); tileIndex < chunk.Width*chunk.Height; tileIndex++ {
+			tileKind := chunk.Data[tileIndex] - 1
+			if tileKind == -1 {
+				continue
 			}
+
+			sourceRect := tileset.SourceRect(tileKind)
+			destRect := s.tilemap.TilePosition(s.layer, chunkIndex, int(tileIndex), xf)
+			// TODO: lookup appropriate texture based on layer?
+			rl.DrawTexturePro(s.texture, sourceRect, destRect, rl.Vector2{}, 0, rl.White)
 		}
 	}
-	return pt.TilemapObject{}
 }
 
-func (s *TilemapComponent) Event(e en.NodeEvent, n *en.Node) {
+///////////////////////////////////////////
+//
+//
+
+type TilemapGeometryComponent struct {
+	PhysicsManager
+	tilemap parts.Tilemap
+	texture rl.Texture2D
+	layer   int
+}
+
+func TilemapGeometry(phys PhysicsManager, tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
+	layerIndex := -1
+	for i, l := range tilemap.Layers {
+		if strings.Compare(l.Name, layer) == 0 {
+			layerIndex = i
+			break
+		}
+	}
+
+	return TilemapGeometryComponent{
+		PhysicsManager: phys,
+		tilemap:        *tilemap,
+		layer:          layerIndex,
+	}
+}
+
+func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, n *engine.Node) {
 	if s.PhysicsManager == nil {
 		slog.Warn("TilemapComponent: no PhysicsManager; Tilemap collision detection will not work.")
 		return
 	}
-	if e == en.NodeEventLoad {
+	if e == engine.NodeEventLoad {
 		s.PhysicsManager.Register(n)
-	} else if e == en.NodeEventUnload {
+	} else if e == engine.NodeEventUnload {
 		s.PhysicsManager.Unregister(n)
 	}
 }
 
-func (s *TilemapComponent) Tick(gs *en.GameState, n *en.Node) {
-	xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
-	screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
-	for _, layerIndex := range s.drawlayers {
-		tileset := s.tilemap.Tilesets[0]
-		layer := s.tilemap.Layers[layerIndex]
-		for chunkIndex, chunk := range layer.Chunks {
-			chunkArea := s.tilemap.ChunkPosition(layerIndex, chunkIndex, xf)
-			if !rl.CheckCollisionRecs(screenArea, chunkArea) {
-				continue
-			}
-			for tileIndex := pt.TileSpaceInt(0); tileIndex < chunk.Width*chunk.Height; tileIndex++ {
-				tileKind := chunk.Data[tileIndex] - 1
-				if tileKind == -1 {
-					continue
-				}
+func (s *TilemapGeometryComponent) Tick(gs *engine.GameState, n *engine.Node) {}
 
-				sourceRect := tileset.SourceRect(tileKind)
-				destRect := s.tilemap.TilePosition(layerIndex, chunkIndex, int(tileIndex), xf)
-				// TODO: lookup appropriate texture based on layer?
-				rl.DrawTexturePro(s.textures[0], sourceRect, destRect, rl.Vector2{}, 0, rl.White)
-			}
-		}
-	}
-}
-
-func (t *TilemapComponent) Surfaces(n *en.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
+func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
 	xf := n.Transform()
 
-	layer := t.tilemap.Layers[t.collisionLayer]
+	layer := t.tilemap.Layers[t.layer]
 	for chunki, chunk := range layer.Chunks {
-		chunkArea := t.tilemap.ChunkPosition(t.collisionLayer, chunki, xf)
+		chunkArea := t.tilemap.ChunkPosition(t.layer, chunki, xf)
 		hitsChunk := contact.CircleOverlapsRect(pos, radius, chunkArea)
 		if hitsChunk {
 			for tilei := range chunk.Data {
 				if chunk.Data[tilei] == 0 {
 					continue
 				}
-				tileArea := t.tilemap.TilePosition(t.collisionLayer, chunki, tilei, xf)
+				tileArea := t.tilemap.TilePosition(t.layer, chunki, tilei, xf)
 				contact.GenHitsForSquare(pos, radius, tileArea, contact.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,

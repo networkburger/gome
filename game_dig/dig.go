@@ -2,23 +2,23 @@ package game_dig
 
 import (
 	"fmt"
-	en "jamesraine/grl/engine"
-	pt "jamesraine/grl/engine/parts"
-	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func GameLoop(screenWidth, screenHeight int) {
-	en.G = en.NewEngine()
-	assets := pt.NewAssets("ass")
+	engine.G = engine.NewEngine()
+	assets := parts.NewAssets("ass")
 
-	solver := ph.NewPhysicsSolver(func(b ph.PhysicsBodyInfo, s ph.PhysicsSignalInfo) {
+	solver := physics.NewPhysicsSolver(func(b physics.PhysicsBodyInfo, s physics.PhysicsSignalInfo) {
 		// something hit something
 	})
 
-	rootNode := en.NewNode("RootNode")
+	rootNode := engine.NewNode("RootNode")
 
 	mapNode := NewDigMap(&solver, &assets)
 
@@ -26,19 +26,19 @@ func GameLoop(screenWidth, screenHeight int) {
 	player.Position = v.V2(985*20, 35*20)
 	player.Rotation = 90
 
-	en.G.AddChild(rootNode, mapNode)
-	en.G.AddChild(rootNode, player)
+	engine.G.AddChild(rootNode, mapNode)
+	engine.G.AddChild(rootNode, player)
 
 	rl.SetTargetFPS(30)
-	gs := en.GameState{
+	gs := engine.GameState{
 		WindowPixelHeight: int(screenHeight),
 		WindowPixelWidth:  int(screenWidth),
-		Camera: &en.Camera{
+		Camera: &engine.Camera{
 			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
 		},
 	}
 
-	en.G.SetScene(rootNode)
+	engine.G.SetScene(rootNode)
 
 	for !rl.WindowShouldClose() {
 		gs.DT = rl.GetFrameTime()
@@ -51,7 +51,7 @@ func GameLoop(screenWidth, screenHeight int) {
 		gs.Camera.Position.X = player.Position.X - (float32(screenWidth) / 2)
 		gs.Camera.Position.Y = player.Position.Y - (float32(screenHeight) / 2)
 
-		en.G.Run(&gs)
+		engine.G.Run(&gs)
 
 		pos := player.Position
 		ang := player.Rotation

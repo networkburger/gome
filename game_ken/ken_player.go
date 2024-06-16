@@ -1,11 +1,11 @@
 package game_ken
 
 import (
-	en "jamesraine/grl/engine"
-	cm "jamesraine/grl/engine/component"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/contact"
-	pt "jamesraine/grl/engine/parts"
-	ph "jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -14,22 +14,22 @@ import (
 type Player struct {
 	Health     int
 	snd        rl.Sound
-	sprite     *cm.SpritesheetComponent
-	ballistics *cm.BallisticComponent
-	body       *cm.PhysicsBodyComponent
+	sprite     *component.SpritesheetComponent
+	ballistics *component.BallisticComponent
+	body       *component.PhysicsBodyComponent
 }
 
-func NewPlayerNode(assets *pt.Assets, solver *ph.PhysicsSolver) *en.Node {
+func NewPlayerNode(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
 	sheet := assets.SpriteSheet("knight.spritesheet")
 
 	player := Player{
 		Health: 100,
 		snd:    assets.Sound("jump.wav"),
-		sprite: &cm.SpritesheetComponent{
+		sprite: &component.SpritesheetComponent{
 			Spritesheet: sheet,
 			Texture:     assets.Texture(sheet.ImageRef),
 		},
-		ballistics: &cm.BallisticComponent{
+		ballistics: &component.BallisticComponent{
 			VelocityDamping: v.V2(0.1, 0.1),
 			AngularDamping:  0.8,
 			Gravity:         v.V2(0, 300),
@@ -37,22 +37,22 @@ func NewPlayerNode(assets *pt.Assets, solver *ph.PhysicsSolver) *en.Node {
 	}
 
 	player.sprite.SetSprite("idle")
-	playerNode := en.NewNode("Player")
-	en.G.AddComponent(playerNode, player.sprite)
-	en.G.AddComponent(playerNode, &player)
-	en.G.AddComponent(playerNode, player.ballistics)
+	playerNode := engine.NewNode("Player")
+	engine.G.AddComponent(playerNode, player.sprite)
+	engine.G.AddComponent(playerNode, &player)
+	engine.G.AddComponent(playerNode, player.ballistics)
 
-	player.body = &cm.PhysicsBodyComponent{
+	player.body = &component.PhysicsBodyComponent{
 		PhysicsManager: solver,
 		Radius:         8,
 		SurfaceProperties: contact.SurfaceProperties{
 			Friction:    0,
-			Restitution: 0.025,
+			Restitution: 0,
 		},
 	}
-	en.G.AddComponent(playerNode, player.body)
+	engine.G.AddComponent(playerNode, player.body)
 
-	// en.G.AddComponent(playerNode, &cm.CircleComponent{
+	// engine.G.AddComponent(playerNode, &component.CircleComponent{
 	// 	Radius: 8,
 	// 	Color:  rl.Green,
 	// })
@@ -65,10 +65,10 @@ func (s Player) String() string {
 	return "Player"
 }
 
-func (s *Player) Event(e en.NodeEvent, n *en.Node) {}
+func (s *Player) Event(e engine.NodeEvent, n *engine.Node) {}
 
-func (p *Player) Tick(gs *en.GameState, n *en.Node) {
-	en.ProcessInputs(InputOverworld, func(action en.ActionID, power float32) {
+func (p *Player) Tick(gs *engine.GameState, n *engine.Node) {
+	engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
 		thrust := float32(500)
 		if !p.body.IsOnGround(gs.T) {
 			thrust = 80

@@ -1,7 +1,7 @@
 package component
 
 import (
-	en "jamesraine/grl/engine"
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -19,7 +19,7 @@ func NewSprite(tex rl.Texture2D) Sprite {
 	}
 }
 
-func (s Sprite) Draw(position v.Vec2, rotation en.AngleD, scale float32) {
+func (s Sprite) Draw(position v.Vec2, rotation engine.AngleD, scale float32) {
 	p := position.Sub(s.Origin)
 	rl.DrawTextureEx(s.Texture, rl.NewVector2(p.X, p.Y), float32(rotation), scale, rl.White)
 }
@@ -28,7 +28,7 @@ type SpriteNode struct {
 	Sprite Sprite
 }
 
-func (s *SpriteNode) Tick(gs *en.GameState, n *en.Node) {
+func (s *SpriteNode) Tick(gs *engine.GameState, n *engine.Node) {
 	pos := v.V2(0, 0).Xfm(n.Transform())
 	a := n.AbsoluteRotation()
 	s.Sprite.Draw(pos, a, n.Scale)
@@ -43,9 +43,9 @@ type Billboard struct {
 	Tint     rl.Color
 }
 
-func (s *Billboard) Event(e en.NodeEvent, n *en.Node) {}
+func (s *Billboard) Event(e engine.NodeEvent, n *engine.Node) {}
 
-func (s *Billboard) Tick(gs *en.GameState, n *en.Node) {
+func (s *Billboard) Tick(gs *engine.GameState, n *engine.Node) {
 	pos := gs.Camera.Transform(n.AbsolutePosition())
 	dr := s.DstRect
 	dr.X = pos.X

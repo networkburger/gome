@@ -1,15 +1,15 @@
 package component
 
 import (
-	en "jamesraine/grl/engine"
-	pt "jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/parts"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type SpritesheetComponent struct {
-	Spritesheet           *pt.Spritesheet
+	Spritesheet           *parts.Spritesheet
 	Texture               rl.Texture2D
 	FlipX                 bool
 	spritename            string
@@ -17,9 +17,9 @@ type SpritesheetComponent struct {
 	FrameTimeMilliseconds int
 }
 
-func (s *SpritesheetComponent) Event(e en.NodeEvent, n *en.Node) {}
+func (s *SpritesheetComponent) Event(e engine.NodeEvent, n *engine.Node) {}
 
-func (s *SpritesheetComponent) Tick(gs *en.GameState, n *en.Node) {
+func (s *SpritesheetComponent) Tick(gs *engine.GameState, n *engine.Node) {
 	if len(s.spritename) < 1 {
 		return
 	}
