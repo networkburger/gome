@@ -19,7 +19,7 @@ const (
 )
 
 type NodeComponent interface {
-	Event(NodeEvent, *GameState, *Node)
+	Event(NodeEvent, *Scene, *Node)
 }
 
 type Node struct {

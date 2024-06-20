@@ -15,7 +15,7 @@ type BallisticComponent struct {
 	Torque          float32
 }
 
-func (b *BallisticComponent) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (b *BallisticComponent) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventTick {
 		accel := b.Gravity.Add(b.Impulse)
 		b.Velocity = b.Velocity.Add(accel.Scl(gs.DT))

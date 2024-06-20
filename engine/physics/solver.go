@@ -104,7 +104,7 @@ func velocityCorrection(inputVelocity, contactNormal v.Vec2, restitution float32
 
 var _up = v.V2(0, -1)
 
-func (s *PhysicsSolver) Solve(gs *engine.GameState) {
+func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 	nhits := 0
 
 	for _, b := range s.bodies {

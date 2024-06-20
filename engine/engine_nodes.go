@@ -6,6 +6,22 @@ import (
 	"slices"
 )
 
+type nodeActionAdd struct {
+	Parent *Node
+	Child  *Node
+}
+type nodeActionRemove struct {
+	*Node
+}
+type nodeActionAddComponent struct {
+	Parent    *Node
+	Component NodeComponent
+}
+type nodeActionRemoveComponent struct {
+	Parent    *Node
+	Component NodeComponent
+}
+
 func (e *Engine) AddChild(p *Node, c *Node) {
 	if c.Parent != nil {
 		slog.Warn("Node already has a parent")
@@ -16,11 +32,17 @@ func (e *Engine) AddChild(p *Node, c *Node) {
 		return
 	}
 
+	inScene := IsDescendant(e.scene.RootNode, p)
+	if inScene && e.nodelock {
+		e.queue = append(e.queue, nodeActionAdd{Parent: p, Child: c})
+		return
+	}
+
 	p.Children = append(p.Children, c)
 	c.Parent = p
 
-	// If we're adding to a node that's already in the scene, trigger load events
-	if IsDescendant(e.scene, p) {
+	// defer firing events until the node is fully attached to the tree
+	if inScene {
 		e.fireDeepEvent(c, NodeEventLoad)
 	}
 }
@@ -29,20 +51,33 @@ func (e *Engine) fireDeepEvent(n *Node, event NodeEvent) {
 	tree := delve(n)
 	for _, n := range tree {
 		for _, comp := range n.Components {
-			comp.Event(event, nil, n)
+			comp.Event(event, e.scene, n)
 		}
 	}
 }
 
 func (e *Engine) AddComponent(n *Node, c NodeComponent) {
-	n.Components = append(n.Components, c)
-	if IsDescendant(e.scene, n) {
-		c.Event(NodeEventLoad, nil, n)
+	// if the parent node is NOT part of the scene, we don't need to
+	// pay attention to the lock state - events won't be fired anyway
+	if IsDescendant(e.scene.RootNode, n) {
+		if e.nodelock {
+			e.queue = append(e.queue, nodeActionAddComponent{Parent: n, Component: c})
+			return
+		}
+		n.Components = append(n.Components, c)
+		c.Event(NodeEventLoad, e.scene, n)
+	} else {
+		n.Components = append(n.Components, c)
 	}
 }
 
 func (e *Engine) RemoveNodeFromParent(killnode *Node) {
-	if IsDescendant(e.scene, killnode) {
+	if e.nodelock {
+		e.queue = append(e.queue, nodeActionRemove{Node: killnode})
+		return
+	}
+
+	if IsDescendant(e.scene.RootNode, killnode) {
 		e.fireDeepEvent(killnode, NodeEventUnload)
 	}
 
@@ -57,12 +92,17 @@ func (e *Engine) RemoveNodeFromParent(killnode *Node) {
 	}
 }
 
-func (e *Engine) RemoveComponentFromParent(n *Node, c NodeComponent) {
-	index := slices.Index(n.Parent.Children, n)
+func (e *Engine) RemoveComponentFromNode(n *Node, c NodeComponent) {
+	if e.nodelock {
+		e.queue = append(e.queue, nodeActionRemoveComponent{Parent: n, Component: c})
+		return
+	}
+
+	index := slices.Index(n.Components, c)
 	n.Components = util.SliceRemoveIndex(n.Components, index)
 
-	if IsDescendant(e.scene, n) {
-		c.Event(NodeEventUnload, nil, n)
+	if IsDescendant(e.scene.RootNode, n) {
+		c.Event(NodeEventUnload, e.scene, n)
 	}
 }
 

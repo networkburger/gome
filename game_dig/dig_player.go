@@ -30,7 +30,7 @@ type Player struct {
 	Ballistics *physics.BallisticComponent
 }
 
-func (p *Player) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.Node) {
 	if event == engine.NodeEventTick {
 		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
 			switch action {

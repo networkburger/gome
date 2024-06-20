@@ -28,7 +28,7 @@ type SpriteNode struct {
 	Sprite Sprite
 }
 
-func (s *SpriteNode) Tick(gs *engine.GameState, n *engine.Node) {
+func (s *SpriteNode) Tick(gs *engine.Scene, n *engine.Node) {
 	pos := v.V2(0, 0).Xfm(n.Transform())
 	a := n.AbsoluteRotation()
 	s.Sprite.Draw(pos, a, n.Scale)
@@ -43,7 +43,7 @@ type Billboard struct {
 	Tint     rl.Color
 }
 
-func (s *Billboard) Event(e engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (s *Billboard) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventDraw {
 
 		pos := gs.Camera.Transform(n.AbsolutePosition())

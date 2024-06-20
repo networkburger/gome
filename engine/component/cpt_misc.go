@@ -11,7 +11,7 @@ type CircleComponent struct {
 	Color  rl.Color
 }
 
-func (s *CircleComponent) Event(e engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (s *CircleComponent) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventDraw {
 		pos := gs.Camera.Transform(n.AbsolutePosition())
 		sc := n.AbsoluteScale()

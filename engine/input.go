@@ -43,6 +43,7 @@ type InputActionMapping struct {
 	ActionID
 	MouseAxis
 	GamePadAxis
+	GamePadAxisScale      float32
 	Const                 float32
 	GamePadButtonPressed  GamePadButton
 	GamePadButtonReleased GamePadButton
@@ -104,22 +105,22 @@ func ProcessInputs(mapping []InputActionMapping, process func(ActionID, float32)
 			}
 
 			if mapping[i].GamePadAxis == GamepadAxisLeftX {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftX))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftX)*mapping[i].GamePadAxisScale)
 			}
 			if mapping[i].GamePadAxis == GamepadAxisLeftY {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftY))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftY)*mapping[i].GamePadAxisScale)
 			}
 			if mapping[i].GamePadAxis == GamepadAxisRightX {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightX))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightX)*mapping[i].GamePadAxisScale)
 			}
 			if mapping[i].GamePadAxis == GamepadAxisRightY {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightY))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightY)*mapping[i].GamePadAxisScale)
 			}
 			if mapping[i].GamePadAxis == GamepadAxisLeftTrigger {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftTrigger))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisLeftTrigger)*mapping[i].GamePadAxisScale)
 			}
 			if mapping[i].GamePadAxis == GamepadAxisRightTrigger {
-				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightTrigger))
+				process(mapping[i].ActionID, rl.GetGamepadAxisMovement(gamepad, rl.GamepadAxisRightTrigger)*mapping[i].GamePadAxisScale)
 			}
 		}
 	}

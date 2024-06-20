@@ -18,6 +18,7 @@ type Assets struct {
 	SpriteSheets map[string]Spritesheet
 	Sounds       map[string]rl.Sound
 	Images       map[string]PixelBuffer
+	Fonts        map[string]FontRenderer
 }
 
 func NewAssets(folder string) Assets {
@@ -30,6 +31,7 @@ func NewAssets(folder string) Assets {
 		SpriteSheets: make(map[string]Spritesheet),
 		Sounds:       make(map[string]rl.Sound),
 		Images:       make(map[string]PixelBuffer),
+		Fonts:        make(map[string]FontRenderer),
 	}
 }
 
@@ -47,6 +49,7 @@ func (a *Assets) Close() {
 	a.Sounds = make(map[string]rl.Sound)
 	a.Images = make(map[string]PixelBuffer)
 	a.SpriteSheets = make(map[string]Spritesheet)
+	a.Fonts = make(map[string]FontRenderer)
 }
 
 func (a *Assets) Path(fname string) string {
@@ -126,4 +129,26 @@ func (a *Assets) FileBytes(fname string) ([]byte, error) {
 	}
 
 	return dat, err
+}
+
+func (a *Assets) Font(fname string) (FontRenderer, error) {
+	s, ok := a.Fonts[fname]
+	if ok {
+		return s, nil
+	}
+
+	fontData, err := a.FileBytes("robotoslab.json")
+	if err != nil {
+		return FontRenderer{}, err
+	}
+	fontSpec, err := FontRead(fontData)
+	if err != nil {
+		return FontRenderer{}, err
+	}
+
+	font := FontRenderer{
+		Font:    fontSpec,
+		Texture: a.Texture(fontSpec.ImagePath),
+	}
+	return font, nil
 }

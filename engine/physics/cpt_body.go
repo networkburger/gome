@@ -16,7 +16,7 @@ func (p *PhysicsBodyComponent) IsOnGroundIsh(t, grace float64) bool {
 	return t-p.OnGround < grace
 }
 
-func (s *PhysicsBodyComponent) Event(e engine.NodeEvent, _ *engine.GameState, n *engine.Node) {
+func (s *PhysicsBodyComponent) Event(e engine.NodeEvent, _ *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventLoad {
 		s.PhysicsSolver.Register(n)
 	} else if e == engine.NodeEventUnload {

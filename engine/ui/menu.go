@@ -1,43 +1,56 @@
 package ui
 
 import (
+	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/parts"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type FontRenderer struct {
-	Font    parts.Font
-	Texture rl.Texture2D
+type MenuAction func()
+type MenuLabel string
+
+type MenuItem struct {
+	MenuLabel
+	MenuAction
 }
 
-func (fr FontRenderer) TextAt(x, y int, color rl.Color, text string) {
-	for _, c := range text {
-		for _, s := range fr.Font.FontSprite {
-			if s.Char.Value == int(c) {
-				src := rl.NewRectangle(float32(s.Position.X), float32(s.Position.Y), float32(s.SourceSize.Width), float32(s.SourceSize.Height))
-				dest := rl.NewRectangle(float32(x+s.Char.Offset.X), float32(y+s.Char.Offset.Y), float32(s.SourceSize.Width), float32(s.SourceSize.Height))
-				rl.DrawTexturePro(fr.Texture, src, dest, rl.Vector2{}, 0, color)
-				x += s.Char.AdvanceX
-				break
-			}
-		}
-	}
+type Menu struct {
+	Items []MenuItem
+	parts.FontRenderer
+	Selected int
 }
 
-func (fr FontRenderer) MeasureText(text string) (int, int) {
-	w := 0
-	h := 0
-	for _, c := range text {
-		for _, s := range fr.Font.FontSprite {
-			if s.Char.Value == int(c) {
-				w += s.Char.AdvanceX
-				if s.SourceSize.Height > h {
-					h = s.SourceSize.Height
-				}
-				break
+func (m *Menu) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
+	switch event {
+	case engine.NodeEventDraw:
+		if rl.IsKeyPressed(rl.KeyDown) {
+			m.Selected++
+			if m.Selected >= len(m.Items) {
+				m.Selected = 0
 			}
 		}
+		if rl.IsKeyPressed(rl.KeyUp) {
+			m.Selected--
+			if m.Selected < 0 {
+				m.Selected = len(m.Items) - 1
+			}
+		}
+		if rl.IsKeyPressed(rl.KeyEnter) {
+			m.Items[m.Selected].MenuAction()
+		}
+
+		y := int(float32(gs.G.WindowPixelHeight) * 0.1)
+		center := gs.G.WindowPixelWidth / 2
+		for i, item := range m.Items {
+			w, h := m.FontRenderer.MeasureText(string(item.MenuLabel))
+			x := center - w/2
+			col := White
+			if i == m.Selected {
+				col = Red
+			}
+			m.FontRenderer.TextAt(x, y, col.RL(), string(item.MenuLabel))
+			y += h + 10
+		}
 	}
-	return w, h
 }

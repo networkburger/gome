@@ -3,38 +3,41 @@ package game_physicstest
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/game_shared"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type physicsTestScene struct {
 	*engine.Engine
+	parts.Assets
 	physics.PhysicsSolver
 	circleBallistics physics.BallisticComponent
 }
 
-func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
 	case engine.NodeEventSceneActivate:
 		rl.SetTargetFPS(90)
 	case engine.NodeEventDraw:
 		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
-		gs.Camera.Position.X = -500
-		gs.Camera.Position.Y = -300
+		gs.Camera.Position.X = float32(gs.G.WindowPixelWidth) / -2
+		gs.Camera.Position.Y = float32(gs.G.WindowPixelHeight) / -2
 	case engine.NodeEventTick:
-		if rl.IsKeyReleased(rl.KeyW) {
-			s.circleBallistics.Impulse = v.V2(0, -7000)
-		}
-		if rl.IsKeyReleased(rl.KeyS) {
-			s.circleBallistics.Impulse = v.V2(0, 7000)
-		}
-		if rl.IsKeyReleased(rl.KeyA) {
-			s.circleBallistics.Impulse = v.V2(-7000, 0)
-		}
-		if rl.IsKeyReleased(rl.KeyD) {
-			s.circleBallistics.Impulse = v.V2(7000, 0)
+		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
+			switch action {
+			case MoveH:
+				s.circleBallistics.Impulse.X = power
+			case MoveV:
+				s.circleBallistics.Impulse.Y = power
+			}
+		})
+
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			game_shared.ShowPauseMenu(s.Engine, gs, &s.Assets)
 		}
 	case engine.NodeEventLateTick:
 		s.PhysicsSolver.Solve(gs)
@@ -43,7 +46,8 @@ func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.GameState, n
 
 func PhysicsTest(e *engine.Engine) *engine.Node {
 	s := physicsTestScene{}
-	rootNode := e.NewNode("RootNode")
+	s.Assets = parts.NewAssets("ass")
+	rootNode := e.NewNode("RootNode - PT")
 	rootNode.AddComponent(&s)
 	s.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
 
@@ -84,7 +88,7 @@ type PhysicsLineSegment struct {
 	Color   rl.Color
 }
 
-func (p *PhysicsLineSegment) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (p *PhysicsLineSegment) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
 		a := gs.Camera.Transform(p.A)
 		b := gs.Camera.Transform(p.B)

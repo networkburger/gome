@@ -23,7 +23,7 @@ func main() {
 	screenWidth := 1024
 	screenHeight := 512
 
-	e := engine.Engine{}
+	e := engine.NewEngine(screenWidth, screenHeight)
 
 	rl.InitWindow(int32(screenWidth), int32(screenHeight), app)
 	rl.SetTargetFPS(15)
@@ -32,16 +32,16 @@ func main() {
 
 	switch app {
 	case "ken":
-		e.PushScene(game_ken.KenScene(&e))
+		e.PushScene(game_ken.KenScene(e))
 	case "phystest":
-		e.PushScene(game_physicstest.PhysicsTest(&e))
+		e.PushScene(game_physicstest.PhysicsTest(e))
 	case "dig":
-		e.PushScene(game_dig.DigScene(&e))
+		e.PushScene(game_dig.DigScene(e))
 	default:
-		e.PushScene(game_init.StartupScene(&e))
+		e.PushScene(game_init.StartupScene(e))
 	}
 
-	convenience.StandardLoop(&e, screenWidth, screenHeight)
+	convenience.StandardLoop(e, screenWidth, screenHeight)
 
 	rl.CloseWindow()
 }

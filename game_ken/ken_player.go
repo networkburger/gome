@@ -64,7 +64,7 @@ func (s Player) String() string {
 	return "Player"
 }
 
-func (p *Player) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventTick {
 		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
 			thrust := float32(500)

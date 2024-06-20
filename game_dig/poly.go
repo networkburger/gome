@@ -22,7 +22,7 @@ func NewLineStripComponent(col rl.Color, verts []v.Vec2) LineStripComponent {
 	}
 }
 
-func (c *LineStripComponent) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+func (c *LineStripComponent) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.Node) {
 	if event == engine.NodeEventDraw {
 		nodeXf := node.Transform()
 		xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
@@ -41,7 +41,7 @@ type CircleComponent struct {
 	Radius float32
 }
 
-func (c *CircleComponent) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+func (c *CircleComponent) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.Node) {
 	if event == engine.NodeEventDraw {
 		pos := gs.Camera.Transform(node.AbsolutePosition())
 		rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius, c.Color)

@@ -36,10 +36,10 @@ func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) T
 	}
 }
 
-func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
 		xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
-		screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
+		screenArea := rl.NewRectangle(0, 0, float32(gs.G.WindowPixelWidth), float32(gs.G.WindowPixelHeight))
 
 		tileset := s.tilemap.Tilesets[0]
 		layer := s.tilemap.Layers[s.layer]
@@ -89,7 +89,7 @@ func TilemapGeometry(phys *physics.PhysicsSolver, tilemap *parts.Tilemap, layer 
 	}
 }
 
-func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, _ *engine.GameState, n *engine.Node) {
+func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, _ *engine.Scene, n *engine.Node) {
 	if s.PhysicsSolver == nil {
 		slog.Warn("TilemapComponent: no PhysicsManager; Tilemap collision detection will not work.")
 		return

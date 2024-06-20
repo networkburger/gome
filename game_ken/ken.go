@@ -6,6 +6,7 @@ import (
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/game_shared"
 	"log/slog"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -14,22 +15,22 @@ import (
 type kenScene struct {
 	cameraBounds v.Rect
 	playerNode   *engine.Node
-	solver       physics.PhysicsSolver
-	assets       parts.Assets
+	physics.PhysicsSolver
+	parts.Assets
 	*engine.Engine
 }
 
 func KenScene(e *engine.Engine) *engine.Node {
 	k := kenScene{}
 	k.Engine = e
-	k.assets = parts.NewAssets("ass")
-	k.solver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
-		snd := k.assets.Sound("coin.wav")
+	k.Assets = parts.NewAssets("ass")
+	k.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
+		snd := k.Assets.Sound("coin.wav")
 		rl.PlaySound(snd)
 		s.RemoveFromParent()
 	})
 
-	rootNode := e.NewNode("RootNode")
+	rootNode := e.NewNode("RootNode - Ken")
 	rootNode.AddComponent(&k)
 
 	///////////////////////////////////////////
@@ -41,20 +42,20 @@ func KenScene(e *engine.Engine) *engine.Node {
 	worldNodeFG.Scale = 2
 	worldNodeGeometry.Scale = 2
 
-	tilemapData, _ := k.assets.FileBytes("untitled.tmj")
-	tilemap, err := parts.TilemapRead(&k.assets, tilemapData)
+	tilemapData, _ := k.Assets.FileBytes("untitled.tmj")
+	tilemap, err := parts.TilemapRead(&k.Assets, tilemapData)
 	if err != nil {
 		slog.Warn("TilemapReadFile", "error", err)
 	}
 
-	bgcomp := component.TilemapVisual(&k.assets, &tilemap, "BG")
-	fgcomp := component.TilemapVisual(&k.assets, &tilemap, "FG")
-	terrainComp := component.TilemapGeometry(&k.solver, &tilemap, "Terrain")
+	bgcomp := component.TilemapVisual(&k.Assets, &tilemap, "BG")
+	fgcomp := component.TilemapVisual(&k.Assets, &tilemap, "FG")
+	terrainComp := component.TilemapGeometry(&k.PhysicsSolver, &tilemap, "Terrain")
 	terrainObstacles := physics.PhysicsObstacleComponent{
-		PhysicsSolver:            &k.solver,
+		PhysicsSolver:            &k.PhysicsSolver,
 		CollisionSurfaceProvider: &terrainComp,
 	}
-	terrainVisualComp := component.TilemapVisual(&k.assets, &tilemap, "Terrain")
+	terrainVisualComp := component.TilemapVisual(&k.Assets, &tilemap, "Terrain")
 	worldNodeBG.AddComponent(&bgcomp)
 	worldNodeFG.AddComponent(&fgcomp)
 	worldNodeGeometry.AddComponent(&terrainComp)
@@ -63,7 +64,7 @@ func KenScene(e *engine.Engine) *engine.Node {
 
 	///////////////////////////////////////////
 	// PLAYER
-	k.playerNode = NewPlayerNode(e, &k.assets, &k.solver)
+	k.playerNode = NewPlayerNode(e, &k.Assets, &k.PhysicsSolver)
 
 	k.playerNode.Position = v.V2(100, 100)
 
@@ -85,7 +86,7 @@ func KenScene(e *engine.Engine) *engine.Node {
 		if layer.Type == "objectgroup" {
 			for _, obj := range layer.Objects {
 				if obj.Visible {
-					n := Spawn(e, obj.Type, &k.assets, &k.solver)
+					n := Spawn(e, obj.Type, &k.Assets, &k.PhysicsSolver)
 					n.Position = v.V2(float32(obj.X), float32(obj.Y))
 					n.Rotation = engine.AngleD(obj.Rotation)
 					rootNode.AddChild(n)
@@ -100,18 +101,18 @@ func KenScene(e *engine.Engine) *engine.Node {
 	return rootNode
 }
 
-func (k *kenScene) Event(e engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch e {
 	case engine.NodeEventUnload:
-		k.assets.Close()
+		k.Assets.Close()
 
 	case engine.NodeEventSceneActivate:
 		rl.SetTargetFPS(30)
 
 	case engine.NodeEventTick:
 		gs.Camera.Bounds = k.cameraBounds
-		gs.Camera.Position.X = k.playerNode.Position.X - float32(gs.WindowPixelWidth)/2
-		gs.Camera.Position.Y = k.playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
+		gs.Camera.Position.X = k.playerNode.Position.X - float32(gs.G.WindowPixelWidth)/2
+		gs.Camera.Position.Y = k.playerNode.Position.Y - float32(gs.G.WindowPixelHeight)/2
 		if gs.Camera.Position.X < gs.Camera.Bounds.X {
 			gs.Camera.Position.X = gs.Camera.Bounds.X
 		}
@@ -127,14 +128,11 @@ func (k *kenScene) Event(e engine.NodeEvent, gs *engine.GameState, n *engine.Nod
 		}
 
 		if rl.IsKeyPressed(rl.KeyEscape) {
-			gs.Paused = !gs.Paused
-		}
-		if rl.IsKeyPressed(rl.KeyQ) {
-			k.Engine.PopScene()
+			game_shared.ShowPauseMenu(k.Engine, gs, &k.Assets)
 		}
 
 	case engine.NodeEventLateTick:
-		k.solver.Solve(gs)
+		k.PhysicsSolver.Solve(gs)
 
 	case engine.NodeEventDraw:
 		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))

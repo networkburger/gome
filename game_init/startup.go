@@ -1,11 +1,12 @@
 package game_init
 
 import (
-	"fmt"
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/ui"
+	"jamesraine/grl/game_dig"
 	"jamesraine/grl/game_ken"
+	"jamesraine/grl/game_physicstest"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -15,7 +16,7 @@ type startupScene struct {
 	*engine.Engine
 }
 
-func (s *startupScene) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+func (s *startupScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
 	case engine.NodeEventSceneActivate:
 		rl.SetTargetFPS(15)
@@ -33,24 +34,34 @@ func StartupScene(e *engine.Engine) *engine.Node {
 	k.Engine = e
 	k.Assets = parts.NewAssets("ass")
 
-	fontData, err := k.Assets.FileBytes("robotoslab.json")
-	if err != nil {
-		panic(err)
-	}
-	fontSpec, err := parts.FontRead(fontData)
-	if err != nil {
-		panic(err)
+	font, _ := k.Assets.Font("robotoslab.json")
+	menu := ui.Menu{
+		FontRenderer: font,
+		Items: []ui.MenuItem{
+			{
+				MenuLabel: "KEN",
+				MenuAction: func() {
+					e.PushScene(game_ken.KenScene(e))
+				},
+			},
+			{
+				MenuLabel: "DIG",
+				MenuAction: func() {
+					e.PushScene(game_dig.DigScene(e))
+				},
+			},
+			{
+				MenuLabel: "PHYSICS",
+				MenuAction: func() {
+					e.PushScene(game_physicstest.PhysicsTest(e))
+				},
+			},
+		},
 	}
 
-	font := ui.FontRenderer{
-		Font:    fontSpec,
-		Texture: k.Assets.Texture(fontSpec.ImagePath),
-	}
-
-	fmt.Printf("%v", font)
-
-	rootNode := e.NewNode("RootNode")
+	rootNode := e.NewNode("RootNode - MainMenu")
 	rootNode.AddComponent(&k)
+	rootNode.AddComponent(&menu)
 
 	return rootNode
 }
