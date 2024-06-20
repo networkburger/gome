@@ -95,27 +95,35 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 
 	beforeRun := func(gs *engine.GameState) {
 		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			gs.Paused = !gs.Paused
+		}
 	}
 
 	afterRun := func(gs *engine.GameState) {
-		gs.Camera.Bounds = cameraBounds
-		gs.Camera.Position.X = playerNode.Position.X - float32(gs.WindowPixelWidth)/2
-		gs.Camera.Position.Y = playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
-		if gs.Camera.Position.X < gs.Camera.Bounds.X {
-			gs.Camera.Position.X = gs.Camera.Bounds.X
-		}
-		if gs.Camera.Position.X+gs.Camera.Position.W > gs.Camera.Bounds.X+gs.Camera.Bounds.W {
-			gs.Camera.Position.X = (gs.Camera.Bounds.X + gs.Camera.Bounds.W) - gs.Camera.Position.W
-		}
+		if gs.Paused {
+			rl.DrawText("PAUSED", 100, 100, 20, rl.Black)
+		} else {
+			gs.Camera.Bounds = cameraBounds
+			gs.Camera.Position.X = playerNode.Position.X - float32(gs.WindowPixelWidth)/2
+			gs.Camera.Position.Y = playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
+			if gs.Camera.Position.X < gs.Camera.Bounds.X {
+				gs.Camera.Position.X = gs.Camera.Bounds.X
+			}
+			if gs.Camera.Position.X+gs.Camera.Position.W > gs.Camera.Bounds.X+gs.Camera.Bounds.W {
+				gs.Camera.Position.X = (gs.Camera.Bounds.X + gs.Camera.Bounds.W) - gs.Camera.Position.W
+			}
 
-		if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
-			gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
-		}
-		if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
-			gs.Camera.Position.Y = gs.Camera.Bounds.Y
-		}
+			if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
+				gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
+			}
+			if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
+				gs.Camera.Position.Y = gs.Camera.Bounds.Y
+			}
 
-		solver.Solve(gs)
+			solver.Solve(gs)
+		}
 	}
 
 	convenience.StandardLoop(e, screenWidth, screenHeight, beforeRun, afterRun)

@@ -27,6 +27,7 @@ func main() {
 	rl.InitWindow(int32(screenWidth), int32(screenHeight), app)
 	rl.SetTargetFPS(15)
 	rl.InitAudioDevice()
+	rl.SetExitKey(0)
 
 	switch app {
 	case "ken":

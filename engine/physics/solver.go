@@ -44,8 +44,8 @@ func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
 // Register a node with the solver
 // Typically a component will call this at NodeEventLoad
 func (s *PhysicsSolver) Register(n *engine.Node) {
-	obstacle, ok := engine.FindComponent[*PhysicsObstacleComponent](n.Components)
-	if ok {
+	obstacle, psok := engine.FindComponent[*PhysicsObstacleComponent](n.Components)
+	if psok {
 		b := physicsObstacleInfo{
 			Node:                     n,
 			PhysicsObstacleComponent: obstacle,
@@ -53,10 +53,10 @@ func (s *PhysicsSolver) Register(n *engine.Node) {
 		s.obstacles = append(s.obstacles, b)
 	}
 
-	body, ok := engine.FindComponent[*PhysicsBodyComponent](n.Components)
-	if ok {
+	body, bok := engine.FindComponent[*PhysicsBodyComponent](n.Components)
+	if bok {
 		ballistics, ok := engine.FindComponent[*BallisticComponent](n.Components)
-		if ok {
+		if !ok {
 			slog.Warn("PhysicsSolver.AddBody: Node has no BallisticComponent; ignoring")
 		} else {
 			b := physicsBodyInfo{
@@ -68,8 +68,8 @@ func (s *PhysicsSolver) Register(n *engine.Node) {
 		}
 	}
 
-	signal, ok := engine.FindComponent[*PhysicsSignalComponent](n.Components)
-	if ok {
+	signal, sok := engine.FindComponent[*PhysicsSignalComponent](n.Components)
+	if sok {
 		b := physicsSignalInfo{
 			Node:                   n,
 			PhysicsSignalComponent: signal,
