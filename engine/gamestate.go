@@ -1,8 +1,14 @@
 package engine
 
 type GameState struct {
-	DT                float32
-	T                 float64
+	G      *Engine
+	Paused bool
+	DT     float32
+	T      float64
+
+	// WallClock times update even while "paused"
+	WallClockT        float64
+	WallClockDT       float32
 	WindowPixelHeight int
 	WindowPixelWidth  int
 	Camera            *Camera

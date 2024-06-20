@@ -22,9 +22,9 @@ func NewLineStripComponent(col rl.Color, verts []v.Vec2) LineStripComponent {
 	}
 }
 
-func (s *LineStripComponent) Event(e engine.NodeEvent, n *engine.Node) {}
-
-func (c *LineStripComponent) Tick(gs *engine.GameState, node *engine.Node) {
+func (s *LineStripComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *LineStripComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (c *LineStripComponent) Draw(gs *engine.GameState, node *engine.Node) {
 	nodeXf := node.Transform()
 	xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
 

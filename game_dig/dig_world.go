@@ -3,7 +3,6 @@ package game_dig
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
@@ -11,7 +10,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func NewDigMap(solver *physics.PhysicsSolver, assets *parts.Assets) *engine.Node {
+func NewDigMap(e *engine.Engine, solver *physics.PhysicsSolver, assets *parts.Assets) *engine.Node {
 	bgSprite := component.NewBillboard(assets.Texture("bg.png"))
 	mapSprite := component.NewBillboard(assets.Texture("map.png"))
 	mapPixels := assets.Pixels("map.png")
@@ -24,18 +23,18 @@ func NewDigMap(solver *physics.PhysicsSolver, assets *parts.Assets) *engine.Node
 	bgSprite.DstRect = worldRect
 	mapSprite.DstRect = worldRect
 
-	obstacle := component.PhysicsObstacleComponent{
-		PhysicsManager: solver,
+	obstacle := physics.PhysicsObstacleComponent{
+		PhysicsSolver: solver,
 		CollisionSurfaceProvider: &PixelObstacleProvider{
 			PixelBuffer: mapPixels,
 		},
 	}
 
-	mapNode := engine.NewNode("Map")
+	mapNode := e.NewNode("Map")
 	mapNode.Scale = worldScale
-	engine.G.AddComponent(mapNode, &bgSprite)
-	engine.G.AddComponent(mapNode, &mapSprite)
-	engine.G.AddComponent(mapNode, &obstacle)
+	mapNode.AddComponent(&bgSprite)
+	mapNode.AddComponent(&mapSprite)
+	mapNode.AddComponent(&obstacle)
 
 	return mapNode
 }
@@ -44,7 +43,7 @@ type PixelObstacleProvider struct {
 	parts.PixelBuffer
 }
 
-func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
+func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
 	sc := n.AbsoluteScale()
 	sx := int32(pos.X / sc)
 	sy := int32(pos.Y / sc)
@@ -77,7 +76,7 @@ func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius floa
 		for x := left; x <= right; x++ {
 			if p.PixelBuffer.Pixels[y*w+x].A > 0 {
 				blockRect := rl.NewRectangle(float32(x)*sc, float32(y)*sc, sc, sc)
-				contact.GenHitsForSquare(pos, radius, blockRect, contact.SurfaceProperties{
+				physics.GenHitsForSquare(pos, radius, blockRect, physics.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,
 				}, hits, nhits)

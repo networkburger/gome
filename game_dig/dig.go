@@ -3,6 +3,7 @@ package game_dig
 import (
 	"fmt"
 	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
@@ -10,54 +11,37 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func GameLoop(screenWidth, screenHeight int) {
-	engine.G = engine.NewEngine()
+func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 	assets := parts.NewAssets("ass")
+	defer assets.Close()
 
-	solver := physics.NewPhysicsSolver(func(b physics.PhysicsBodyInfo, s physics.PhysicsSignalInfo) {
+	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		// something hit something
 	})
 
-	rootNode := engine.NewNode("RootNode")
+	rootNode := e.NewNode("RootNode")
 
-	mapNode := NewDigMap(&solver, &assets)
+	mapNode := NewDigMap(e, &solver, &assets)
 
-	player := StandardPlayerNode(&solver)
+	player := StandardPlayerNode(e, &solver)
 	player.Position = v.V2(985*20, 35*20)
 	player.Rotation = 90
 
-	engine.G.AddChild(rootNode, mapNode)
-	engine.G.AddChild(rootNode, player)
+	rootNode.AddChild(mapNode)
+	rootNode.AddChild(player)
+	e.SetScene(rootNode)
 
-	rl.SetTargetFPS(30)
-	gs := engine.GameState{
-		WindowPixelHeight: int(screenHeight),
-		WindowPixelWidth:  int(screenWidth),
-		Camera: &engine.Camera{
-			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
-		},
-	}
-
-	engine.G.SetScene(rootNode)
-
-	for !rl.WindowShouldClose() {
-		gs.DT = rl.GetFrameTime()
-		gs.T = rl.GetTime()
-
-		rl.BeginDrawing()
-
-		//rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
-
+	afterRun := func(gs *engine.GameState) {
 		gs.Camera.Position.X = player.Position.X - (float32(screenWidth) / 2)
 		gs.Camera.Position.Y = player.Position.Y - (float32(screenHeight) / 2)
 
-		engine.G.Run(&gs)
-
 		pos := player.Position
 		ang := player.Rotation
-		rl.DrawText(fmt.Sprintf("FPS: %d, X: %d, Y: %d, R: %d", rl.GetFPS(), int32(pos.X), int32(pos.Y), int32(ang)), int32(screenWidth)-160, int32(screenHeight)-20, 10, rl.Gray)
+		rl.DrawText(fmt.Sprintf("X: %d, Y: %d, R: %d", int32(pos.X), int32(pos.Y), int32(ang)), int32(screenWidth)-120, int32(screenHeight)-20, 10, rl.Gray)
 
-		rl.EndDrawing()
-		solver.Solve(&gs)
+		solver.Solve(gs)
 	}
+
+	rl.SetTargetFPS(30)
+	convenience.StandardLoop(e, screenWidth, screenHeight, nil, afterRun)
 }

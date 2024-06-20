@@ -3,7 +3,6 @@ package game_ken
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
@@ -15,11 +14,11 @@ type Player struct {
 	Health     int
 	snd        rl.Sound
 	sprite     *component.SpritesheetComponent
-	ballistics *component.BallisticComponent
-	body       *component.PhysicsBodyComponent
+	ballistics *physics.BallisticComponent
+	body       *physics.PhysicsBodyComponent
 }
 
-func NewPlayerNode(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+func NewPlayerNode(e *engine.Engine, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
 	sheet := assets.SpriteSheet("knight.spritesheet")
 
 	player := Player{
@@ -29,7 +28,7 @@ func NewPlayerNode(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.
 			Spritesheet: sheet,
 			Texture:     assets.Texture(sheet.ImageRef),
 		},
-		ballistics: &component.BallisticComponent{
+		ballistics: &physics.BallisticComponent{
 			VelocityDamping: v.V2(0.1, 0.1),
 			AngularDamping:  0.8,
 			Gravity:         v.V2(0, 300),
@@ -37,20 +36,20 @@ func NewPlayerNode(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.
 	}
 
 	player.sprite.SetSprite("idle")
-	playerNode := engine.NewNode("Player")
-	engine.G.AddComponent(playerNode, player.sprite)
-	engine.G.AddComponent(playerNode, &player)
-	engine.G.AddComponent(playerNode, player.ballistics)
+	playerNode := e.NewNode("Player")
+	playerNode.AddComponent(player.sprite)
+	playerNode.AddComponent(&player)
+	playerNode.AddComponent(player.ballistics)
 
-	player.body = &component.PhysicsBodyComponent{
-		PhysicsManager: solver,
-		Radius:         8,
-		SurfaceProperties: contact.SurfaceProperties{
+	player.body = &physics.PhysicsBodyComponent{
+		PhysicsSolver: solver,
+		Radius:        8,
+		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
 			Restitution: 0,
 		},
 	}
-	engine.G.AddComponent(playerNode, player.body)
+	playerNode.AddComponent(player.body)
 
 	// engine.G.AddComponent(playerNode, &component.CircleComponent{
 	// 	Radius: 8,
@@ -65,7 +64,8 @@ func (s Player) String() string {
 	return "Player"
 }
 
-func (s *Player) Event(e engine.NodeEvent, n *engine.Node) {}
+func (s *Player) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *Player) Draw(gs *engine.GameState, n *engine.Node) {}
 
 func (p *Player) Tick(gs *engine.GameState, n *engine.Node) {
 	engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {

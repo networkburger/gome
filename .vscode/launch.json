@@ -27,6 +27,14 @@
       "mode": "auto",
       "program": "${workspaceFolder}/main.go",
       "args": ["phystest"]
+    },
+    {
+      "name": "MENU",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/main.go",
+      "args": ["menu"]
     }
 
   ]

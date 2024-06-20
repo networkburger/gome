@@ -13,23 +13,23 @@ const (
 	CollidableSomethingElse
 )
 
-type SpawnFunc func(*parts.Assets, *physics.PhysicsSolver) *engine.Node
+type SpawnFunc func(*engine.Engine, *parts.Assets, *physics.PhysicsSolver) *engine.Node
 
 var _directory = map[string]SpawnFunc{
 	"coin": _spawnCoin,
 }
 
-func Spawn(kind string, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+func Spawn(e *engine.Engine, kind string, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
 	spawner, ok := _directory[kind]
 	if ok {
-		return spawner(assets, solver)
+		return spawner(e, assets, solver)
 	} else {
-		return engine.NewNode(kind)
+		return e.NewNode(kind)
 	}
 }
 
-func _spawnCoin(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
-	n := engine.NewNode("Coin")
+func _spawnCoin(e *engine.Engine, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+	n := e.NewNode("Coin")
 	sheet := assets.SpriteSheet("coin.spritesheet")
 	tex := assets.Texture(sheet.ImageRef)
 
@@ -39,13 +39,13 @@ func _spawnCoin(assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Nod
 	}
 	ssComp.SetSprite("idle")
 	ssComp.FrameTimeMilliseconds = 100
-	engine.G.AddComponent(n, &ssComp)
+	n.AddComponent(&ssComp)
 
-	signal := component.PhysicsSignalComponent{
-		PhysicsManager: solver,
-		Radius:         16,
-		Kind:           CollidableCoin,
+	signal := physics.PhysicsSignalComponent{
+		PhysicsSolver: solver,
+		Radius:        16,
+		Kind:          CollidableCoin,
 	}
-	engine.G.AddComponent(n, &signal)
+	n.AddComponent(&signal)
 	return n
 }

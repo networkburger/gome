@@ -2,79 +2,77 @@ package physics
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/util"
 	"jamesraine/grl/engine/v"
 	"log/slog"
 )
 
-// Cache types - store a node and its relevant components
-type PhysicsBodyInfo struct {
+type physicsBodyInfo struct {
 	*engine.Node
-	*component.PhysicsBodyComponent
-	*component.BallisticComponent
+	*PhysicsBodyComponent
+	*BallisticComponent
 }
-type PhysicsSignalInfo struct {
+type physicsSignalInfo struct {
 	*engine.Node
-	*component.PhysicsSignalComponent
+	*PhysicsSignalComponent
 }
-type PhysicsObstacleInfo struct {
+type physicsObstacleInfo struct {
 	*engine.Node
-	*component.PhysicsObstacleComponent
+	*PhysicsObstacleComponent
 }
-type PhysicsContactNotifier func(PhysicsBodyInfo, PhysicsSignalInfo)
+
+type PhysicsContactNotifier func(*engine.Node, *engine.Node)
 
 type PhysicsSolver struct {
 	PhysicsContactNotifier
-	obstacles []PhysicsObstacleInfo
-	bodies    []PhysicsBodyInfo
-	signals   []PhysicsSignalInfo
-	hits      []contact.CollisionSurface
+	obstacles []physicsObstacleInfo
+	bodies    []physicsBodyInfo
+	signals   []physicsSignalInfo
+	hits      []CollisionSurface
 }
 
 func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
 	return PhysicsSolver{
 		PhysicsContactNotifier: notifier,
-		bodies:                 make([]PhysicsBodyInfo, 0),
-		signals:                make([]PhysicsSignalInfo, 0),
-		obstacles:              make([]PhysicsObstacleInfo, 0),
-		hits:                   make([]contact.CollisionSurface, 32),
+		bodies:                 make([]physicsBodyInfo, 0),
+		signals:                make([]physicsSignalInfo, 0),
+		obstacles:              make([]physicsObstacleInfo, 0),
+		hits:                   make([]CollisionSurface, 32),
 	}
 }
 
 // Register a node with the solver
 // Typically a component will call this at NodeEventLoad
 func (s *PhysicsSolver) Register(n *engine.Node) {
-	obstacle := engine.FindComponent[*component.PhysicsObstacleComponent](n.Components)
-	if obstacle != nil {
-		b := PhysicsObstacleInfo{
+	obstacle, ok := engine.FindComponent[*PhysicsObstacleComponent](n.Components)
+	if ok {
+		b := physicsObstacleInfo{
 			Node:                     n,
-			PhysicsObstacleComponent: *obstacle,
+			PhysicsObstacleComponent: obstacle,
 		}
 		s.obstacles = append(s.obstacles, b)
 	}
 
-	body := engine.FindComponent[*component.PhysicsBodyComponent](n.Components)
-	if body != nil {
-		ballistics := engine.FindComponent[*component.BallisticComponent](n.Components)
-		if ballistics == nil {
+	body, ok := engine.FindComponent[*PhysicsBodyComponent](n.Components)
+	if ok {
+		ballistics, ok := engine.FindComponent[*BallisticComponent](n.Components)
+		if ok {
 			slog.Warn("PhysicsSolver.AddBody: Node has no BallisticComponent; ignoring")
 		} else {
-			b := PhysicsBodyInfo{
+			b := physicsBodyInfo{
 				Node:                 n,
-				BallisticComponent:   *ballistics,
-				PhysicsBodyComponent: *body,
+				BallisticComponent:   ballistics,
+				PhysicsBodyComponent: body,
 			}
 			s.bodies = append(s.bodies, b)
 		}
 	}
 
-	signal := engine.FindComponent[*component.PhysicsSignalComponent](n.Components)
-	if signal != nil {
-		b := PhysicsSignalInfo{
+	signal, ok := engine.FindComponent[*PhysicsSignalComponent](n.Components)
+	if ok {
+		b := physicsSignalInfo{
 			Node:                   n,
-			PhysicsSignalComponent: *signal,
+			PhysicsSignalComponent: signal,
 		}
 		s.signals = append(s.signals, b)
 	}
@@ -83,13 +81,13 @@ func (s *PhysicsSolver) Register(n *engine.Node) {
 // Unregister a node with the solver
 // Typically a component will call this at NodeEventUnload
 func (s *PhysicsSolver) Unregister(n *engine.Node) {
-	s.bodies = util.SliceRemoveAll(s.bodies, func(_ int, b PhysicsBodyInfo) bool {
+	s.bodies = util.SliceRemoveAll(s.bodies, func(_ int, b physicsBodyInfo) bool {
 		return b.Node == n
 	})
-	s.signals = util.SliceRemoveAll(s.signals, func(_ int, b PhysicsSignalInfo) bool {
+	s.signals = util.SliceRemoveAll(s.signals, func(_ int, b physicsSignalInfo) bool {
 		return b.Node == n
 	})
-	s.obstacles = util.SliceRemoveAll(s.obstacles, func(_ int, b PhysicsObstacleInfo) bool {
+	s.obstacles = util.SliceRemoveAll(s.obstacles, func(_ int, b physicsObstacleInfo) bool {
 		return b.Node == n
 	})
 }
@@ -120,7 +118,7 @@ func (s *PhysicsSolver) Solve(gs *engine.GameState) {
 				sigRadius := sig.Node.AbsoluteScale() * sig.PhysicsSignalComponent.Radius
 				sigPos := sig.Node.AbsolutePosition()
 				if bpos.DistDist(sigPos) < (radius+sigRadius)*(radius+sigRadius) {
-					s.PhysicsContactNotifier(b, sig)
+					s.PhysicsContactNotifier(b.Node, sig.Node)
 				}
 			}
 		}

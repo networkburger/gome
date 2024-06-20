@@ -14,6 +14,7 @@ const (
 
 type NodeComponent interface {
 	Tick(*GameState, *Node)
+	Draw(*GameState, *Node)
 	Event(NodeEvent, *Node)
 }
 
@@ -27,17 +28,19 @@ type Node struct {
 	Children   []*Node
 	Components []NodeComponent
 	Parent     *Node
+	engine     *Engine
 }
 
-var _nid = 0
+func (n *Node) AddChild(c *Node) {
+	n.engine.AddChild(n, c)
+}
 
-func NewNode(name string) *Node {
-	_nid = _nid + 1
-	return &Node{
-		id:    NodeID(_nid),
-		Name:  name,
-		Scale: 1,
-	}
+func (n *Node) AddComponent(c NodeComponent) {
+	n.engine.AddComponent(n, c)
+}
+
+func (n *Node) RemoveFromParent() {
+	n.engine.RemoveNodeFromParent(n)
 }
 
 func (n *Node) ID() NodeID {

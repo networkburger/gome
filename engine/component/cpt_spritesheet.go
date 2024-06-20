@@ -17,9 +17,9 @@ type SpritesheetComponent struct {
 	FrameTimeMilliseconds int
 }
 
-func (s *SpritesheetComponent) Event(e engine.NodeEvent, n *engine.Node) {}
-
-func (s *SpritesheetComponent) Tick(gs *engine.GameState, n *engine.Node) {
+func (s *SpritesheetComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *SpritesheetComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *SpritesheetComponent) Draw(gs *engine.GameState, n *engine.Node) {
 	if len(s.spritename) < 1 {
 		return
 	}

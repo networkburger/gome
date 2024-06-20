@@ -43,9 +43,9 @@ type Billboard struct {
 	Tint     rl.Color
 }
 
-func (s *Billboard) Event(e engine.NodeEvent, n *engine.Node) {}
-
-func (s *Billboard) Tick(gs *engine.GameState, n *engine.Node) {
+func (s *Billboard) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *Billboard) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *Billboard) Draw(gs *engine.GameState, n *engine.Node) {
 	pos := gs.Camera.Transform(n.AbsolutePosition())
 	dr := s.DstRect
 	dr.X = pos.X

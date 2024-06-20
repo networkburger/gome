@@ -11,9 +11,10 @@ type CircleComponent struct {
 	Color  rl.Color
 }
 
-func (s *CircleComponent) Event(e engine.NodeEvent, n *engine.Node) {}
+func (s *CircleComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *CircleComponent) Tick(gs *engine.GameState, n *engine.Node) {}
 
-func (c *CircleComponent) Tick(gs *engine.GameState, node *engine.Node) {
+func (c *CircleComponent) Draw(gs *engine.GameState, node *engine.Node) {
 	pos := gs.Camera.Transform(node.AbsolutePosition())
 	sc := node.AbsoluteScale()
 	rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius*sc, c.Color)

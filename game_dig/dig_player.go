@@ -2,8 +2,6 @@ package game_dig
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 	"math"
@@ -20,7 +18,7 @@ type PlayerStats struct {
 
 func StartingPlayerStats() PlayerStats {
 	return PlayerStats{
-		Speed:     600,
+		Speed:     1200,
 		TurnSpeed: 250,
 		MaxHealth: 100,
 	}
@@ -29,10 +27,11 @@ func StartingPlayerStats() PlayerStats {
 type Player struct {
 	Stats      PlayerStats
 	Health     int
-	Ballistics *component.BallisticComponent
+	Ballistics *physics.BallisticComponent
 }
 
-func (s *Player) Event(e engine.NodeEvent, n *engine.Node) {}
+func (s *Player) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *Player) Draw(gs *engine.GameState, n *engine.Node) {}
 
 func (p *Player) Tick(gs *engine.GameState, node *engine.Node) {
 	engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
@@ -49,14 +48,14 @@ func (p *Player) Tick(gs *engine.GameState, node *engine.Node) {
 	})
 }
 
-func StandardPlayerNode(phys *physics.PhysicsSolver) *engine.Node {
+func StandardPlayerNode(e *engine.Engine, phys *physics.PhysicsSolver) *engine.Node {
 	r := float32(20)
 	player := Player{
 		Stats:  StartingPlayerStats(),
 		Health: 100,
 	}
-	playerNode := engine.NewNode("Player")
-	engine.G.AddComponent(playerNode, &player)
+	playerNode := e.NewNode("Player")
+	playerNode.AddComponent(&player)
 
 	a45 := math.Pi / 4
 
@@ -72,24 +71,25 @@ func StandardPlayerNode(phys *physics.PhysicsSolver) *engine.Node {
 		v.V2(float32(math.Sin(a45*0))*r, float32(math.Cos(a45*0))*r),
 		v.V2(0, 0),
 	})
-	engine.G.AddComponent(playerNode, &polyNode)
+	playerNode.AddComponent(&polyNode)
 
-	ballistics := component.BallisticComponent{
+	ballistics := physics.BallisticComponent{
 		VelocityDamping: v.V2(4, 4),
 		AngularDamping:  5,
+		Gravity:         v.V2(0, 1000),
 	}
-	engine.G.AddComponent(playerNode, &ballistics)
+	playerNode.AddComponent(&ballistics)
 	player.Ballistics = &ballistics
 
-	physBody := component.PhysicsBodyComponent{
-		PhysicsManager: phys,
-		Radius:         20,
-		SurfaceProperties: contact.SurfaceProperties{
+	physBody := physics.PhysicsBodyComponent{
+		PhysicsSolver: phys,
+		Radius:        20,
+		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
 			Restitution: 0.2,
 		},
 	}
-	engine.G.AddComponent(playerNode, &physBody)
+	playerNode.AddComponent(&physBody)
 
 	return playerNode
 }

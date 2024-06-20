@@ -1,16 +1,9 @@
 package engine
 
-// Global ENGINE instance
-var G *Engine
-
 type NodeEventFunc func(n *Node)
 
 type Engine struct {
 	scene *Node
-}
-
-func NewEngine() *Engine {
-	return &Engine{}
 }
 
 func (e *Engine) Scene() *Node {
@@ -19,4 +12,16 @@ func (e *Engine) Scene() *Node {
 func (e *Engine) SetScene(n *Node) {
 	e.scene = n
 	e.fireLoadEvents(n)
+}
+
+var _nid = 0
+
+func (e *Engine) NewNode(name string) *Node {
+	_nid = _nid + 1
+	return &Node{
+		engine: e,
+		id:     NodeID(_nid),
+		Name:   name,
+		Scale:  1,
+	}
 }

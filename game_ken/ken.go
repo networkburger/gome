@@ -1,9 +1,9 @@
 package game_ken
 
 import (
-	"fmt"
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
@@ -12,23 +12,23 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func GameLoop(screenWidth, screenHeight int) {
-	engine.G = engine.NewEngine()
-
+func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 	assets := parts.NewAssets("ass")
-	rootNode := engine.NewNode("RootNode")
+	defer assets.Close()
 
-	solver := physics.NewPhysicsSolver(func(b physics.PhysicsBodyInfo, s physics.PhysicsSignalInfo) {
+	rootNode := e.NewNode("RootNode")
+
+	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		snd := assets.Sound("coin.wav")
 		rl.PlaySound(snd)
-		engine.G.RemoveNodeFromParent(s.Node)
+		s.RemoveFromParent()
 	})
 
 	///////////////////////////////////////////
 	// WORLD TILEMAP
-	worldNodeBG := engine.NewNode("WorldBG")
-	worldNodeFG := engine.NewNode("WorldFG")
-	worldNodeGeometry := engine.NewNode("WorldGeometry")
+	worldNodeBG := e.NewNode("WorldBG")
+	worldNodeFG := e.NewNode("WorldFG")
+	worldNodeGeometry := e.NewNode("WorldGeometry")
 	worldNodeBG.Scale = 2
 	worldNodeFG.Scale = 2
 	worldNodeGeometry.Scale = 2
@@ -42,20 +42,20 @@ func GameLoop(screenWidth, screenHeight int) {
 	bgcomp := component.TilemapVisual(&assets, &tilemap, "BG")
 	fgcomp := component.TilemapVisual(&assets, &tilemap, "FG")
 	terrainComp := component.TilemapGeometry(&solver, &tilemap, "Terrain")
-	terrainObstacles := component.PhysicsObstacleComponent{
-		PhysicsManager:           &solver,
+	terrainObstacles := physics.PhysicsObstacleComponent{
+		PhysicsSolver:            &solver,
 		CollisionSurfaceProvider: &terrainComp,
 	}
 	terrainVisualComp := component.TilemapVisual(&assets, &tilemap, "Terrain")
-	engine.G.AddComponent(worldNodeBG, &bgcomp)
-	engine.G.AddComponent(worldNodeFG, &fgcomp)
-	engine.G.AddComponent(worldNodeGeometry, &terrainComp)
-	engine.G.AddComponent(worldNodeGeometry, &terrainObstacles)
-	engine.G.AddComponent(worldNodeGeometry, &terrainVisualComp)
+	worldNodeBG.AddComponent(&bgcomp)
+	worldNodeFG.AddComponent(&fgcomp)
+	worldNodeGeometry.AddComponent(&terrainComp)
+	worldNodeGeometry.AddComponent(&terrainObstacles)
+	worldNodeGeometry.AddComponent(&terrainVisualComp)
 
 	///////////////////////////////////////////
 	// PLAYER
-	playerNode := NewPlayerNode(&assets, &solver)
+	playerNode := NewPlayerNode(e, &assets, &solver)
 
 	playerNode.Position = v.V2(100, 100)
 
@@ -69,44 +69,36 @@ func GameLoop(screenWidth, screenHeight int) {
 	///////////////////////////////////////////
 	// GET GOING PLZ
 
-	engine.G.AddChild(rootNode, worldNodeBG)
-	engine.G.AddChild(rootNode, worldNodeGeometry)
-	engine.G.AddChild(rootNode, playerNode)
+	rootNode.AddChild(worldNodeBG)
+	rootNode.AddChild(worldNodeGeometry)
+	rootNode.AddChild(playerNode)
 
 	for _, layer := range tilemap.Layers {
 		if layer.Type == "objectgroup" {
 			for _, obj := range layer.Objects {
 				if obj.Visible {
-					n := Spawn(obj.Type, &assets, &solver)
+					n := Spawn(e, obj.Type, &assets, &solver)
 					n.Position = v.V2(float32(obj.X), float32(obj.Y))
 					n.Rotation = engine.AngleD(obj.Rotation)
-					engine.G.AddChild(rootNode, n)
+					rootNode.AddChild(n)
 				}
 			}
 		}
 	}
-	engine.G.AddChild(rootNode, worldNodeFG)
+	rootNode.AddChild(worldNodeFG)
 
 	rl.SetTargetFPS(30)
 
-	gs := engine.GameState{
-		WindowPixelHeight: screenHeight,
-		WindowPixelWidth:  screenWidth,
-		Camera: &engine.Camera{
-			Position: v.R(0, 0, float32(screenWidth), float32(screenHeight)),
-			Bounds:   tilemap.Bounds(worldNodeGeometry.Transform()),
-		},
+	cameraBounds := tilemap.Bounds(worldNodeGeometry.Transform())
+
+	e.SetScene(rootNode)
+
+	beforeRun := func(gs *engine.GameState) {
+		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
 	}
 
-	engine.G.SetScene(rootNode)
-
-	for !rl.WindowShouldClose() {
-		gs.DT = rl.GetFrameTime()
-		gs.T = rl.GetTime()
-		rl.BeginDrawing()
-		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
-		engine.G.Run(&gs)
-
+	afterRun := func(gs *engine.GameState) {
+		gs.Camera.Bounds = cameraBounds
 		gs.Camera.Position.X = playerNode.Position.X - float32(gs.WindowPixelWidth)/2
 		gs.Camera.Position.Y = playerNode.Position.Y - float32(gs.WindowPixelHeight)/2
 		if gs.Camera.Position.X < gs.Camera.Bounds.X {
@@ -123,8 +115,8 @@ func GameLoop(screenWidth, screenHeight int) {
 			gs.Camera.Position.Y = gs.Camera.Bounds.Y
 		}
 
-		rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), int32(screenWidth)-160, int32(screenHeight)-20, 10, rl.Gray)
-		rl.EndDrawing()
-		solver.Solve(&gs)
+		solver.Solve(gs)
 	}
+
+	convenience.StandardLoop(e, screenWidth, screenHeight, beforeRun, afterRun)
 }

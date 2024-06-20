@@ -2,8 +2,8 @@ package component
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/contact"
 	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 	"log/slog"
 	"strings"
@@ -36,9 +36,9 @@ func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) T
 	}
 }
 
-func (s *TilemapVisualComponent) Event(e engine.NodeEvent, n *engine.Node) {}
-
-func (s *TilemapVisualComponent) Tick(gs *engine.GameState, n *engine.Node) {
+func (s *TilemapVisualComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *TilemapVisualComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *TilemapVisualComponent) Draw(gs *engine.GameState, n *engine.Node) {
 	xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
 	screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
 
@@ -68,13 +68,12 @@ func (s *TilemapVisualComponent) Tick(gs *engine.GameState, n *engine.Node) {
 //
 
 type TilemapGeometryComponent struct {
-	PhysicsManager
+	*physics.PhysicsSolver
 	tilemap parts.Tilemap
-	texture rl.Texture2D
 	layer   int
 }
 
-func TilemapGeometry(phys PhysicsManager, tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
+func TilemapGeometry(phys *physics.PhysicsSolver, tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
 	layerIndex := -1
 	for i, l := range tilemap.Layers {
 		if strings.Compare(l.Name, layer) == 0 {
@@ -84,40 +83,41 @@ func TilemapGeometry(phys PhysicsManager, tilemap *parts.Tilemap, layer string) 
 	}
 
 	return TilemapGeometryComponent{
-		PhysicsManager: phys,
-		tilemap:        *tilemap,
-		layer:          layerIndex,
+		PhysicsSolver: phys,
+		tilemap:       *tilemap,
+		layer:         layerIndex,
 	}
 }
 
 func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, n *engine.Node) {
-	if s.PhysicsManager == nil {
+	if s.PhysicsSolver == nil {
 		slog.Warn("TilemapComponent: no PhysicsManager; Tilemap collision detection will not work.")
 		return
 	}
 	if e == engine.NodeEventLoad {
-		s.PhysicsManager.Register(n)
+		s.PhysicsSolver.Register(n)
 	} else if e == engine.NodeEventUnload {
-		s.PhysicsManager.Unregister(n)
+		s.PhysicsSolver.Unregister(n)
 	}
 }
 
 func (s *TilemapGeometryComponent) Tick(gs *engine.GameState, n *engine.Node) {}
+func (s *TilemapGeometryComponent) Draw(gs *engine.GameState, n *engine.Node) {}
 
-func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []contact.CollisionSurface, nhits *int) {
+func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
 	xf := n.Transform()
 
 	layer := t.tilemap.Layers[t.layer]
 	for chunki, chunk := range layer.Chunks {
 		chunkArea := t.tilemap.ChunkPosition(t.layer, chunki, xf)
-		hitsChunk := contact.CircleOverlapsRect(pos, radius, chunkArea)
+		hitsChunk := physics.CircleOverlapsRect(pos, radius, chunkArea)
 		if hitsChunk {
 			for tilei := range chunk.Data {
 				if chunk.Data[tilei] == 0 {
 					continue
 				}
 				tileArea := t.tilemap.TilePosition(t.layer, chunki, tilei, xf)
-				contact.GenHitsForSquare(pos, radius, tileArea, contact.SurfaceProperties{
+				physics.GenHitsForSquare(pos, radius, tileArea, physics.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,
 				}, hits, nhits)

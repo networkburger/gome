@@ -33,6 +33,22 @@ func NewAssets(folder string) Assets {
 	}
 }
 
+func (a *Assets) Close() {
+	for _, t := range a.Textures {
+		rl.UnloadTexture(t)
+	}
+	for _, s := range a.Sounds {
+		rl.UnloadSound(s)
+	}
+	for _, i := range a.Images {
+		rl.UnloadImage(i.Image)
+	}
+	a.Textures = make(map[string]rl.Texture2D)
+	a.Sounds = make(map[string]rl.Sound)
+	a.Images = make(map[string]PixelBuffer)
+	a.SpriteSheets = make(map[string]Spritesheet)
+}
+
 func (a *Assets) Path(fname string) string {
 	return a.Folder + fname
 }

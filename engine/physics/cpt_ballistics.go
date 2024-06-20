@@ -1,4 +1,4 @@
-package component
+package physics
 
 import (
 	"jamesraine/grl/engine"
@@ -15,7 +15,8 @@ type BallisticComponent struct {
 	Torque          float32
 }
 
-func (s *BallisticComponent) Event(e engine.NodeEvent, n *engine.Node) {}
+func (s *BallisticComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
+func (s *BallisticComponent) Draw(gs *engine.GameState, n *engine.Node) {}
 
 func (b *BallisticComponent) Tick(gs *engine.GameState, n *engine.Node) {
 	accel := b.Gravity.Add(b.Impulse)

@@ -1,4 +1,4 @@
-package contact
+package physics
 
 import (
 	"jamesraine/grl/engine"
@@ -106,32 +106,11 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea rl.Rectangle, surface
 	}
 }
 
-func Maxf(a, b float32) float32 {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func Minf(a, b float32) float32 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func Absf(a float32) float32 {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-
 func triangleArea(a, b, c v.Vec2) float32 {
 	ab := b.Sub(a)
 	ac := c.Sub(a)
 	cp := ab.X*ac.Y - ab.Y*ac.X
-	return Absf(cp) / 2
+	return v.Absf(cp) / 2
 }
 
 // reference material:
@@ -146,7 +125,7 @@ func CircleSegmentIntersection(radius float32, o, p, q v.Vec2) (bool, v.Vec2) {
 	oplen := op.Len()
 	oqlen := oq.Len()
 	min_dist := float32(99999999)
-	max_dist := Maxf(oplen, oqlen)
+	max_dist := v.Maxf(oplen, oqlen)
 	var hit v.Vec2
 	opdotqp := op.Dot(qp)
 	oqdotpq := oq.Dot(pq)
