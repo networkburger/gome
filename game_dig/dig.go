@@ -29,7 +29,7 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 
 	rootNode.AddChild(mapNode)
 	rootNode.AddChild(player)
-	e.SetScene(rootNode)
+	e.PushScene(rootNode)
 
 	afterRun := func(gs *engine.GameState) {
 		gs.Camera.Position.X = player.Position.X - (float32(screenWidth) / 2)
@@ -43,5 +43,5 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 	}
 
 	rl.SetTargetFPS(30)
-	convenience.StandardLoop(e, screenWidth, screenHeight, nil, afterRun)
+	convenience.LegacyLoop(e, screenWidth, screenHeight, nil, afterRun)
 }

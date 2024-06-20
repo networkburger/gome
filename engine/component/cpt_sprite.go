@@ -43,15 +43,16 @@ type Billboard struct {
 	Tint     rl.Color
 }
 
-func (s *Billboard) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *Billboard) Tick(gs *engine.GameState, n *engine.Node) {}
-func (s *Billboard) Draw(gs *engine.GameState, n *engine.Node) {
-	pos := gs.Camera.Transform(n.AbsolutePosition())
-	dr := s.DstRect
-	dr.X = pos.X
-	dr.Y = pos.Y
-	or := rl.NewVector2(s.Origin.X, s.Origin.Y)
-	rl.DrawTexturePro(s.Texture, s.SrcRect, dr, or, s.Rotation, s.Tint)
+func (s *Billboard) Event(e engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	if e == engine.NodeEventDraw {
+
+		pos := gs.Camera.Transform(n.AbsolutePosition())
+		dr := s.DstRect
+		dr.X = pos.X
+		dr.Y = pos.Y
+		or := rl.NewVector2(s.Origin.X, s.Origin.Y)
+		rl.DrawTexturePro(s.Texture, s.SrcRect, dr, or, s.Rotation, s.Tint)
+	}
 }
 
 func NewBillboard(tex rl.Texture2D) Billboard {

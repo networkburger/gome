@@ -48,7 +48,7 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 
 	rl.SetTargetFPS(90)
 
-	e.SetScene(rootNode)
+	e.PushScene(rootNode)
 
 	beforeRun := func(gs *engine.GameState) {
 		if rl.IsKeyReleased(rl.KeyW) {
@@ -70,7 +70,7 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 		gs.Camera.Position.Y = -float32(screenHeight) / 2
 	}
 
-	convenience.StandardLoop(e, screenWidth, screenHeight, beforeRun, afterRun)
+	convenience.LegacyLoop(e, screenWidth, screenHeight, beforeRun, afterRun)
 }
 
 type PhysicsLineSegment struct {
@@ -78,13 +78,12 @@ type PhysicsLineSegment struct {
 	Color   rl.Color
 }
 
-func (s *PhysicsLineSegment) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *PhysicsLineSegment) Tick(gs *engine.GameState, n *engine.Node) {}
-
-func (p *PhysicsLineSegment) Draw(gs *engine.GameState, n *engine.Node) {
-	a := gs.Camera.Transform(p.A)
-	b := gs.Camera.Transform(p.B)
-	rl.DrawLine(int32(a.X), int32(a.Y), int32(b.X), int32(b.Y), p.Color)
+func (p *PhysicsLineSegment) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	if event == engine.NodeEventDraw {
+		a := gs.Camera.Transform(p.A)
+		b := gs.Camera.Transform(p.B)
+		rl.DrawLine(int32(a.X), int32(a.Y), int32(b.X), int32(b.Y), p.Color)
+	}
 }
 func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
 	didHit, hitAt := physics.CircleSegmentIntersection(radius, pos, p.A, p.B)

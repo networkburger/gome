@@ -10,10 +10,7 @@ type PhysicsSignalComponent struct {
 	Kind   int
 }
 
-func (s *PhysicsSignalComponent) Tick(gs *engine.GameState, n *engine.Node) {}
-func (s *PhysicsSignalComponent) Draw(gs *engine.GameState, n *engine.Node) {}
-
-func (s *PhysicsSignalComponent) Event(e engine.NodeEvent, n *engine.Node) {
+func (s *PhysicsSignalComponent) Event(e engine.NodeEvent, _ *engine.GameState, n *engine.Node) {
 	if e == engine.NodeEventLoad {
 		s.PhysicsSolver.Register(n)
 	} else if e == engine.NodeEventUnload {

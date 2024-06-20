@@ -3,15 +3,36 @@ package engine
 type NodeEventFunc func(n *Node)
 
 type Engine struct {
+	stack []*Node
 	scene *Node
 }
 
 func (e *Engine) Scene() *Node {
 	return e.scene
 }
-func (e *Engine) SetScene(n *Node) {
+func (e *Engine) PushScene(n *Node) {
+	if e.scene != nil {
+		e.fireDeepEvent(e.scene, NodeEventSceneDeativate)
+	}
+	e.stack = append(e.stack, e.scene)
 	e.scene = n
-	e.fireLoadEvents(n)
+
+	e.fireDeepEvent(n, NodeEventSceneActivate)
+	e.fireDeepEvent(n, NodeEventLoad)
+}
+
+func (c *Engine) PopScene() {
+	if c.scene != nil {
+		c.fireDeepEvent(c.scene, NodeEventUnload)
+		c.fireDeepEvent(c.scene, NodeEventSceneDeativate)
+	}
+	if len(c.stack) > 0 {
+		c.scene = c.stack[len(c.stack)-1]
+		c.stack = c.stack[:len(c.stack)-1]
+		c.fireDeepEvent(c.scene, NodeEventSceneActivate)
+	} else {
+		c.scene = nil
+	}
 }
 
 var _nid = 0

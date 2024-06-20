@@ -30,22 +30,21 @@ type Player struct {
 	Ballistics *physics.BallisticComponent
 }
 
-func (s *Player) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *Player) Draw(gs *engine.GameState, n *engine.Node) {}
-
-func (p *Player) Tick(gs *engine.GameState, node *engine.Node) {
-	engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
-		switch action {
-		case Accelerate:
-			p.Ballistics.Impulse = node.Forward().Scl(power * p.Stats.Speed)
-		case TurnLeft:
-			p.Ballistics.Torque = p.Stats.TurnSpeed * -power
-		case TurnRight:
-			p.Ballistics.Torque = p.Stats.TurnSpeed * power
-		case Turn:
-			p.Ballistics.Torque = p.Stats.TurnSpeed * power
-		}
-	})
+func (p *Player) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+	if event == engine.NodeEventTick {
+		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
+			switch action {
+			case Accelerate:
+				p.Ballistics.Impulse = node.Forward().Scl(power * p.Stats.Speed)
+			case TurnLeft:
+				p.Ballistics.Torque = p.Stats.TurnSpeed * -power
+			case TurnRight:
+				p.Ballistics.Torque = p.Stats.TurnSpeed * power
+			case Turn:
+				p.Ballistics.Torque = p.Stats.TurnSpeed * power
+			}
+		})
+	}
 }
 
 func StandardPlayerNode(e *engine.Engine, phys *physics.PhysicsSolver) *engine.Node {

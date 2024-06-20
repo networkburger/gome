@@ -36,29 +36,29 @@ func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) T
 	}
 }
 
-func (s *TilemapVisualComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *TilemapVisualComponent) Tick(gs *engine.GameState, n *engine.Node) {}
-func (s *TilemapVisualComponent) Draw(gs *engine.GameState, n *engine.Node) {
-	xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
-	screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
+func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	if event == engine.NodeEventDraw {
+		xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
+		screenArea := rl.NewRectangle(0, 0, float32(gs.WindowPixelWidth), float32(gs.WindowPixelHeight))
 
-	tileset := s.tilemap.Tilesets[0]
-	layer := s.tilemap.Layers[s.layer]
-	for chunkIndex, chunk := range layer.Chunks {
-		chunkArea := s.tilemap.ChunkPosition(s.layer, chunkIndex, xf)
-		if !rl.CheckCollisionRecs(screenArea, chunkArea) {
-			continue
-		}
-		for tileIndex := parts.TileSpaceInt(0); tileIndex < chunk.Width*chunk.Height; tileIndex++ {
-			tileKind := chunk.Data[tileIndex] - 1
-			if tileKind == -1 {
+		tileset := s.tilemap.Tilesets[0]
+		layer := s.tilemap.Layers[s.layer]
+		for chunkIndex, chunk := range layer.Chunks {
+			chunkArea := s.tilemap.ChunkPosition(s.layer, chunkIndex, xf)
+			if !rl.CheckCollisionRecs(screenArea, chunkArea) {
 				continue
 			}
+			for tileIndex := parts.TileSpaceInt(0); tileIndex < chunk.Width*chunk.Height; tileIndex++ {
+				tileKind := chunk.Data[tileIndex] - 1
+				if tileKind == -1 {
+					continue
+				}
 
-			sourceRect := tileset.SourceRect(tileKind)
-			destRect := s.tilemap.TilePosition(s.layer, chunkIndex, int(tileIndex), xf)
-			// TODO: lookup appropriate texture based on layer?
-			rl.DrawTexturePro(s.texture, sourceRect, destRect, rl.Vector2{}, 0, rl.White)
+				sourceRect := tileset.SourceRect(tileKind)
+				destRect := s.tilemap.TilePosition(s.layer, chunkIndex, int(tileIndex), xf)
+				// TODO: lookup appropriate texture based on layer?
+				rl.DrawTexturePro(s.texture, sourceRect, destRect, rl.Vector2{}, 0, rl.White)
+			}
 		}
 	}
 }
@@ -89,7 +89,7 @@ func TilemapGeometry(phys *physics.PhysicsSolver, tilemap *parts.Tilemap, layer 
 	}
 }
 
-func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, n *engine.Node) {
+func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, _ *engine.GameState, n *engine.Node) {
 	if s.PhysicsSolver == nil {
 		slog.Warn("TilemapComponent: no PhysicsManager; Tilemap collision detection will not work.")
 		return
@@ -100,9 +100,6 @@ func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, n *engine.Node) {
 		s.PhysicsSolver.Unregister(n)
 	}
 }
-
-func (s *TilemapGeometryComponent) Tick(gs *engine.GameState, n *engine.Node) {}
-func (s *TilemapGeometryComponent) Draw(gs *engine.GameState, n *engine.Node) {}
 
 func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
 	xf := n.Transform()

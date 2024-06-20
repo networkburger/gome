@@ -15,21 +15,20 @@ type BallisticComponent struct {
 	Torque          float32
 }
 
-func (s *BallisticComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *BallisticComponent) Draw(gs *engine.GameState, n *engine.Node) {}
+func (b *BallisticComponent) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	if event == engine.NodeEventTick {
+		accel := b.Gravity.Add(b.Impulse)
+		b.Velocity = b.Velocity.Add(accel.Scl(gs.DT))
+		b.Velocity = b.Velocity.Sub(b.Velocity.Mul(b.VelocityDamping.Scl(gs.DT)))
 
-func (b *BallisticComponent) Tick(gs *engine.GameState, n *engine.Node) {
-	accel := b.Gravity.Add(b.Impulse)
-	b.Velocity = b.Velocity.Add(accel.Scl(gs.DT))
-	b.Velocity = b.Velocity.Sub(b.Velocity.Mul(b.VelocityDamping.Scl(gs.DT)))
+		avel := float32(b.AngularVelocity) + b.Torque*gs.DT
+		avel -= avel * b.AngularDamping * gs.DT
+		b.AngularVelocity = engine.AngleD(avel)
 
-	avel := float32(b.AngularVelocity) + b.Torque*gs.DT
-	avel -= avel * b.AngularDamping * gs.DT
-	b.AngularVelocity = engine.AngleD(avel)
+		b.Impulse = v.V2(0, 0)
+		b.Torque = 0
 
-	b.Impulse = v.V2(0, 0)
-	b.Torque = 0
-
-	n.Position = n.Position.Add(b.Velocity.Scl(gs.DT))
-	n.Rotation += engine.AngleD(avel * gs.DT)
+		n.Position = n.Position.Add(b.Velocity.Scl(gs.DT))
+		n.Rotation += engine.AngleD(avel * gs.DT)
+	}
 }

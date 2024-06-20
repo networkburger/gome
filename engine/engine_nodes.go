@@ -21,15 +21,15 @@ func (e *Engine) AddChild(p *Node, c *Node) {
 
 	// If we're adding to a node that's already in the scene, trigger load events
 	if IsDescendant(e.scene, p) {
-		e.fireLoadEvents(c)
+		e.fireDeepEvent(c, NodeEventLoad)
 	}
 }
 
-func (e *Engine) fireLoadEvents(n *Node) {
+func (e *Engine) fireDeepEvent(n *Node, event NodeEvent) {
 	tree := delve(n)
 	for _, n := range tree {
 		for _, comp := range n.Components {
-			comp.Event(NodeEventLoad, n)
+			comp.Event(event, nil, n)
 		}
 	}
 }
@@ -37,25 +37,23 @@ func (e *Engine) fireLoadEvents(n *Node) {
 func (e *Engine) AddComponent(n *Node, c NodeComponent) {
 	n.Components = append(n.Components, c)
 	if IsDescendant(e.scene, n) {
-		c.Event(NodeEventLoad, n)
+		c.Event(NodeEventLoad, nil, n)
 	}
 }
 
 func (e *Engine) RemoveNodeFromParent(killnode *Node) {
-	nodeTree := delve(killnode)
-
 	if IsDescendant(e.scene, killnode) {
-		// remove nodes from 'bottom to top' so that our notfications
-		// fire for each node in a sensible order
-		for i := len(nodeTree) - 1; i >= 0; i-- {
-			n := nodeTree[i]
-			for _, component := range n.Components {
-				component.Event(NodeEventUnload, n)
-			}
-			index := slices.Index(n.Parent.Children, n)
-			n.Parent.Children = util.SliceRemoveIndex(n.Parent.Children, index)
-			n.Parent = nil
+		e.fireDeepEvent(killnode, NodeEventUnload)
+	}
+
+	if killnode.Parent != nil {
+		index := util.SliceIndexOf(killnode.Parent.Children, killnode)
+		if index == -1 {
+			slog.Warn("Node not found in parent's children")
+		} else {
+			killnode.Parent.Children = util.SliceRemoveIndex(killnode.Parent.Children, index)
 		}
+		killnode.Parent = nil
 	}
 }
 
@@ -64,7 +62,7 @@ func (e *Engine) RemoveComponentFromParent(n *Node, c NodeComponent) {
 	n.Components = util.SliceRemoveIndex(n.Components, index)
 
 	if IsDescendant(e.scene, n) {
-		c.Event(NodeEventUnload, n)
+		c.Event(NodeEventUnload, nil, n)
 	}
 }
 

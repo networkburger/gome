@@ -2,6 +2,7 @@ package main
 
 import (
 	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/game_dig"
 	"jamesraine/grl/game_init"
 	"jamesraine/grl/game_ken"
@@ -27,18 +28,20 @@ func main() {
 	rl.InitWindow(int32(screenWidth), int32(screenHeight), app)
 	rl.SetTargetFPS(15)
 	rl.InitAudioDevice()
-	rl.SetExitKey(0)
+	rl.SetExitKey(rl.KeyNull)
 
 	switch app {
 	case "ken":
-		game_ken.GameLoop(&e, screenWidth, screenHeight)
+		e.PushScene(game_ken.KenScene(&e))
 	case "phystest":
 		game_physicstest.GameLoop(&e, screenWidth, screenHeight)
 	case "dig":
 		game_dig.GameLoop(&e, screenWidth, screenHeight)
 	default:
-		game_init.GameLoop(&e, screenWidth, screenHeight)
+		e.PushScene(game_init.StartupScene(&e))
 	}
+
+	convenience.StandardLoop(&e, screenWidth, screenHeight)
 
 	rl.CloseWindow()
 }

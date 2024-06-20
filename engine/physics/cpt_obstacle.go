@@ -10,9 +10,7 @@ type PhysicsObstacleComponent struct {
 	CollisionSurfaceProvider
 }
 
-func (s *PhysicsObstacleComponent) Tick(gs *engine.GameState, n *engine.Node) {}
-func (s *PhysicsObstacleComponent) Draw(gs *engine.GameState, n *engine.Node) {}
-func (s *PhysicsObstacleComponent) Event(e engine.NodeEvent, n *engine.Node) {
+func (s *PhysicsObstacleComponent) Event(e engine.NodeEvent, _ *engine.GameState, n *engine.Node) {
 	if e == engine.NodeEventLoad {
 		if s.CollisionSurfaceProvider == nil {
 			slog.Warn("PhysicsObstacleComponent: no ObstacleProvider; ignoring")

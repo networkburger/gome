@@ -10,12 +10,16 @@ type NodeEvent int
 const (
 	NodeEventLoad NodeEvent = iota
 	NodeEventUnload
+	NodeEventTick
+	NodeEventDraw
+	NodeEventLateTick
+	NodeEventLateDraw
+	NodeEventSceneActivate
+	NodeEventSceneDeativate
 )
 
 type NodeComponent interface {
-	Tick(*GameState, *Node)
-	Draw(*GameState, *Node)
-	Event(NodeEvent, *Node)
+	Event(NodeEvent, *GameState, *Node)
 }
 
 type Node struct {

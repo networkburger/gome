@@ -22,18 +22,18 @@ func NewLineStripComponent(col rl.Color, verts []v.Vec2) LineStripComponent {
 	}
 }
 
-func (s *LineStripComponent) Event(e engine.NodeEvent, n *engine.Node)  {}
-func (s *LineStripComponent) Tick(gs *engine.GameState, n *engine.Node) {}
-func (c *LineStripComponent) Draw(gs *engine.GameState, node *engine.Node) {
-	nodeXf := node.Transform()
-	xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
+func (c *LineStripComponent) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+	if event == engine.NodeEventDraw {
+		nodeXf := node.Transform()
+		xf := v.MatrixMultiply(nodeXf, gs.Camera.Matrix)
 
-	for i := 0; i < len(c._xfv); i++ {
-		x := c.Vertices[i].Xfm(xf)
-		c._xfv[i] = rl.NewVector2(x.X, x.Y)
+		for i := 0; i < len(c._xfv); i++ {
+			x := c.Vertices[i].Xfm(xf)
+			c._xfv[i] = rl.NewVector2(x.X, x.Y)
+		}
+
+		rl.DrawLineStrip(c._xfv, c.Color)
 	}
-
-	rl.DrawLineStrip(c._xfv, c.Color)
 }
 
 type CircleComponent struct {
@@ -41,7 +41,9 @@ type CircleComponent struct {
 	Radius float32
 }
 
-func (c *CircleComponent) Tick(gs *engine.GameState, node *engine.Node) {
-	pos := gs.Camera.Transform(node.AbsolutePosition())
-	rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius, c.Color)
+func (c *CircleComponent) Event(event engine.NodeEvent, gs *engine.GameState, node *engine.Node) {
+	if event == engine.NodeEventDraw {
+		pos := gs.Camera.Transform(node.AbsolutePosition())
+		rl.DrawCircle(int32(pos.X), int32(pos.Y), c.Radius, c.Color)
+	}
 }
