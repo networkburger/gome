@@ -3,30 +3,63 @@ package game_physicstest
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
-	rootNode := e.NewNode("RootNode")
-	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
+type physicsTestScene struct {
+	*engine.Engine
+	physics.PhysicsSolver
+	circleBallistics physics.BallisticComponent
+}
 
-	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), rl.Red, &solver))
-	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), rl.Green, &solver))
-	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), rl.Blue, &solver))
-	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), rl.Brown, &solver))
+func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	switch event {
+	case engine.NodeEventSceneActivate:
+		rl.SetTargetFPS(90)
+	case engine.NodeEventDraw:
+		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		gs.Camera.Position.X = -500
+		gs.Camera.Position.Y = -300
+	case engine.NodeEventTick:
+		if rl.IsKeyReleased(rl.KeyW) {
+			s.circleBallistics.Impulse = v.V2(0, -7000)
+		}
+		if rl.IsKeyReleased(rl.KeyS) {
+			s.circleBallistics.Impulse = v.V2(0, 7000)
+		}
+		if rl.IsKeyReleased(rl.KeyA) {
+			s.circleBallistics.Impulse = v.V2(-7000, 0)
+		}
+		if rl.IsKeyReleased(rl.KeyD) {
+			s.circleBallistics.Impulse = v.V2(7000, 0)
+		}
+	case engine.NodeEventLateTick:
+		s.PhysicsSolver.Solve(gs)
+	}
+}
+
+func PhysicsTest(e *engine.Engine) *engine.Node {
+	s := physicsTestScene{}
+	rootNode := e.NewNode("RootNode")
+	rootNode.AddComponent(&s)
+	s.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
+
+	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), rl.Red, &s.PhysicsSolver))
+	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), rl.Green, &s.PhysicsSolver))
+	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), rl.Blue, &s.PhysicsSolver))
+	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), rl.Brown, &s.PhysicsSolver))
 
 	circleBody := e.NewNode("Circle")
-	circleBallistics := physics.BallisticComponent{
+	s.circleBallistics = physics.BallisticComponent{
 		VelocityDamping: v.V2(0.3, 0.3),
 		AngularDamping:  0.8,
 		Gravity:         v.V2(0, 30),
 	}
 	circlePhys := physics.PhysicsBodyComponent{
-		PhysicsSolver: &solver,
+		PhysicsSolver: &s.PhysicsSolver,
 		Radius:        8,
 		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
@@ -39,38 +72,11 @@ func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
 	}
 	circleBody.Position = v.V2(0, 0)
 	circleBody.AddComponent(&circleVis)
-	circleBody.AddComponent(&circleBallistics)
+	circleBody.AddComponent(&s.circleBallistics)
 	circleBody.AddComponent(&circlePhys)
 	rootNode.AddChild(circleBody)
 
-	///////////////////////////////////////////
-	// GET GOING PLZ
-
-	rl.SetTargetFPS(90)
-
-	e.PushScene(rootNode)
-
-	beforeRun := func(gs *engine.GameState) {
-		if rl.IsKeyReleased(rl.KeyW) {
-			circleBallistics.Impulse = v.V2(0, -7000)
-		}
-		if rl.IsKeyReleased(rl.KeyS) {
-			circleBallistics.Impulse = v.V2(0, 7000)
-		}
-		if rl.IsKeyReleased(rl.KeyA) {
-			circleBallistics.Impulse = v.V2(-7000, 0)
-		}
-		if rl.IsKeyReleased(rl.KeyD) {
-			circleBallistics.Impulse = v.V2(7000, 0)
-		}
-
-	}
-	afterRun := func(gs *engine.GameState) {
-		gs.Camera.Position.X = -float32(screenWidth) / 2
-		gs.Camera.Position.Y = -float32(screenHeight) / 2
-	}
-
-	convenience.LegacyLoop(e, screenWidth, screenHeight, beforeRun, afterRun)
+	return rootNode
 }
 
 type PhysicsLineSegment struct {

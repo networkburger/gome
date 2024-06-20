@@ -34,9 +34,9 @@ func main() {
 	case "ken":
 		e.PushScene(game_ken.KenScene(&e))
 	case "phystest":
-		game_physicstest.GameLoop(&e, screenWidth, screenHeight)
+		e.PushScene(game_physicstest.PhysicsTest(&e))
 	case "dig":
-		game_dig.GameLoop(&e, screenWidth, screenHeight)
+		e.PushScene(game_dig.DigScene(&e))
 	default:
 		e.PushScene(game_init.StartupScene(&e))
 	}

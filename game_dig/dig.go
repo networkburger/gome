@@ -1,9 +1,7 @@
 package game_dig
 
 import (
-	"fmt"
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
@@ -11,37 +9,44 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func GameLoop(e *engine.Engine, screenWidth, screenHeight int) {
-	assets := parts.NewAssets("ass")
-	defer assets.Close()
+type digScene struct {
+	parts.Assets
+	*engine.Engine
+	physics.PhysicsSolver
+	player *engine.Node
+}
 
-	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
+func (s *digScene) Event(event engine.NodeEvent, gs *engine.GameState, n *engine.Node) {
+	switch event {
+	case engine.NodeEventSceneActivate:
+		rl.SetTargetFPS(90)
+	case engine.NodeEventDraw:
+		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+	case engine.NodeEventTick:
+		gs.Camera.Position.X = s.player.Position.X - 500 // screenw / 2
+		gs.Camera.Position.Y = s.player.Position.Y - 300 // screenh / 2
+	case engine.NodeEventLateTick:
+		s.PhysicsSolver.Solve(gs)
+	}
+}
+
+func DigScene(e *engine.Engine) *engine.Node {
+	k := digScene{}
+	k.Assets = parts.NewAssets("ass")
+	k.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		// something hit something
 	})
 
 	rootNode := e.NewNode("RootNode")
+	rootNode.AddComponent(&k)
 
-	mapNode := NewDigMap(e, &solver, &assets)
+	mapNode := NewDigMap(e, &k.PhysicsSolver, &k.Assets)
 
-	player := StandardPlayerNode(e, &solver)
-	player.Position = v.V2(985*20, 35*20)
-	player.Rotation = 90
+	k.player = StandardPlayerNode(e, &k.PhysicsSolver)
+	k.player.Position = v.V2(985*20, 35*20)
+	k.player.Rotation = 90
 
 	rootNode.AddChild(mapNode)
-	rootNode.AddChild(player)
-	e.PushScene(rootNode)
-
-	afterRun := func(gs *engine.GameState) {
-		gs.Camera.Position.X = player.Position.X - (float32(screenWidth) / 2)
-		gs.Camera.Position.Y = player.Position.Y - (float32(screenHeight) / 2)
-
-		pos := player.Position
-		ang := player.Rotation
-		rl.DrawText(fmt.Sprintf("X: %d, Y: %d, R: %d", int32(pos.X), int32(pos.Y), int32(ang)), int32(screenWidth)-120, int32(screenHeight)-20, 10, rl.Gray)
-
-		solver.Solve(gs)
-	}
-
-	rl.SetTargetFPS(30)
-	convenience.LegacyLoop(e, screenWidth, screenHeight, nil, afterRun)
+	rootNode.AddChild(k.player)
+	return rootNode
 }
