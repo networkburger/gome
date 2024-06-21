@@ -10,10 +10,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func NewDigMap(e *engine.Engine, assets *parts.Assets) *engine.Node {
-	bgSprite := component.NewBillboard(assets.Texture("bg.png"))
-	mapSprite := component.NewBillboard(assets.Texture("map.png"))
-	mapPixels := assets.Pixels("map.png")
+func NewDigMap(e *engine.Engine) *engine.Node {
+	bgSprite := component.NewBillboard(e.Assets.Texture("bg.png"))
+	mapSprite := component.NewBillboard(e.Assets.Texture("map.png"))
+	mapPixels := e.Assets.Pixels("map.png")
 
 	baseSize := v.V2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))
 	worldScale := float32(20)

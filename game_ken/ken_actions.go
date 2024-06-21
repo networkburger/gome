@@ -9,6 +9,7 @@ import (
 const (
 	Move = iota
 	Jump
+	Pause
 )
 
 var InputOverworld = []engine.InputActionMapping{
@@ -45,7 +46,17 @@ var InputOverworld = []engine.InputActionMapping{
 		Const:    float32(1),
 	},
 	{
-		ActionID:    Move,
-		GamePadAxis: engine.GamepadAxisLeftX,
+		ActionID:         Move,
+		GamePadAxis:      engine.GamepadAxisLeftX,
+		GamePadAxisScale: 1,
+	},
+
+	{
+		ActionID:             Pause,
+		GamePadButtonPressed: rl.GamepadButtonMiddleRight,
+	},
+	{
+		ActionID:   Pause,
+		KeyPressed: rl.KeyEscape,
 	},
 }

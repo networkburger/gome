@@ -9,6 +9,7 @@ import (
 const (
 	MoveH = iota
 	MoveV
+	Pause
 )
 
 const MoveSpeed = 700
@@ -65,5 +66,14 @@ var InputOverworld = []engine.InputActionMapping{
 		ActionID:         MoveV,
 		GamePadAxis:      engine.GamepadAxisLeftY,
 		GamePadAxisScale: MoveSpeed,
+	},
+
+	{
+		ActionID:             Pause,
+		GamePadButtonPressed: rl.GamepadButtonMiddleRight,
+	},
+	{
+		ActionID:    Pause,
+		KeyReleased: rl.KeyEscape,
 	},
 }

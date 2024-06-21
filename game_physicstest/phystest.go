@@ -3,7 +3,6 @@ package game_physicstest
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 	"jamesraine/grl/game_shared"
@@ -12,7 +11,6 @@ import (
 )
 
 type physicsTestScene struct {
-	parts.Assets
 	circleBallistics physics.BallisticComponent
 }
 
@@ -31,18 +29,15 @@ func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *en
 				s.circleBallistics.Impulse.X = power
 			case MoveV:
 				s.circleBallistics.Impulse.Y = power
+			case Pause:
+				game_shared.ShowPauseMenu(gs)
 			}
 		})
-
-		if rl.IsKeyPressed(rl.KeyEscape) {
-			game_shared.ShowPauseMenu(gs, &s.Assets)
-		}
 	}
 }
 
 func PhysicsTest(e *engine.Engine) *engine.Scene {
 	s := physicsTestScene{}
-	s.Assets = parts.NewAssets("ass")
 	rootNode := e.NewNode("RootNode - PT")
 	rootNode.AddComponent(&s)
 	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})

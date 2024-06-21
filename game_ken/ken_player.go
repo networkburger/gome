@@ -1,11 +1,13 @@
 package game_ken
 
 import (
+	"fmt"
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/game_shared"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -71,7 +73,10 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 				thrust = 80
 			}
 			switch action {
+			case Pause:
+				game_shared.ShowPauseMenu(gs)
 			case Move:
+				fmt.Printf("Move %f\n", power)
 				p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(power*thrust, 0))
 			case Jump:
 				if p.body.IsOnGroundIsh(gs.T, 0.5) {
@@ -104,6 +109,22 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 			p.sprite.FlipX = p.ballistics.Velocity.X < 0
 		} else {
 			p.sprite.SetSprite("idle")
+		}
+
+		gs.Camera.Position.X = n.Position.X - float32(gs.Engine.WindowPixelWidth)/2
+		gs.Camera.Position.Y = n.Position.Y - float32(gs.Engine.WindowPixelHeight)/2
+		if gs.Camera.Position.X < gs.Camera.Bounds.X {
+			gs.Camera.Position.X = gs.Camera.Bounds.X
+		}
+		if gs.Camera.Position.X+gs.Camera.Position.W > gs.Camera.Bounds.X+gs.Camera.Bounds.W {
+			gs.Camera.Position.X = (gs.Camera.Bounds.X + gs.Camera.Bounds.W) - gs.Camera.Position.W
+		}
+
+		if gs.Camera.Position.Y+gs.Camera.Position.H > gs.Camera.Bounds.Y+gs.Camera.Bounds.H {
+			gs.Camera.Position.Y = (gs.Camera.Bounds.Y + gs.Camera.Bounds.H) - gs.Camera.Position.H
+		}
+		if gs.Camera.Position.Y < gs.Camera.Bounds.Y {
+			gs.Camera.Position.Y = gs.Camera.Bounds.Y
 		}
 	}
 }

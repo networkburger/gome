@@ -2,17 +2,13 @@ package game_dig
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
-	"jamesraine/grl/game_shared"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type digScene struct {
-	parts.Assets
-	*engine.Engine
 	player *engine.Node
 }
 
@@ -25,16 +21,11 @@ func (s *digScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Nod
 	case engine.NodeEventTick:
 		gs.Camera.Position.X = s.player.Position.X - float32(gs.Engine.WindowPixelWidth)/2
 		gs.Camera.Position.Y = s.player.Position.Y - float32(gs.Engine.WindowPixelHeight)/2
-
-		if rl.IsKeyPressed(rl.KeyEscape) {
-			game_shared.ShowPauseMenu(gs, &s.Assets)
-		}
 	}
 }
 
 func DigScene(e *engine.Engine) *engine.Scene {
 	k := digScene{}
-	k.Assets = parts.NewAssets("ass")
 	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		// something hit something
 	})
@@ -42,7 +33,7 @@ func DigScene(e *engine.Engine) *engine.Scene {
 	rootNode := e.NewNode("RootNode - Dig")
 	rootNode.AddComponent(&k)
 
-	mapNode := NewDigMap(e, &k.Assets)
+	mapNode := NewDigMap(e)
 
 	k.player = StandardPlayerNode(e)
 	k.player.Position = v.V2(985*20, 35*20)

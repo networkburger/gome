@@ -1,5 +1,7 @@
 package engine
 
+import "jamesraine/grl/engine/parts"
+
 type NodeEventFunc func(n *Node)
 type DeferredAction func()
 
@@ -10,12 +12,14 @@ type Engine struct {
 	queue             []DeferredAction
 	WindowPixelHeight int
 	WindowPixelWidth  int
+	parts.Assets
 }
 
 func NewEngine(screenW, screenH int) *Engine {
 	e := Engine{
 		WindowPixelHeight: screenH,
 		WindowPixelWidth:  screenW,
+		Assets:            parts.NewAssets("ass"),
 		scene: &Scene{
 			Node: &Node{},
 		},

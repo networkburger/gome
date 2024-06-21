@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	Accelerate = engine.ActionID(0)
-	Decelerate = engine.ActionID(1)
-	TurnLeft   = engine.ActionID(2)
-	TurnRight  = engine.ActionID(3)
-	Turn       = engine.ActionID(4)
+	Accelerate = iota
+	Decelerate
+	TurnLeft
+	TurnRight
+	Turn
+	Pause
 )
 
 var InputOverworld = []engine.InputActionMapping{
@@ -58,5 +59,14 @@ var InputOverworld = []engine.InputActionMapping{
 	{
 		ActionID:    Turn,
 		GamePadAxis: engine.GamepadAxisLeftX,
+	},
+
+	{
+		ActionID:             Pause,
+		GamePadButtonPressed: rl.GamepadButtonMiddleRight,
+	},
+	{
+		ActionID:   Pause,
+		KeyPressed: rl.KeyEscape,
 	},
 }

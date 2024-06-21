@@ -124,4 +124,6 @@ func ProcessInputs(mapping []InputActionMapping, process func(ActionID, float32)
 			}
 		}
 	}
+
+	gamepad = -1
 }

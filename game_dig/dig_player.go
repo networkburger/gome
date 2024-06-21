@@ -4,6 +4,7 @@ import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/game_shared"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -34,6 +35,8 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.No
 	if event == engine.NodeEventTick {
 		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
 			switch action {
+			case Pause:
+				game_shared.ShowPauseMenu(gs)
 			case Accelerate:
 				p.Ballistics.Impulse = node.Forward().Scl(power * p.Stats.Speed)
 			case TurnLeft:
