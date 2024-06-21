@@ -23,6 +23,9 @@ func StandardLoop(e *engine.Engine, screenWidth, screenHeight int) {
 		rl.BeginDrawing()
 		e.LoopEvent(engine.NodeEventDraw)
 		e.LoopEvent(engine.NodeEventLateDraw)
+		if gs.Physics != nil {
+			gs.Physics.Solve(gs)
+		}
 		rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), int32(screenWidth)-160, int32(screenHeight)-20, 10, rl.Gray)
 		rl.EndDrawing()
 		e.Unlock()

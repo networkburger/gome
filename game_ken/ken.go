@@ -13,18 +13,16 @@ import (
 )
 
 type kenScene struct {
-	cameraBounds v.Rect
-	playerNode   *engine.Node
-	physics.PhysicsSolver
+	playerNode *engine.Node
 	parts.Assets
 	*engine.Engine
 }
 
-func KenScene(e *engine.Engine) *engine.Node {
+func KenScene(e *engine.Engine) *engine.Scene {
 	k := kenScene{}
 	k.Engine = e
 	k.Assets = parts.NewAssets("ass")
-	k.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
+	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		snd := k.Assets.Sound("coin.wav")
 		rl.PlaySound(snd)
 		s.RemoveFromParent()
@@ -50,9 +48,8 @@ func KenScene(e *engine.Engine) *engine.Node {
 
 	bgcomp := component.TilemapVisual(&k.Assets, &tilemap, "BG")
 	fgcomp := component.TilemapVisual(&k.Assets, &tilemap, "FG")
-	terrainComp := component.TilemapGeometry(&k.PhysicsSolver, &tilemap, "Terrain")
+	terrainComp := component.TilemapGeometry(&tilemap, "Terrain")
 	terrainObstacles := physics.PhysicsObstacleComponent{
-		PhysicsSolver:            &k.PhysicsSolver,
 		CollisionSurfaceProvider: &terrainComp,
 	}
 	terrainVisualComp := component.TilemapVisual(&k.Assets, &tilemap, "Terrain")
@@ -64,7 +61,7 @@ func KenScene(e *engine.Engine) *engine.Node {
 
 	///////////////////////////////////////////
 	// PLAYER
-	k.playerNode = NewPlayerNode(e, &k.Assets, &k.PhysicsSolver)
+	k.playerNode = NewPlayerNode(e, &k.Assets)
 
 	k.playerNode.Position = v.V2(100, 100)
 
@@ -83,7 +80,7 @@ func KenScene(e *engine.Engine) *engine.Node {
 		if layer.Type == "objectgroup" {
 			for _, obj := range layer.Objects {
 				if obj.Visible {
-					n := Spawn(e, obj.Type, &k.Assets, &k.PhysicsSolver)
+					n := Spawn(e, obj.Type, &k.Assets)
 					n.Position = v.V2(float32(obj.X), float32(obj.Y))
 					n.Rotation = engine.AngleD(obj.Rotation)
 					rootNode.AddChild(n)
@@ -93,9 +90,14 @@ func KenScene(e *engine.Engine) *engine.Node {
 	}
 	rootNode.AddChild(worldNodeFG)
 
-	k.cameraBounds = tilemap.Bounds(worldNodeGeometry.Transform())
-
-	return rootNode
+	return &engine.Scene{
+		Physics: &solver,
+		Node:    rootNode,
+		Camera: engine.Camera{
+			Position: v.R(0, 0, float32(e.WindowPixelWidth), float32(e.WindowPixelHeight)),
+			Bounds:   tilemap.Bounds(worldNodeGeometry.Transform()),
+		},
+	}
 }
 
 func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
@@ -107,9 +109,8 @@ func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 		rl.SetTargetFPS(30)
 
 	case engine.NodeEventTick:
-		gs.Camera.Bounds = k.cameraBounds
-		gs.Camera.Position.X = k.playerNode.Position.X - float32(gs.G.WindowPixelWidth)/2
-		gs.Camera.Position.Y = k.playerNode.Position.Y - float32(gs.G.WindowPixelHeight)/2
+		gs.Camera.Position.X = k.playerNode.Position.X - float32(gs.Engine.WindowPixelWidth)/2
+		gs.Camera.Position.Y = k.playerNode.Position.Y - float32(gs.Engine.WindowPixelHeight)/2
 		if gs.Camera.Position.X < gs.Camera.Bounds.X {
 			gs.Camera.Position.X = gs.Camera.Bounds.X
 		}
@@ -127,9 +128,6 @@ func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 		if rl.IsKeyPressed(rl.KeyEscape) {
 			game_shared.ShowPauseMenu(gs, &k.Assets)
 		}
-
-	case engine.NodeEventLateTick:
-		k.PhysicsSolver.Solve(gs)
 
 	case engine.NodeEventDraw:
 		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))

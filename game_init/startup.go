@@ -29,7 +29,7 @@ func (s *startupScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine
 	}
 }
 
-func StartupScene(e *engine.Engine) *engine.Node {
+func StartupScene(e *engine.Engine) *engine.Scene {
 	k := startupScene{}
 	k.Engine = e
 	k.Assets = parts.NewAssets("ass")
@@ -63,5 +63,7 @@ func StartupScene(e *engine.Engine) *engine.Node {
 	rootNode.AddComponent(&k)
 	rootNode.AddComponent(&menu)
 
-	return rootNode
+	return &engine.Scene{
+		Node: rootNode,
+	}
 }

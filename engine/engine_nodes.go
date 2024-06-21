@@ -16,7 +16,7 @@ func (e *Engine) AddChild(p *Node, c *Node) {
 		return
 	}
 
-	inScene := IsDescendant(e.scene.RootNode, p)
+	inScene := IsDescendant(e.scene.Node, p)
 	if inScene {
 		e.testLock()
 	}
@@ -48,7 +48,7 @@ func (e *Engine) testLock() {
 func (e *Engine) AddComponent(n *Node, c NodeComponent) {
 	// if the parent node is NOT part of the scene, we don't need to
 	// pay attention to the lock state - events won't be fired anyway
-	if IsDescendant(e.scene.RootNode, n) {
+	if IsDescendant(e.scene.Node, n) {
 		e.testLock()
 		n.Components = append(n.Components, c)
 		c.Event(NodeEventLoad, e.scene, n)
@@ -60,7 +60,7 @@ func (e *Engine) AddComponent(n *Node, c NodeComponent) {
 func (e *Engine) RemoveNodeFromParent(killnode *Node) {
 	e.testLock()
 
-	if IsDescendant(e.scene.RootNode, killnode) {
+	if IsDescendant(e.scene.Node, killnode) {
 		e.fireDeepEvent(killnode, NodeEventUnload)
 	}
 
@@ -81,7 +81,7 @@ func (e *Engine) RemoveComponentFromNode(n *Node, c NodeComponent) {
 	index := slices.Index(n.Components, c)
 	n.Components = util.SliceRemoveIndex(n.Components, index)
 
-	if IsDescendant(e.scene.RootNode, n) {
+	if IsDescendant(e.scene.Node, n) {
 		c.Event(NodeEventUnload, e.scene, n)
 	}
 }

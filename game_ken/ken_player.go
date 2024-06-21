@@ -18,7 +18,7 @@ type Player struct {
 	body       *physics.PhysicsBodyComponent
 }
 
-func NewPlayerNode(e *engine.Engine, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+func NewPlayerNode(e *engine.Engine, assets *parts.Assets) *engine.Node {
 	sheet := assets.SpriteSheet("knight.spritesheet")
 
 	player := Player{
@@ -42,8 +42,7 @@ func NewPlayerNode(e *engine.Engine, assets *parts.Assets, solver *physics.Physi
 	playerNode.AddComponent(player.ballistics)
 
 	player.body = &physics.PhysicsBodyComponent{
-		PhysicsSolver: solver,
-		Radius:        8,
+		Radius: 8,
 		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
 			Restitution: 0,

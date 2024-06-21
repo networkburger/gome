@@ -6,18 +6,17 @@ import (
 )
 
 type PhysicsObstacleComponent struct {
-	*PhysicsSolver
 	CollisionSurfaceProvider
 }
 
-func (s *PhysicsObstacleComponent) Event(e engine.NodeEvent, _ *engine.Scene, n *engine.Node) {
+func (o *PhysicsObstacleComponent) Event(e engine.NodeEvent, s *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventLoad {
-		if s.CollisionSurfaceProvider == nil {
+		if o.CollisionSurfaceProvider == nil {
 			slog.Warn("PhysicsObstacleComponent: no ObstacleProvider; ignoring")
 		} else {
-			s.PhysicsSolver.Register(n)
+			s.Physics.Register(n)
 		}
 	} else if e == engine.NodeEventUnload {
-		s.PhysicsSolver.Unregister(n)
+		s.Physics.Unregister(n)
 	}
 }

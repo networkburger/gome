@@ -10,7 +10,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func NewDigMap(e *engine.Engine, solver *physics.PhysicsSolver, assets *parts.Assets) *engine.Node {
+func NewDigMap(e *engine.Engine, assets *parts.Assets) *engine.Node {
 	bgSprite := component.NewBillboard(assets.Texture("bg.png"))
 	mapSprite := component.NewBillboard(assets.Texture("map.png"))
 	mapPixels := assets.Pixels("map.png")
@@ -24,7 +24,6 @@ func NewDigMap(e *engine.Engine, solver *physics.PhysicsSolver, assets *parts.As
 	mapSprite.DstRect = worldRect
 
 	obstacle := physics.PhysicsObstacleComponent{
-		PhysicsSolver: solver,
 		CollisionSurfaceProvider: &PixelObstacleProvider{
 			PixelBuffer: mapPixels,
 		},

@@ -5,7 +5,6 @@ import (
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
-	"log/slog"
 	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -39,7 +38,7 @@ func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) T
 func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
 		xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
-		screenArea := rl.NewRectangle(0, 0, float32(gs.G.WindowPixelWidth), float32(gs.G.WindowPixelHeight))
+		screenArea := rl.NewRectangle(0, 0, float32(gs.Engine.WindowPixelWidth), float32(gs.Engine.WindowPixelHeight))
 
 		tileset := s.tilemap.Tilesets[0]
 		layer := s.tilemap.Layers[s.layer]
@@ -68,12 +67,11 @@ func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.Scene,
 //
 
 type TilemapGeometryComponent struct {
-	*physics.PhysicsSolver
 	tilemap parts.Tilemap
 	layer   int
 }
 
-func TilemapGeometry(phys *physics.PhysicsSolver, tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
+func TilemapGeometry(tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
 	layerIndex := -1
 	for i, l := range tilemap.Layers {
 		if strings.Compare(l.Name, layer) == 0 {
@@ -83,21 +81,16 @@ func TilemapGeometry(phys *physics.PhysicsSolver, tilemap *parts.Tilemap, layer 
 	}
 
 	return TilemapGeometryComponent{
-		PhysicsSolver: phys,
-		tilemap:       *tilemap,
-		layer:         layerIndex,
+		tilemap: *tilemap,
+		layer:   layerIndex,
 	}
 }
 
-func (s *TilemapGeometryComponent) Event(e engine.NodeEvent, _ *engine.Scene, n *engine.Node) {
-	if s.PhysicsSolver == nil {
-		slog.Warn("TilemapComponent: no PhysicsManager; Tilemap collision detection will not work.")
-		return
-	}
+func (g *TilemapGeometryComponent) Event(e engine.NodeEvent, s *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventLoad {
-		s.PhysicsSolver.Register(n)
+		s.Physics.Register(n)
 	} else if e == engine.NodeEventUnload {
-		s.PhysicsSolver.Unregister(n)
+		s.Physics.Unregister(n)
 	}
 }
 

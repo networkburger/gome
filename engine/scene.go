@@ -1,14 +1,20 @@
 package engine
 
-type Scene struct {
-	G        *Engine
-	RootNode *Node
-	Paused   bool
-	DT       float32
-	T        float64
+type Physics interface {
+	Register(*Node)
+	Unregister(*Node)
+	Solve(*Scene)
+}
 
-	// WallClock times update even while "paused"
-	WallClockT  float64
+type Scene struct {
+	*Engine
+	*Node
+	Physics
+	Camera
+
+	Paused      bool
+	DT          float32
+	T           float64
+	WallClockT  float64 // WallClock times update even while "paused"
 	WallClockDT float32
-	Camera      *Camera
 }

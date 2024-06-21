@@ -1,16 +1,15 @@
 package engine
 
-import "jamesraine/grl/engine/v"
-
 type NodeEventFunc func(n *Node)
 type DeferredAction func()
 
 type Engine struct {
-	sceneStack                          []*Scene
-	scene                               *Scene
-	nodelock                            bool
-	queue                               []DeferredAction
-	WindowPixelHeight, WindowPixelWidth int
+	sceneStack        []*Scene
+	scene             *Scene
+	nodelock          bool
+	queue             []DeferredAction
+	WindowPixelHeight int
+	WindowPixelWidth  int
 }
 
 func NewEngine(screenW, screenH int) *Engine {
@@ -18,10 +17,10 @@ func NewEngine(screenW, screenH int) *Engine {
 		WindowPixelHeight: screenH,
 		WindowPixelWidth:  screenW,
 		scene: &Scene{
-			RootNode: &Node{},
+			Node: &Node{},
 		},
 	}
-	e.scene.RootNode = &Node{
+	e.scene.Node = &Node{
 		engine: &e,
 	}
 	return &e
@@ -30,34 +29,27 @@ func NewEngine(screenW, screenH int) *Engine {
 func (e *Engine) Scene() *Scene {
 	return e.scene
 }
-func (e *Engine) PushScene(sceneNode *Node) {
-	scene := Scene{
-		G:        e,
-		RootNode: sceneNode,
-		Camera: &Camera{
-			Position: v.R(0, 0, float32(e.WindowPixelWidth), float32(e.WindowPixelHeight)),
-		},
-	}
-
+func (e *Engine) PushScene(scene *Scene) {
 	if e.scene != nil {
-		e.fireDeepEvent(e.scene.RootNode, NodeEventSceneDeativate)
+		e.fireDeepEvent(e.scene.Node, NodeEventSceneDeativate)
 	}
+	scene.Engine = e
 	e.sceneStack = append(e.sceneStack, e.scene)
-	e.scene = &scene
+	e.scene = scene
 
-	e.fireDeepEvent(scene.RootNode, NodeEventSceneActivate)
-	e.fireDeepEvent(scene.RootNode, NodeEventLoad)
+	e.fireDeepEvent(scene.Node, NodeEventSceneActivate)
+	e.fireDeepEvent(scene.Node, NodeEventLoad)
 }
 
 func (c *Engine) PopScene() {
 	if c.scene != nil {
-		c.fireDeepEvent(c.scene.RootNode, NodeEventUnload)
-		c.fireDeepEvent(c.scene.RootNode, NodeEventSceneDeativate)
+		c.fireDeepEvent(c.scene.Node, NodeEventUnload)
+		c.fireDeepEvent(c.scene.Node, NodeEventSceneDeativate)
 	}
 	if len(c.sceneStack) > 0 {
 		c.scene = c.sceneStack[len(c.sceneStack)-1]
 		c.sceneStack = c.sceneStack[:len(c.sceneStack)-1]
-		c.fireDeepEvent(c.scene.RootNode, NodeEventSceneActivate)
+		c.fireDeepEvent(c.scene.Node, NodeEventSceneActivate)
 	} else {
 		c.scene = nil
 	}
@@ -98,7 +90,7 @@ func (e *Engine) LoopEvent(event NodeEvent) {
 	if event == NodeEventTick {
 		e.scene.Camera.cache()
 	}
-	send(event, e.scene, e.scene.RootNode)
+	send(event, e.scene, e.scene.Node)
 }
 
 func send(e NodeEvent, s *Scene, n *Node) {

@@ -13,7 +13,6 @@ import (
 
 type physicsTestScene struct {
 	parts.Assets
-	physics.PhysicsSolver
 	circleBallistics physics.BallisticComponent
 }
 
@@ -23,8 +22,8 @@ func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *en
 		rl.SetTargetFPS(90)
 	case engine.NodeEventDraw:
 		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
-		gs.Camera.Position.X = float32(gs.G.WindowPixelWidth) / -2
-		gs.Camera.Position.Y = float32(gs.G.WindowPixelHeight) / -2
+		gs.Camera.Position.X = float32(gs.Engine.WindowPixelWidth) / -2
+		gs.Camera.Position.Y = float32(gs.Engine.WindowPixelHeight) / -2
 	case engine.NodeEventTick:
 		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
 			switch action {
@@ -38,22 +37,20 @@ func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *en
 		if rl.IsKeyPressed(rl.KeyEscape) {
 			game_shared.ShowPauseMenu(gs, &s.Assets)
 		}
-	case engine.NodeEventLateTick:
-		s.PhysicsSolver.Solve(gs)
 	}
 }
 
-func PhysicsTest(e *engine.Engine) *engine.Node {
+func PhysicsTest(e *engine.Engine) *engine.Scene {
 	s := physicsTestScene{}
 	s.Assets = parts.NewAssets("ass")
 	rootNode := e.NewNode("RootNode - PT")
 	rootNode.AddComponent(&s)
-	s.PhysicsSolver = physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
+	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
 
-	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), rl.Red, &s.PhysicsSolver))
-	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), rl.Green, &s.PhysicsSolver))
-	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), rl.Blue, &s.PhysicsSolver))
-	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), rl.Brown, &s.PhysicsSolver))
+	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), rl.Red))
+	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), rl.Green))
+	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), rl.Blue))
+	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), rl.Brown))
 
 	circleBody := e.NewNode("Circle")
 	s.circleBallistics = physics.BallisticComponent{
@@ -62,8 +59,7 @@ func PhysicsTest(e *engine.Engine) *engine.Node {
 		Gravity:         v.V2(0, 30),
 	}
 	circlePhys := physics.PhysicsBodyComponent{
-		PhysicsSolver: &s.PhysicsSolver,
-		Radius:        8,
+		Radius: 8,
 		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
 			Restitution: 0.33,
@@ -79,7 +75,10 @@ func PhysicsTest(e *engine.Engine) *engine.Node {
 	circleBody.AddComponent(&circlePhys)
 	rootNode.AddChild(circleBody)
 
-	return rootNode
+	return &engine.Scene{
+		Node:    rootNode,
+		Physics: &solver,
+	}
 }
 
 type PhysicsLineSegment struct {
@@ -109,7 +108,7 @@ func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32
 	}
 }
 
-func newLine(e *engine.Engine, a, b v.Vec2, col rl.Color, solver *physics.PhysicsSolver) *engine.Node {
+func newLine(e *engine.Engine, a, b v.Vec2, col rl.Color) *engine.Node {
 	groundNode := e.NewNode("Ground")
 
 	ab := b.Sub(a)
@@ -121,7 +120,6 @@ func newLine(e *engine.Engine, a, b v.Vec2, col rl.Color, solver *physics.Physic
 		Color: col,
 	}
 	groundSurface := physics.PhysicsObstacleComponent{
-		PhysicsSolver:            solver,
 		CollisionSurfaceProvider: &groundLine,
 	}
 	groundNode.AddComponent(&groundLine)

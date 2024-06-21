@@ -47,7 +47,7 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.No
 	}
 }
 
-func StandardPlayerNode(e *engine.Engine, phys *physics.PhysicsSolver) *engine.Node {
+func StandardPlayerNode(e *engine.Engine) *engine.Node {
 	r := float32(20)
 	player := Player{
 		Stats:  StartingPlayerStats(),
@@ -81,8 +81,7 @@ func StandardPlayerNode(e *engine.Engine, phys *physics.PhysicsSolver) *engine.N
 	player.Ballistics = &ballistics
 
 	physBody := physics.PhysicsBodyComponent{
-		PhysicsSolver: phys,
-		Radius:        20,
+		Radius: 20,
 		SurfaceProperties: physics.SurfaceProperties{
 			Friction:    0,
 			Restitution: 0.2,

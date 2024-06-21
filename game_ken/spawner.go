@@ -13,22 +13,22 @@ const (
 	CollidableSomethingElse
 )
 
-type SpawnFunc func(*engine.Engine, *parts.Assets, *physics.PhysicsSolver) *engine.Node
+type SpawnFunc func(*engine.Engine, *parts.Assets) *engine.Node
 
 var _directory = map[string]SpawnFunc{
 	"coin": _spawnCoin,
 }
 
-func Spawn(e *engine.Engine, kind string, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+func Spawn(e *engine.Engine, kind string, assets *parts.Assets) *engine.Node {
 	spawner, ok := _directory[kind]
 	if ok {
-		return spawner(e, assets, solver)
+		return spawner(e, assets)
 	} else {
 		return e.NewNode(kind)
 	}
 }
 
-func _spawnCoin(e *engine.Engine, assets *parts.Assets, solver *physics.PhysicsSolver) *engine.Node {
+func _spawnCoin(e *engine.Engine, assets *parts.Assets) *engine.Node {
 	n := e.NewNode("Coin")
 	sheet := assets.SpriteSheet("coin.spritesheet")
 	tex := assets.Texture(sheet.ImageRef)
@@ -42,9 +42,8 @@ func _spawnCoin(e *engine.Engine, assets *parts.Assets, solver *physics.PhysicsS
 	n.AddComponent(&ssComp)
 
 	signal := physics.PhysicsSignalComponent{
-		PhysicsSolver: solver,
-		Radius:        16,
-		Kind:          CollidableCoin,
+		Radius: 16,
+		Kind:   CollidableCoin,
 	}
 	n.AddComponent(&signal)
 	return n

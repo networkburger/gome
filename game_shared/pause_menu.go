@@ -9,7 +9,6 @@ import (
 )
 
 func ShowPauseMenu(gs *engine.Scene, assets *parts.Assets) {
-
 	gs.Paused = true
 
 	font, _ := assets.Font("robotoslab48.json")
@@ -23,7 +22,7 @@ func ShowPauseMenu(gs *engine.Scene, assets *parts.Assets) {
 				MenuLabel: "MAIN MENU",
 				MenuAction: func() {
 					gs.Paused = false
-					gs.G.PopScene()
+					gs.Engine.PopScene()
 				},
 			},
 			{
@@ -35,10 +34,10 @@ func ShowPauseMenu(gs *engine.Scene, assets *parts.Assets) {
 		},
 	}
 	menu.Items[0].MenuAction = func() {
-		gs.G.RemoveComponentFromNode(gs.RootNode, &menu)
+		gs.Engine.RemoveComponentFromNode(gs.Node, &menu)
 		gs.Paused = false
 	}
-	gs.G.Enqueue(func() {
-		gs.RootNode.AddComponent(&menu)
+	gs.Engine.Enqueue(func() {
+		gs.Node.AddComponent(&menu)
 	})
 }

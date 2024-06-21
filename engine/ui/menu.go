@@ -36,11 +36,11 @@ func (m *Menu) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 			}
 		}
 		if rl.IsKeyPressed(rl.KeyEnter) {
-			gs.G.Enqueue(m.Items[m.Selected].MenuAction)
+			gs.Engine.Enqueue(m.Items[m.Selected].MenuAction)
 		}
 
-		y := int(float32(gs.G.WindowPixelHeight) * 0.1)
-		center := gs.G.WindowPixelWidth / 2
+		y := int(float32(gs.Engine.WindowPixelHeight) * 0.1)
+		center := gs.Engine.WindowPixelWidth / 2
 		for i, item := range m.Items {
 			w, h := m.FontRenderer.MeasureText(string(item.MenuLabel))
 			x := center - w/2
