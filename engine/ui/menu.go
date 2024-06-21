@@ -7,12 +7,11 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type MenuAction func()
 type MenuLabel string
 
 type MenuItem struct {
 	MenuLabel
-	MenuAction
+	MenuAction engine.DeferredAction
 }
 
 type Menu struct {
@@ -37,7 +36,7 @@ func (m *Menu) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 			}
 		}
 		if rl.IsKeyPressed(rl.KeyEnter) {
-			m.Items[m.Selected].MenuAction()
+			gs.G.Enqueue(m.Items[m.Selected].MenuAction)
 		}
 
 		y := int(float32(gs.G.WindowPixelHeight) * 0.1)

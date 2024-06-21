@@ -34,7 +34,7 @@ func StartupScene(e *engine.Engine) *engine.Node {
 	k.Engine = e
 	k.Assets = parts.NewAssets("ass")
 
-	font, _ := k.Assets.Font("robotoslab.json")
+	font, _ := k.Assets.Font("robotoslab48.json")
 	menu := ui.Menu{
 		FontRenderer: font,
 		Items: []ui.MenuItem{

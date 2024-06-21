@@ -1,0 +1,1346 @@
+{
+  "software": {
+    "name": "rTexPacker v3.0",
+    "url": "https://raylibtech.itch.io/rtexpacker"
+  },
+  "atlas": {
+    "imagePath": "robotoslab48.png",
+    "width": 512,
+    "height": 512,
+    "spriteCount": 95,
+    "isFont": true,
+    "fontSize": 48
+  },
+  "sprites": [
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0020",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 0, "y": 0 },
+      "sourceSize": { "width": 9, "height": 48 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 0, "height": 0 },
+      "char": {
+        "value": 32,
+        "offset": { "x": 0, "y": 0 },
+        "advanceX": 9
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0021",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 462, "y": 48 },
+      "sourceSize": { "width": 5, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 5, "height": 26 },
+      "char": {
+        "value": 33,
+        "offset": { "x": 2, "y": 12 },
+        "advanceX": 8
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0022",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 82, "y": 102 },
+      "sourceSize": { "width": 10, "height": 10 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 10 },
+      "char": {
+        "value": 34,
+        "offset": { "x": 2, "y": 10 },
+        "advanceX": 13
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0023",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 186, "y": 76 },
+      "sourceSize": { "width": 20, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 26 },
+      "char": {
+        "value": 35,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0024",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 106, "y": 0 },
+      "sourceSize": { "width": 17, "height": 35 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 35 },
+      "char": {
+        "value": 36,
+        "offset": { "x": 1, "y": 7 },
+        "advanceX": 19
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0025",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 64, "y": 48 },
+      "sourceSize": { "width": 24, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 24, "height": 28 },
+      "char": {
+        "value": 37,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 25
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0026",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 337, "y": 0 },
+      "sourceSize": { "width": 22, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 28 },
+      "char": {
+        "value": 38,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0027",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 92, "y": 102 },
+      "sourceSize": { "width": 4, "height": 10 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 4, "height": 10 },
+      "char": {
+        "value": 39,
+        "offset": { "x": 2, "y": 10 },
+        "advanceX": 8
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0028",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 9, "y": 0 },
+      "sourceSize": { "width": 10, "height": 39 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 39 },
+      "char": {
+        "value": 40,
+        "offset": { "x": 2, "y": 8 },
+        "advanceX": 11
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0029",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 19, "y": 0 },
+      "sourceSize": { "width": 10, "height": 39 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 39 },
+      "char": {
+        "value": 41,
+        "offset": { "x": 0, "y": 8 },
+        "advanceX": 11
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 31, "y": 102 },
+      "sourceSize": { "width": 15, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 15, "height": 16 },
+      "char": {
+        "value": 42,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 17
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 491, "y": 76 },
+      "sourceSize": { "width": 19, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 19, "height": 20 },
+      "char": {
+        "value": 43,
+        "offset": { "x": 1, "y": 16 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 76, "y": 102 },
+      "sourceSize": { "width": 6, "height": 10 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 6, "height": 10 },
+      "char": {
+        "value": 44,
+        "offset": { "x": 0, "y": 34 },
+        "advanceX": 7
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 131, "y": 102 },
+      "sourceSize": { "width": 10, "height": 4 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 4 },
+      "char": {
+        "value": 45,
+        "offset": { "x": 2, "y": 25 },
+        "advanceX": 14
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 126, "y": 102 },
+      "sourceSize": { "width": 5, "height": 4 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 5, "height": 4 },
+      "char": {
+        "value": 46,
+        "offset": { "x": 2, "y": 34 },
+        "advanceX": 8
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U002F",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 177, "y": 0 },
+      "sourceSize": { "width": 14, "height": 29 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 14, "height": 29 },
+      "char": {
+        "value": 47,
+        "offset": { "x": 0, "y": 12 },
+        "advanceX": 14
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0030",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 250, "y": 0 },
+      "sourceSize": { "width": 17, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 28 },
+      "char": {
+        "value": 48,
+        "offset": { "x": 2, "y": 11 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0031",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 152, "y": 76 },
+      "sourceSize": { "width": 12, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 12, "height": 26 },
+      "char": {
+        "value": 49,
+        "offset": { "x": 2, "y": 12 },
+        "advanceX": 14
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0032",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 164, "y": 48 },
+      "sourceSize": { "width": 18, "height": 27 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 27 },
+      "char": {
+        "value": 50,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0033",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 267, "y": 0 },
+      "sourceSize": { "width": 17, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 28 },
+      "char": {
+        "value": 51,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 19
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0034",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 0, "y": 76 },
+      "sourceSize": { "width": 19, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 19, "height": 26 },
+      "char": {
+        "value": 52,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0035",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 147, "y": 48 },
+      "sourceSize": { "width": 17, "height": 27 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 27 },
+      "char": {
+        "value": 53,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 19
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0036",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 284, "y": 0 },
+      "sourceSize": { "width": 17, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 28 },
+      "char": {
+        "value": 54,
+        "offset": { "x": 2, "y": 11 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0037",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 381, "y": 48 },
+      "sourceSize": { "width": 18, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 26 },
+      "char": {
+        "value": 55,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0038",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 301, "y": 0 },
+      "sourceSize": { "width": 18, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 28 },
+      "char": {
+        "value": 56,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0039",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 319, "y": 0 },
+      "sourceSize": { "width": 18, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 28 },
+      "char": {
+        "value": 57,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 326, "y": 76 },
+      "sourceSize": { "width": 5, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 5, "height": 20 },
+      "char": {
+        "value": 58,
+        "offset": { "x": 2, "y": 18 },
+        "advanceX": 7
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 123, "y": 76 },
+      "sourceSize": { "width": 7, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 7, "height": 26 },
+      "char": {
+        "value": 59,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 7
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 0, "y": 102 },
+      "sourceSize": { "width": 15, "height": 18 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 1, "width": 15, "height": 17 },
+      "char": {
+        "value": 60,
+        "offset": { "x": 1, "y": 19 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 60, "y": 102 },
+      "sourceSize": { "width": 16, "height": 11 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 16, "height": 11 },
+      "char": {
+        "value": 61,
+        "offset": { "x": 2, "y": 20 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 15, "y": 102 },
+      "sourceSize": { "width": 16, "height": 17 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 16, "height": 17 },
+      "char": {
+        "value": 62,
+        "offset": { "x": 2, "y": 20 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U003F",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 88, "y": 48 },
+      "sourceSize": { "width": 15, "height": 27 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 15, "height": 27 },
+      "char": {
+        "value": 63,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 16
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0040",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 76, "y": 0 },
+      "sourceSize": { "width": 30, "height": 35 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 30, "height": 35 },
+      "char": {
+        "value": 64,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 32
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0041",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 205, "y": 48 },
+      "sourceSize": { "width": 25, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 25, "height": 26 },
+      "char": {
+        "value": 65,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 27
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0042",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 359, "y": 48 },
+      "sourceSize": { "width": 22, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 26 },
+      "char": {
+        "value": 66,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0043",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 412, "y": 0 },
+      "sourceSize": { "width": 20, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 28 },
+      "char": {
+        "value": 67,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0044",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 399, "y": 48 },
+      "sourceSize": { "width": 22, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 26 },
+      "char": {
+        "value": 68,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 24
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0045",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 421, "y": 48 },
+      "sourceSize": { "width": 21, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 26 },
+      "char": {
+        "value": 69,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0046",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 442, "y": 48 },
+      "sourceSize": { "width": 20, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 26 },
+      "char": {
+        "value": 70,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0047",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 21, "y": 48 },
+      "sourceSize": { "width": 21, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 28 },
+      "char": {
+        "value": 71,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0048",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 467, "y": 48 },
+      "sourceSize": { "width": 26, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 26, "height": 26 },
+      "char": {
+        "value": 72,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 28
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0049",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 493, "y": 48 },
+      "sourceSize": { "width": 10, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 26 },
+      "char": {
+        "value": 73,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 12
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 128, "y": 48 },
+      "sourceSize": { "width": 19, "height": 27 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 19, "height": 27 },
+      "char": {
+        "value": 74,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 19, "y": 76 },
+      "sourceSize": { "width": 25, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 25, "height": 26 },
+      "char": {
+        "value": 75,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 26
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 44, "y": 76 },
+      "sourceSize": { "width": 20, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 26 },
+      "char": {
+        "value": 76,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 64, "y": 76 },
+      "sourceSize": { "width": 33, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 33, "height": 26 },
+      "char": {
+        "value": 77,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 35
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 97, "y": 76 },
+      "sourceSize": { "width": 26, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 26, "height": 26 },
+      "char": {
+        "value": 78,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 28
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U004F",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 42, "y": 48 },
+      "sourceSize": { "width": 22, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 28 },
+      "char": {
+        "value": 79,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 24
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0050",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 130, "y": 76 },
+      "sourceSize": { "width": 22, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 26 },
+      "char": {
+        "value": 80,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0051",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 123, "y": 0 },
+      "sourceSize": { "width": 23, "height": 32 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 23, "height": 32 },
+      "char": {
+        "value": 81,
+        "offset": { "x": 1, "y": 11 },
+        "advanceX": 24
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0052",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 164, "y": 76 },
+      "sourceSize": { "width": 22, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 26 },
+      "char": {
+        "value": 82,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 24
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0053",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 232, "y": 0 },
+      "sourceSize": { "width": 18, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 28 },
+      "char": {
+        "value": 83,
+        "offset": { "x": 2, "y": 11 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0054",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 182, "y": 48 },
+      "sourceSize": { "width": 23, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 23, "height": 26 },
+      "char": {
+        "value": 84,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 24
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0055",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 103, "y": 48 },
+      "sourceSize": { "width": 25, "height": 27 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 25, "height": 27 },
+      "char": {
+        "value": 85,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 27
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0056",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 230, "y": 48 },
+      "sourceSize": { "width": 25, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 25, "height": 26 },
+      "char": {
+        "value": 86,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 26
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0057",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 255, "y": 48 },
+      "sourceSize": { "width": 36, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 36, "height": 26 },
+      "char": {
+        "value": 87,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 37
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0058",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 291, "y": 48 },
+      "sourceSize": { "width": 25, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 25, "height": 26 },
+      "char": {
+        "value": 88,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 27
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0059",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 316, "y": 48 },
+      "sourceSize": { "width": 24, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 24, "height": 26 },
+      "char": {
+        "value": 89,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 25
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 340, "y": 48 },
+      "sourceSize": { "width": 19, "height": 26 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 19, "height": 26 },
+      "char": {
+        "value": 90,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 29, "y": 0 },
+      "sourceSize": { "width": 8, "height": 36 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 8, "height": 36 },
+      "char": {
+        "value": 91,
+        "offset": { "x": 2, "y": 8 },
+        "advanceX": 10
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 162, "y": 0 },
+      "sourceSize": { "width": 15, "height": 29 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 15, "height": 29 },
+      "char": {
+        "value": 92,
+        "offset": { "x": 0, "y": 12 },
+        "advanceX": 14
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 37, "y": 0 },
+      "sourceSize": { "width": 8, "height": 36 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 8, "height": 36 },
+      "char": {
+        "value": 93,
+        "offset": { "x": 0, "y": 8 },
+        "advanceX": 9
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 46, "y": 102 },
+      "sourceSize": { "width": 14, "height": 14 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 14, "height": 14 },
+      "char": {
+        "value": 94,
+        "offset": { "x": 1, "y": 12 },
+        "advanceX": 15
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U005F",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 141, "y": 102 },
+      "sourceSize": { "width": 17, "height": 3 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 3 },
+      "char": {
+        "value": 95,
+        "offset": { "x": 2, "y": 38 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0060",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 117, "y": 102 },
+      "sourceSize": { "width": 9, "height": 6 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 9, "height": 6 },
+      "char": {
+        "value": 96,
+        "offset": { "x": 0, "y": 10 },
+        "advanceX": 8
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0061",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 275, "y": 76 },
+      "sourceSize": { "width": 18, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 21 },
+      "char": {
+        "value": 97,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0062",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 191, "y": 0 },
+      "sourceSize": { "width": 21, "height": 29 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 29 },
+      "char": {
+        "value": 98,
+        "offset": { "x": -1, "y": 10 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0063",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 219, "y": 76 },
+      "sourceSize": { "width": 17, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 21 },
+      "char": {
+        "value": 99,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0064",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 212, "y": 0 },
+      "sourceSize": { "width": 20, "height": 29 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 29 },
+      "char": {
+        "value": 100,
+        "offset": { "x": 1, "y": 10 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0065",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 293, "y": 76 },
+      "sourceSize": { "width": 17, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 21 },
+      "char": {
+        "value": 101,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0066",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 150, "y": 0 },
+      "sourceSize": { "width": 12, "height": 29 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 12, "height": 29 },
+      "char": {
+        "value": 102,
+        "offset": { "x": 1, "y": 9 },
+        "advanceX": 12
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0067",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 359, "y": 0 },
+      "sourceSize": { "width": 20, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 28 },
+      "char": {
+        "value": 103,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0068",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 379, "y": 0 },
+      "sourceSize": { "width": 23, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 23, "height": 28 },
+      "char": {
+        "value": 104,
+        "offset": { "x": 0, "y": 10 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0069",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 402, "y": 0 },
+      "sourceSize": { "width": 10, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 28 },
+      "char": {
+        "value": 105,
+        "offset": { "x": 1, "y": 10 },
+        "advanceX": 11
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 45, "y": 0 },
+      "sourceSize": { "width": 8, "height": 36 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 8, "height": 36 },
+      "char": {
+        "value": 106,
+        "offset": { "x": -1, "y": 10 },
+        "advanceX": 9
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 432, "y": 0 },
+      "sourceSize": { "width": 22, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 28 },
+      "char": {
+        "value": 107,
+        "offset": { "x": 1, "y": 10 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 454, "y": 0 },
+      "sourceSize": { "width": 10, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 10, "height": 28 },
+      "char": {
+        "value": 108,
+        "offset": { "x": 1, "y": 10 },
+        "advanceX": 11
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 405, "y": 76 },
+      "sourceSize": { "width": 33, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 33, "height": 20 },
+      "char": {
+        "value": 109,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 35
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 469, "y": 76 },
+      "sourceSize": { "width": 22, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 22, "height": 20 },
+      "char": {
+        "value": 110,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 23
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U006F",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 257, "y": 76 },
+      "sourceSize": { "width": 18, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 18, "height": 21 },
+      "char": {
+        "value": 111,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 19
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0070",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 464, "y": 0 },
+      "sourceSize": { "width": 20, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 28 },
+      "char": {
+        "value": 112,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0071",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 484, "y": 0 },
+      "sourceSize": { "width": 20, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 20, "height": 28 },
+      "char": {
+        "value": 113,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 20
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0072",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 455, "y": 76 },
+      "sourceSize": { "width": 14, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 14, "height": 20 },
+      "char": {
+        "value": 114,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 15
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0073",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 310, "y": 76 },
+      "sourceSize": { "width": 16, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 16, "height": 21 },
+      "char": {
+        "value": 115,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0074",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 206, "y": 76 },
+      "sourceSize": { "width": 13, "height": 25 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 13, "height": 25 },
+      "char": {
+        "value": 116,
+        "offset": { "x": 0, "y": 14 },
+        "advanceX": 12
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0075",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 236, "y": 76 },
+      "sourceSize": { "width": 21, "height": 21 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 21 },
+      "char": {
+        "value": 117,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 22
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0076",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 331, "y": 76 },
+      "sourceSize": { "width": 21, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 20 },
+      "char": {
+        "value": 118,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0077",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 352, "y": 76 },
+      "sourceSize": { "width": 32, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 32, "height": 20 },
+      "char": {
+        "value": 119,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 32
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0078",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 384, "y": 76 },
+      "sourceSize": { "width": 21, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 20 },
+      "char": {
+        "value": 120,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U0079",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 0, "y": 48 },
+      "sourceSize": { "width": 21, "height": 28 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 28 },
+      "char": {
+        "value": 121,
+        "offset": { "x": 0, "y": 18 },
+        "advanceX": 21
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U007A",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 438, "y": 76 },
+      "sourceSize": { "width": 17, "height": 20 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 17, "height": 20 },
+      "char": {
+        "value": 122,
+        "offset": { "x": 1, "y": 18 },
+        "advanceX": 18
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U007B",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 53, "y": 0 },
+      "sourceSize": { "width": 11, "height": 36 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 11, "height": 36 },
+      "char": {
+        "value": 123,
+        "offset": { "x": 1, "y": 9 },
+        "advanceX": 12
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U007C",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 146, "y": 0 },
+      "sourceSize": { "width": 4, "height": 31 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 4, "height": 31 },
+      "char": {
+        "value": 124,
+        "offset": { "x": 2, "y": 12 },
+        "advanceX": 8
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U007D",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 64, "y": 0 },
+      "sourceSize": { "width": 12, "height": 36 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 12, "height": 36 },
+      "char": {
+        "value": 125,
+        "offset": { "x": 0, "y": 9 },
+        "advanceX": 12
+      }
+    },
+    {
+      "nameId": "RobotoSlab-VariableFont_wght-U007E",
+      "origin": { "x": 0, "y": 0 },
+      "position": { "x": 96, "y": 102 },
+      "sourceSize": { "width": 21, "height": 8 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 0, "y": 0, "width": 21, "height": 8 },
+      "char": {
+        "value": 126,
+        "offset": { "x": 2, "y": 23 },
+        "advanceX": 24
+      }
+    }
+  ]
+}

@@ -75,9 +75,6 @@ func KenScene(e *engine.Engine) *engine.Node {
 			worldNodeGeometry.Scale*float32(spawn.Y))
 	}
 
-	///////////////////////////////////////////
-	// GET GOING PLZ
-
 	rootNode.AddChild(worldNodeBG)
 	rootNode.AddChild(worldNodeGeometry)
 	rootNode.AddChild(k.playerNode)
@@ -128,7 +125,7 @@ func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 		}
 
 		if rl.IsKeyPressed(rl.KeyEscape) {
-			game_shared.ShowPauseMenu(k.Engine, gs, &k.Assets)
+			game_shared.ShowPauseMenu(gs, &k.Assets)
 		}
 
 	case engine.NodeEventLateTick:

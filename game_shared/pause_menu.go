@@ -8,11 +8,11 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func ShowPauseMenu(e *engine.Engine, gs *engine.Scene, assets *parts.Assets) {
+func ShowPauseMenu(gs *engine.Scene, assets *parts.Assets) {
 
 	gs.Paused = true
 
-	font, _ := assets.Font("robotoslab.json")
+	font, _ := assets.Font("robotoslab48.json")
 	menu := ui.Menu{
 		FontRenderer: font,
 		Items: []ui.MenuItem{
@@ -23,7 +23,7 @@ func ShowPauseMenu(e *engine.Engine, gs *engine.Scene, assets *parts.Assets) {
 				MenuLabel: "MAIN MENU",
 				MenuAction: func() {
 					gs.Paused = false
-					e.PopScene()
+					gs.G.PopScene()
 				},
 			},
 			{
@@ -35,8 +35,10 @@ func ShowPauseMenu(e *engine.Engine, gs *engine.Scene, assets *parts.Assets) {
 		},
 	}
 	menu.Items[0].MenuAction = func() {
-		e.RemoveComponentFromNode(gs.RootNode, &menu)
+		gs.G.RemoveComponentFromNode(gs.RootNode, &menu)
 		gs.Paused = false
 	}
-	gs.RootNode.AddComponent(&menu)
+	gs.G.Enqueue(func() {
+		gs.RootNode.AddComponent(&menu)
+	})
 }

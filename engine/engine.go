@@ -3,12 +3,13 @@ package engine
 import "jamesraine/grl/engine/v"
 
 type NodeEventFunc func(n *Node)
+type DeferredAction func()
 
 type Engine struct {
 	sceneStack                          []*Scene
 	scene                               *Scene
 	nodelock                            bool
-	queue                               []any
+	queue                               []DeferredAction
 	WindowPixelHeight, WindowPixelWidth int
 }
 
@@ -74,34 +75,20 @@ func (e *Engine) NewNode(name string) *Node {
 	}
 }
 
+func (e *Engine) Enqueue(action DeferredAction) {
+	e.queue = append(e.queue, action)
+}
+
 func (e *Engine) Lock() {
 	e.nodelock = true
 }
+
 func (e *Engine) Unlock() {
 	e.nodelock = false
 
 	if len(e.queue) > 0 {
 		for _, action := range e.queue {
-			addChild, ok := action.(nodeActionAdd)
-			if ok {
-				e.AddChild(addChild.Parent, addChild.Child)
-				continue
-			}
-			removeChild, ok := action.(nodeActionRemove)
-			if ok {
-				e.RemoveNodeFromParent(removeChild.Node)
-				continue
-			}
-			addComponent, ok := action.(nodeActionAddComponent)
-			if ok {
-				e.AddComponent(addComponent.Parent, addComponent.Component)
-				continue
-			}
-			removeComponent, ok := action.(nodeActionRemoveComponent)
-			if ok {
-				e.RemoveComponentFromNode(removeComponent.Parent, removeComponent.Component)
-				continue
-			}
+			action()
 		}
 		e.queue = e.queue[:0]
 	}

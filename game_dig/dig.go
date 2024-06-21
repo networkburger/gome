@@ -28,7 +28,7 @@ func (s *digScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Nod
 		gs.Camera.Position.Y = s.player.Position.Y - float32(gs.G.WindowPixelHeight)/2
 
 		if rl.IsKeyPressed(rl.KeyEscape) {
-			game_shared.ShowPauseMenu(s.Engine, gs, &s.Assets)
+			game_shared.ShowPauseMenu(gs, &s.Assets)
 		}
 	case engine.NodeEventLateTick:
 		s.PhysicsSolver.Solve(gs)

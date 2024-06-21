@@ -6,22 +6,6 @@ import (
 	"slices"
 )
 
-type nodeActionAdd struct {
-	Parent *Node
-	Child  *Node
-}
-type nodeActionRemove struct {
-	*Node
-}
-type nodeActionAddComponent struct {
-	Parent    *Node
-	Component NodeComponent
-}
-type nodeActionRemoveComponent struct {
-	Parent    *Node
-	Component NodeComponent
-}
-
 func (e *Engine) AddChild(p *Node, c *Node) {
 	if c.Parent != nil {
 		slog.Warn("Node already has a parent")
@@ -33,9 +17,8 @@ func (e *Engine) AddChild(p *Node, c *Node) {
 	}
 
 	inScene := IsDescendant(e.scene.RootNode, p)
-	if inScene && e.nodelock {
-		e.queue = append(e.queue, nodeActionAdd{Parent: p, Child: c})
-		return
+	if inScene {
+		e.testLock()
 	}
 
 	p.Children = append(p.Children, c)
@@ -56,14 +39,17 @@ func (e *Engine) fireDeepEvent(n *Node, event NodeEvent) {
 	}
 }
 
+func (e *Engine) testLock() {
+	if e.nodelock {
+		panic("Node is locked")
+	}
+}
+
 func (e *Engine) AddComponent(n *Node, c NodeComponent) {
 	// if the parent node is NOT part of the scene, we don't need to
 	// pay attention to the lock state - events won't be fired anyway
 	if IsDescendant(e.scene.RootNode, n) {
-		if e.nodelock {
-			e.queue = append(e.queue, nodeActionAddComponent{Parent: n, Component: c})
-			return
-		}
+		e.testLock()
 		n.Components = append(n.Components, c)
 		c.Event(NodeEventLoad, e.scene, n)
 	} else {
@@ -72,10 +58,7 @@ func (e *Engine) AddComponent(n *Node, c NodeComponent) {
 }
 
 func (e *Engine) RemoveNodeFromParent(killnode *Node) {
-	if e.nodelock {
-		e.queue = append(e.queue, nodeActionRemove{Node: killnode})
-		return
-	}
+	e.testLock()
 
 	if IsDescendant(e.scene.RootNode, killnode) {
 		e.fireDeepEvent(killnode, NodeEventUnload)
@@ -93,10 +76,7 @@ func (e *Engine) RemoveNodeFromParent(killnode *Node) {
 }
 
 func (e *Engine) RemoveComponentFromNode(n *Node, c NodeComponent) {
-	if e.nodelock {
-		e.queue = append(e.queue, nodeActionRemoveComponent{Parent: n, Component: c})
-		return
-	}
+	e.testLock()
 
 	index := slices.Index(n.Components, c)
 	n.Components = util.SliceRemoveIndex(n.Components, index)

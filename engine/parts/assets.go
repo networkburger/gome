@@ -137,7 +137,7 @@ func (a *Assets) Font(fname string) (FontRenderer, error) {
 		return s, nil
 	}
 
-	fontData, err := a.FileBytes("robotoslab.json")
+	fontData, err := a.FileBytes(fname)
 	if err != nil {
 		return FontRenderer{}, err
 	}
