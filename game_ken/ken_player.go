@@ -1,20 +1,19 @@
 package game_ken
 
 import (
-	"fmt"
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/sound"
 	"jamesraine/grl/engine/v"
 	"jamesraine/grl/game_shared"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Player struct {
 	Health     int
-	snd        rl.Sound
+	snd        sound.Sound
 	sprite     *component.SpritesheetComponent
 	ballistics *physics.BallisticComponent
 	body       *physics.PhysicsBodyComponent
@@ -67,7 +66,7 @@ func (s Player) String() string {
 
 func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventTick {
-		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
+		io.ProcessInputs(InputOverworld, func(action io.ActionID, power float32) {
 			thrust := float32(500)
 			if !p.body.IsOnGround(gs.T) {
 				thrust = 80
@@ -76,7 +75,6 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 			case Pause:
 				game_shared.ShowPauseMenu(gs)
 			case Move:
-				fmt.Printf("Move %f\n", power)
 				p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(power*thrust, 0))
 			case Jump:
 				if p.body.IsOnGroundIsh(gs.T, 0.5) {
@@ -90,7 +88,7 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 					p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(0, -9000))
 					// reset back to zero to avoid triggering multiple jumps
 					p.body.OnGround = 0
-					rl.PlaySound(p.snd)
+					sound.PlaySound(p.snd)
 				}
 			}
 		})

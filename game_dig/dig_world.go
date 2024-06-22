@@ -3,11 +3,9 @@ package game_dig
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
-	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func NewDigMap(e *engine.Engine) *engine.Node {
@@ -18,7 +16,7 @@ func NewDigMap(e *engine.Engine) *engine.Node {
 	baseSize := v.V2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))
 	worldScale := float32(20)
 	worldSize := baseSize.Scl(worldScale)
-	worldRect := rl.NewRectangle(0, 0, worldSize.X, worldSize.Y)
+	worldRect := v.R(0, 0, worldSize.X, worldSize.Y)
 
 	bgSprite.DstRect = worldRect
 	mapSprite.DstRect = worldRect
@@ -39,7 +37,7 @@ func NewDigMap(e *engine.Engine) *engine.Node {
 }
 
 type PixelObstacleProvider struct {
-	parts.PixelBuffer
+	render.PixelBuffer
 }
 
 func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
@@ -51,8 +49,8 @@ func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius floa
 	top := int32(sy - sradius)
 	right := int32(sx + sradius)
 	bottom := int32(sy + sradius)
-	w := p.PixelBuffer.Image.Width
-	h := p.PixelBuffer.Image.Height
+	w := p.PixelBuffer.W
+	h := p.PixelBuffer.H
 
 	if right < 0 || left >= w || bottom < 0 || top >= h {
 		return
@@ -74,7 +72,7 @@ func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius floa
 	for y := top; y <= bottom; y++ {
 		for x := left; x <= right; x++ {
 			if p.PixelBuffer.Pixels[y*w+x].A > 0 {
-				blockRect := rl.NewRectangle(float32(x)*sc, float32(y)*sc, sc, sc)
+				blockRect := v.R(float32(x)*sc, float32(y)*sc, sc, sc)
 				physics.GenHitsForSquare(pos, radius, blockRect, physics.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,

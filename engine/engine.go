@@ -10,12 +10,12 @@ type Engine struct {
 	scene             *Scene
 	nodelock          bool
 	queue             []DeferredAction
-	WindowPixelHeight int
-	WindowPixelWidth  int
+	WindowPixelHeight int32
+	WindowPixelWidth  int32
 	parts.Assets
 }
 
-func NewEngine(screenW, screenH int) *Engine {
+func NewEngine(screenW, screenH int32) *Engine {
 	e := Engine{
 		WindowPixelHeight: screenH,
 		WindowPixelWidth:  screenW,

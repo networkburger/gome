@@ -3,9 +3,9 @@ package game_dig
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"jamesraine/grl/engine/window"
 )
 
 type digScene struct {
@@ -15,9 +15,9 @@ type digScene struct {
 func (s *digScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
 	case engine.NodeEventSceneActivate:
-		rl.SetTargetFPS(90)
+		window.SetTargetFPS(90)
 	case engine.NodeEventDraw:
-		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		render.ClearBackground(18, 65, 68)
 	case engine.NodeEventTick:
 		gs.Camera.Position.X = s.player.Position.X - float32(gs.Engine.WindowPixelWidth)/2
 		gs.Camera.Position.Y = s.player.Position.Y - float32(gs.Engine.WindowPixelHeight)/2

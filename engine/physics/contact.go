@@ -3,8 +3,6 @@ package physics
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/v"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type SurfaceProperties struct {
@@ -25,21 +23,21 @@ type CollisionSurfaceProvider interface {
 	Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []CollisionSurface, nhits *int)
 }
 
-func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle rl.Rectangle) bool {
+func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle v.Rect) bool {
 	// Find the closest point to the circle within the rectangle
 	closestX := circlePos.X
 	closestY := circlePos.Y
 
 	if circlePos.X < rectangle.X {
 		closestX = rectangle.X
-	} else if circlePos.X > rectangle.X+rectangle.Width {
-		closestX = rectangle.X + rectangle.Width
+	} else if circlePos.X > rectangle.X+rectangle.W {
+		closestX = rectangle.X + rectangle.W
 	}
 
 	if circlePos.Y < rectangle.Y {
 		closestY = rectangle.Y
-	} else if circlePos.Y > rectangle.Y+rectangle.Height {
-		closestY = rectangle.Y + rectangle.Height
+	} else if circlePos.Y > rectangle.Y+rectangle.H {
+		closestY = rectangle.Y + rectangle.H
 	}
 
 	// Determine collision
@@ -48,12 +46,12 @@ func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle rl.Rectangle
 	return dist < r2
 }
 
-func GenHitsForSquare(pos v.Vec2, radius float32, tileArea rl.Rectangle, surfaceProperties SurfaceProperties, hits []CollisionSurface, nhits *int) {
+func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProperties SurfaceProperties, hits []CollisionSurface, nhits *int) {
 	if approxSquareCircleOverlap(pos, radius, tileArea) {
 		// TOP EDGE
 		collides, collisionPos := CircleSegmentIntersection(radius, pos,
 			v.V2(tileArea.X, tileArea.Y),
-			v.V2(tileArea.X+tileArea.Width, tileArea.Y))
+			v.V2(tileArea.X+tileArea.W, tileArea.Y))
 		if collides {
 			hits[*nhits] = CollisionSurface{
 				Normal:            v.V2(0, -1),
@@ -65,8 +63,8 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea rl.Rectangle, surface
 
 		// BOTTOM EDGE
 		collides, collisionPos = CircleSegmentIntersection(radius, pos,
-			v.V2(tileArea.X+tileArea.Width, tileArea.Y+tileArea.Height),
-			v.V2(tileArea.X, tileArea.Y+tileArea.Height),
+			v.V2(tileArea.X+tileArea.W, tileArea.Y+tileArea.H),
+			v.V2(tileArea.X, tileArea.Y+tileArea.H),
 		)
 		if collides {
 			hits[*nhits] = CollisionSurface{
@@ -79,7 +77,7 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea rl.Rectangle, surface
 
 		// LEFT EDGE
 		collides, collisionPos = CircleSegmentIntersection(radius, pos,
-			v.V2(tileArea.X, tileArea.Y+tileArea.Height),
+			v.V2(tileArea.X, tileArea.Y+tileArea.H),
 			v.V2(tileArea.X, tileArea.Y),
 		)
 		if collides {
@@ -93,8 +91,8 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea rl.Rectangle, surface
 
 		// RIGHT EDGE
 		collides, collisionPos = CircleSegmentIntersection(radius, pos,
-			v.V2(tileArea.X+tileArea.Width, tileArea.Y),
-			v.V2(tileArea.X+tileArea.Width, tileArea.Y+tileArea.Height))
+			v.V2(tileArea.X+tileArea.W, tileArea.Y),
+			v.V2(tileArea.X+tileArea.W, tileArea.Y+tileArea.H))
 		if collides {
 			hits[*nhits] = CollisionSurface{
 				Normal:            v.V2(1, 0),
@@ -149,10 +147,10 @@ func CircleSegmentIntersection(radius float32, o, p, q v.Vec2) (bool, v.Vec2) {
 	}
 }
 
-func approxSquareCircleOverlap(pos v.Vec2, radius float32, square rl.Rectangle) bool {
-	sposx := square.X + square.Width*0.5
-	sposy := square.Y + square.Height*0.5
-	sradius := 1.5 * square.Width * 0.5
+func approxSquareCircleOverlap(pos v.Vec2, radius float32, square v.Rect) bool {
+	sposx := square.X + square.W*0.5
+	sposy := square.Y + square.H*0.5
+	sradius := 1.5 * square.W * 0.5
 	dist := pos.DistDist(v.V2(sposx, sposy))
 	return dist < (sradius+radius)*(sradius+radius)
 }

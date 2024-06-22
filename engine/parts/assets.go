@@ -1,23 +1,18 @@
 package parts
 
 import (
+	"jamesraine/grl/engine/render"
+	"jamesraine/grl/engine/sound"
 	"log/slog"
 	"os"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
-
-type PixelBuffer struct {
-	*rl.Image
-	Pixels []rl.Color
-}
 
 type Assets struct {
 	Folder       string
-	Textures     map[string]rl.Texture2D
+	Textures     map[string]render.Texture2D
 	SpriteSheets map[string]Spritesheet
-	Sounds       map[string]rl.Sound
-	Images       map[string]PixelBuffer
+	Sounds       map[string]sound.Sound
+	Images       map[string]render.PixelBuffer
 	Fonts        map[string]FontRenderer
 }
 
@@ -27,27 +22,24 @@ func NewAssets(folder string) Assets {
 	}
 	return Assets{
 		Folder:       folder,
-		Textures:     make(map[string]rl.Texture2D),
+		Textures:     make(map[string]render.Texture2D),
 		SpriteSheets: make(map[string]Spritesheet),
-		Sounds:       make(map[string]rl.Sound),
-		Images:       make(map[string]PixelBuffer),
+		Sounds:       make(map[string]sound.Sound),
+		Images:       make(map[string]render.PixelBuffer),
 		Fonts:        make(map[string]FontRenderer),
 	}
 }
 
 func (a *Assets) Close() {
 	for _, t := range a.Textures {
-		rl.UnloadTexture(t)
+		render.UnloadTexture(t)
 	}
 	for _, s := range a.Sounds {
-		rl.UnloadSound(s)
+		sound.UnloadSound(s)
 	}
-	for _, i := range a.Images {
-		rl.UnloadImage(i.Image)
-	}
-	a.Textures = make(map[string]rl.Texture2D)
-	a.Sounds = make(map[string]rl.Sound)
-	a.Images = make(map[string]PixelBuffer)
+	a.Textures = make(map[string]render.Texture2D)
+	a.Sounds = make(map[string]sound.Sound)
+	a.Images = make(map[string]render.PixelBuffer)
 	a.SpriteSheets = make(map[string]Spritesheet)
 	a.Fonts = make(map[string]FontRenderer)
 }
@@ -56,14 +48,14 @@ func (a *Assets) Path(fname string) string {
 	return a.Folder + fname
 }
 
-func (a *Assets) Texture(fname string) rl.Texture2D {
+func (a *Assets) Texture(fname string) render.Texture2D {
 	t, ok := a.Textures[fname]
 	if ok {
 		return t
 	}
 	fpath := a.Path(fname)
 	slog.Info("Assets.Texture", "fname", fname, "fpath", fpath)
-	tex := rl.LoadTexture(fpath)
+	tex := render.LoadTexture(fpath)
 	if tex.ID == 0 {
 		slog.Warn("Assets.Texture FAIL", "fname", fname)
 	} else {
@@ -73,24 +65,15 @@ func (a *Assets) Texture(fname string) rl.Texture2D {
 	return tex
 }
 
-func (a *Assets) Pixels(fname string) PixelBuffer {
+func (a *Assets) Pixels(fname string) render.PixelBuffer {
 	t, ok := a.Images[fname]
 	if ok {
 		return t
 	}
 	fpath := a.Path(fname)
 	slog.Info("Assets.Image", "fname", fname, "fpath", fpath)
-	tex := rl.LoadImage(fpath)
-	pix := rl.LoadImageColors(tex)
-	buf := PixelBuffer{
-		Image:  tex,
-		Pixels: pix,
-	}
-	if tex.Format == 0 {
-		slog.Warn("Assets.Image FAIL", "fname", fname)
-	} else {
-		slog.Info("Assets.Image DONE", "fname", fname, "Formast", tex.Format, "W", tex.Width, "H", tex.Height)
-	}
+	buf := render.LoadPixels(fpath)
+	slog.Info("Assets.Image DONE", "fname", fname, "W", buf.W, "H", buf.H)
 	a.Images[fname] = buf
 	return buf
 }
@@ -106,14 +89,14 @@ func (a *Assets) SpriteSheet(fname string) *Spritesheet {
 	return &s
 }
 
-func (a *Assets) Sound(fname string) rl.Sound {
+func (a *Assets) Sound(fname string) sound.Sound {
 	s, ok := a.Sounds[fname]
 	if ok {
 		return s
 	}
 	fpath := a.Path(fname)
 	slog.Info("Assets.Sound", "fname", fname, "fpath", fpath)
-	snd := rl.LoadSound(fpath)
+	snd := sound.LoadSound(fpath)
 	a.Sounds[fname] = snd
 	return snd
 }

@@ -3,14 +3,14 @@ package component
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/render"
+	"jamesraine/grl/engine/v"
 	"math"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type SpritesheetComponent struct {
 	Spritesheet           *parts.Spritesheet
-	Texture               rl.Texture2D
+	Texture               render.Texture2D
 	FlipX                 bool
 	spritename            string
 	nframes               int
@@ -23,7 +23,6 @@ func (s *SpritesheetComponent) Event(event engine.NodeEvent, gs *engine.Scene, n
 			return
 		}
 		pos := gs.Camera.Transform(n.AbsolutePosition())
-		a := n.AbsoluteRotation()
 		scale := n.AbsoluteScale()
 		frametime := s.FrameTimeMilliseconds
 		if frametime == 0 {
@@ -32,16 +31,18 @@ func (s *SpritesheetComponent) Event(event engine.NodeEvent, gs *engine.Scene, n
 		tms := gs.T * 1000
 		framen := int(math.Floor(tms/float64(frametime))) % s.nframes
 		frame := s.Spritesheet.GetFrame(s.spritename, framen)
-		destRect := rl.NewRectangle(
-			pos.X-frame.Origin.X*scale,
-			pos.Y-frame.Origin.Y*scale,
-			frame.Source.Width*scale,
-			frame.Source.Height*scale)
+
 		srcRect := frame.Source
 		if s.FlipX {
-			srcRect.Width *= -1
+			srcRect.W *= -1
 		}
-		rl.DrawTexturePro(s.Texture, srcRect, destRect, rl.Vector2{}, float32(a.Rad()), rl.White)
+		render.DrawRect(s.Texture,
+			srcRect.X, srcRect.Y, srcRect.W, srcRect.H,
+			pos.X-frame.Origin.X*scale,
+			pos.Y-frame.Origin.Y*scale,
+			frame.Source.W*scale,
+			frame.Source.H*scale,
+			v.White)
 	}
 }
 

@@ -3,8 +3,7 @@ package game_shared
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/ui"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"jamesraine/grl/engine/window"
 )
 
 func ShowPauseMenu(gs *engine.Scene) {
@@ -34,7 +33,7 @@ func ShowPauseMenu(gs *engine.Scene) {
 		{
 			MenuLabel: "QUIT TO DESKTOP",
 			MenuAction: func() {
-				rl.CloseWindow()
+				window.CloseWindow()
 			},
 		},
 	}

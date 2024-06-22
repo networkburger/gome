@@ -3,8 +3,6 @@ package parts
 import (
 	"encoding/json"
 	"jamesraine/grl/engine/v"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Tileset struct {
@@ -121,11 +119,11 @@ func TilesetRead(fbytes []byte) (Tileset, error) {
 	return s, err
 }
 
-func (t Tileset) SourceRect(i int) rl.Rectangle {
+func (t Tileset) SourceRect(i int) v.Rect {
 	col := i % t.Columns
 	row := int(i / t.Columns)
 	// TODO: respect margin and spacing - we're presuming tight packing here
-	r := rl.NewRectangle(
+	r := v.R(
 		float32(col*t.TileWidth),
 		float32(row*t.TileHeight),
 		float32(t.TileWidth),
@@ -133,7 +131,7 @@ func (t Tileset) SourceRect(i int) rl.Rectangle {
 	return r
 }
 
-func (m Tilemap) TilePosition(layer, chunk, tile int, xf v.Mat) rl.Rectangle {
+func (m Tilemap) TilePosition(layer, chunk, tile int, xf v.Mat) v.Rect {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
@@ -143,16 +141,16 @@ func (m Tilemap) TilePosition(layer, chunk, tile int, xf v.Mat) rl.Rectangle {
 	bottomRight := v.V2(topLeft.X+tw, topLeft.Y+th)
 	topLeft = topLeft.Xfm(xf)
 	bottomRight = bottomRight.Xfm(xf)
-	r := rl.Rectangle{
-		X:      topLeft.X,
-		Y:      topLeft.Y,
-		Width:  bottomRight.X - topLeft.X,
-		Height: bottomRight.Y - topLeft.Y,
+	r := v.Rect{
+		X: topLeft.X,
+		Y: topLeft.Y,
+		W: bottomRight.X - topLeft.X,
+		H: bottomRight.Y - topLeft.Y,
 	}
 	return r
 }
 
-func (m Tilemap) ChunkPosition(layer, chunk int, xf v.Mat) rl.Rectangle {
+func (m Tilemap) ChunkPosition(layer, chunk int, xf v.Mat) v.Rect {
 	ch := m.Layers[layer].Chunks[chunk]
 	tw := float32(m.TileWidth)
 	th := float32(m.TileHeight)
@@ -160,11 +158,11 @@ func (m Tilemap) ChunkPosition(layer, chunk int, xf v.Mat) rl.Rectangle {
 	bottomRight := v.V2(float32(ch.X+ch.Width)*tw, float32(ch.Y+ch.Height)*th)
 	topLeft = topLeft.Xfm(xf)
 	bottomRight = bottomRight.Xfm(xf)
-	r := rl.Rectangle{
-		X:      topLeft.X,
-		Y:      topLeft.Y,
-		Width:  bottomRight.X - topLeft.X,
-		Height: bottomRight.Y - topLeft.Y,
+	r := v.Rect{
+		X: topLeft.X,
+		Y: topLeft.Y,
+		W: bottomRight.X - topLeft.X,
+		H: bottomRight.Y - topLeft.Y,
 	}
 	return r
 }

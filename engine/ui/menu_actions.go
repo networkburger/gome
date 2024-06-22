@@ -1,10 +1,6 @@
 package ui
 
-import (
-	"jamesraine/grl/engine"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
-)
+import "jamesraine/grl/engine/io"
 
 const (
 	MenuNext = iota
@@ -13,72 +9,41 @@ const (
 	MenuSelect
 )
 
-var menuActions = []engine.InputActionMapping{
+var menuActions = []io.InputActionMapping{
 	{
-		ActionID:    MenuNext,
-		KeyReleased: rl.KeyD,
+		ActionID: MenuNext,
+		Triggers: []io.InputVector{
+			{KeyReleased: io.KeyD},
+			{KeyReleased: io.KeyDown},
+			{GamePadButtonReleased: io.GamepadButtonLeftFaceDown},
+		},
 	},
 	{
-		ActionID:    MenuNext,
-		KeyReleased: rl.KeyDown,
+		ActionID: MenuPrev,
+		Triggers: []io.InputVector{
+			{KeyReleased: io.KeyW},
+			{KeyReleased: io.KeyUp},
+			{GamePadButtonReleased: io.GamepadButtonLeftFaceUp},
+		},
 	},
 	{
-		ActionID:              MenuNext,
-		GamePadButtonReleased: rl.GamepadButtonLeftFaceDown,
-	},
-
-	{
-		ActionID:    MenuPrev,
-		KeyReleased: rl.KeyW,
-	},
-	{
-		ActionID:    MenuPrev,
-		KeyReleased: rl.KeyUp,
+		ActionID: MenuBack,
+		Triggers: []io.InputVector{
+			{KeyReleased: io.KeyA},
+			{KeyReleased: io.KeyEscape},
+			{KeyReleased: io.KeyLeft},
+			{GamePadButtonReleased: io.GamepadButtonLeftFaceLeft},
+			{GamePadButtonReleased: io.GamepadButtonRightFaceRight},
+		},
 	},
 	{
-		ActionID:              MenuPrev,
-		GamePadButtonReleased: rl.GamepadButtonLeftFaceUp,
-	},
-
-	{
-		ActionID:    MenuBack,
-		KeyReleased: rl.KeyA,
-	},
-	{
-		ActionID:    MenuBack,
-		KeyReleased: rl.KeyEscape,
-	},
-	{
-		ActionID:    MenuBack,
-		KeyReleased: rl.KeyLeft,
-	},
-	{
-		ActionID:              MenuBack,
-		GamePadButtonReleased: rl.GamepadButtonLeftFaceLeft,
-	},
-	{
-		ActionID:              MenuBack,
-		GamePadButtonReleased: rl.GamepadButtonRightFaceRight,
-	},
-
-	{
-		ActionID:    MenuSelect,
-		KeyReleased: rl.KeySpace,
-	},
-	{
-		ActionID:    MenuSelect,
-		KeyReleased: rl.KeyEnter,
-	},
-	{
-		ActionID:    MenuSelect,
-		KeyReleased: rl.KeyRight,
-	},
-	{
-		ActionID:            MenuSelect,
-		MouseButtonReleased: rl.MouseLeftButton,
-	},
-	{
-		ActionID:              MenuSelect,
-		GamePadButtonReleased: rl.GamepadButtonRightFaceDown,
+		ActionID: MenuSelect,
+		Triggers: []io.InputVector{
+			{KeyReleased: io.KeySpace},
+			{KeyReleased: io.KeyEnter},
+			{KeyReleased: io.KeyRight},
+			{MouseButtonReleased: io.MouseButtonLeft},
+			{GamePadButtonReleased: io.GamepadButtonRightFaceDown},
+		},
 	},
 }

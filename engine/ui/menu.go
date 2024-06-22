@@ -2,7 +2,9 @@ package ui
 
 import (
 	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/v"
 )
 
 type MenuLabel string
@@ -44,7 +46,7 @@ func (m *Menu) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 		for i := 0; i < len(m.Cursor)-1; i++ {
 			items = items[m.Cursor[i]].Subitems
 		}
-		engine.ProcessInputs(menuActions, func(action engine.ActionID, power float32) {
+		io.ProcessInputs(menuActions, func(action io.ActionID, power float32) {
 			switch action {
 			case MenuNext:
 				selected++
@@ -82,16 +84,16 @@ func (m *Menu) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 
 		m.Cursor[len(m.Cursor)-1] = selected
 
-		y := int(float32(gs.Engine.WindowPixelHeight) * 0.1)
+		y := int32(float32(gs.Engine.WindowPixelHeight) * 0.1)
 		center := gs.Engine.WindowPixelWidth / 2
 		for i, item := range items {
 			w, h := m.FontRenderer.MeasureText(string(item.MenuLabel))
 			x := center - w/2
-			col := White
+			col := v.White
 			if i == selected {
-				col = Red
+				col = v.Red
 			}
-			m.FontRenderer.TextAt(x, y, col.RL(), string(item.MenuLabel))
+			m.FontRenderer.TextAt(x, y, col, string(item.MenuLabel))
 			y += h + 10
 		}
 	}

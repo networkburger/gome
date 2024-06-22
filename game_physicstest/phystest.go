@@ -3,11 +3,12 @@ package game_physicstest
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/component"
+	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/engine/window"
 	"jamesraine/grl/game_shared"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type physicsTestScene struct {
@@ -17,13 +18,13 @@ type physicsTestScene struct {
 func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
 	case engine.NodeEventSceneActivate:
-		rl.SetTargetFPS(90)
+		window.SetTargetFPS(90)
 	case engine.NodeEventDraw:
-		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		render.ClearBackground(18, 65, 68)
 		gs.Camera.Position.X = float32(gs.Engine.WindowPixelWidth) / -2
 		gs.Camera.Position.Y = float32(gs.Engine.WindowPixelHeight) / -2
 	case engine.NodeEventTick:
-		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
+		io.ProcessInputs(InputOverworld, func(action io.ActionID, power float32) {
 			switch action {
 			case MoveH:
 				s.circleBallistics.Impulse.X = power
@@ -42,10 +43,10 @@ func PhysicsTest(e *engine.Engine) *engine.Scene {
 	rootNode.AddComponent(&s)
 	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
 
-	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), rl.Red))
-	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), rl.Green))
-	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), rl.Blue))
-	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), rl.Brown))
+	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), v.Red))
+	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), v.Green))
+	rootNode.AddChild(newLine(e, v.V2(200, 30), v.V2(200, -130), v.Blue))
+	rootNode.AddChild(newLine(e, v.V2(200, -130), v.V2(-200, -130), v.Brown))
 
 	circleBody := e.NewNode("Circle")
 	s.circleBallistics = physics.BallisticComponent{
@@ -62,7 +63,7 @@ func PhysicsTest(e *engine.Engine) *engine.Scene {
 	}
 	circleVis := component.CircleComponent{
 		Radius: 8,
-		Color:  rl.Green,
+		Color:  v.Green,
 	}
 	circleBody.Position = v.V2(0, 0)
 	circleBody.AddComponent(&circleVis)
@@ -78,14 +79,14 @@ func PhysicsTest(e *engine.Engine) *engine.Scene {
 
 type PhysicsLineSegment struct {
 	A, B, N v.Vec2
-	Color   rl.Color
+	Color   v.Color
 }
 
 func (p *PhysicsLineSegment) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
 		a := gs.Camera.Transform(p.A)
 		b := gs.Camera.Transform(p.B)
-		rl.DrawLine(int32(a.X), int32(a.Y), int32(b.X), int32(b.Y), p.Color)
+		render.DrawLine(int32(a.X), int32(a.Y), int32(b.X), int32(b.Y), p.Color)
 	}
 }
 func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
@@ -103,7 +104,7 @@ func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32
 	}
 }
 
-func newLine(e *engine.Engine, a, b v.Vec2, col rl.Color) *engine.Node {
+func newLine(e *engine.Engine, a, b v.Vec2, col v.Color) *engine.Node {
 	groundNode := e.NewNode("Ground")
 
 	ab := b.Sub(a)

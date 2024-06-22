@@ -4,15 +4,14 @@ import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
 	"strings"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type TilemapVisualComponent struct {
 	tilemap parts.Tilemap
-	texture rl.Texture2D
+	texture render.Texture2D
 	layer   int
 }
 
@@ -38,13 +37,13 @@ func TilemapVisual(assets *parts.Assets, tilemap *parts.Tilemap, layer string) T
 func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
 		xf := v.MatrixMultiply(n.Transform(), gs.Camera.Matrix)
-		screenArea := rl.NewRectangle(0, 0, float32(gs.Engine.WindowPixelWidth), float32(gs.Engine.WindowPixelHeight))
+		screenArea := v.R(0, 0, float32(gs.Engine.WindowPixelWidth), float32(gs.Engine.WindowPixelHeight))
 
 		tileset := s.tilemap.Tilesets[0]
 		layer := s.tilemap.Layers[s.layer]
 		for chunkIndex, chunk := range layer.Chunks {
 			chunkArea := s.tilemap.ChunkPosition(s.layer, chunkIndex, xf)
-			if !rl.CheckCollisionRecs(screenArea, chunkArea) {
+			if !screenArea.Overlaps(chunkArea) {
 				continue
 			}
 			for tileIndex := parts.TileSpaceInt(0); tileIndex < chunk.Width*chunk.Height; tileIndex++ {
@@ -56,7 +55,9 @@ func (s *TilemapVisualComponent) Event(event engine.NodeEvent, gs *engine.Scene,
 				sourceRect := tileset.SourceRect(tileKind)
 				destRect := s.tilemap.TilePosition(s.layer, chunkIndex, int(tileIndex), xf)
 				// TODO: lookup appropriate texture based on layer?
-				rl.DrawTexturePro(s.texture, sourceRect, destRect, rl.Vector2{}, 0, rl.White)
+				render.DrawRect(s.texture,
+					sourceRect.X, sourceRect.Y, sourceRect.W, sourceRect.H,
+					destRect.X, destRect.Y, destRect.W, destRect.H, v.White)
 			}
 		}
 	}

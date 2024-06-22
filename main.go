@@ -3,13 +3,12 @@ package main
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/convenience"
+	"jamesraine/grl/engine/window"
 	"jamesraine/grl/game_dig"
 	"jamesraine/grl/game_init"
 	"jamesraine/grl/game_ken"
 	"jamesraine/grl/game_physicstest"
 	"os"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func main() {
@@ -20,15 +19,12 @@ func main() {
 		app = args[0]
 	}
 
-	screenWidth := 1024
-	screenHeight := 512
+	screenWidth := int32(1024)
+	screenHeight := int32(512)
 
 	e := engine.NewEngine(screenWidth, screenHeight)
 
-	rl.InitWindow(int32(screenWidth), int32(screenHeight), app)
-	rl.SetTargetFPS(15)
-	rl.InitAudioDevice()
-	rl.SetExitKey(rl.KeyNull)
+	window.InitWindow(screenWidth, screenHeight, "GOGAMES")
 
 	switch app {
 	case "ken":
@@ -43,5 +39,5 @@ func main() {
 
 	convenience.StandardLoop(e, screenWidth, screenHeight)
 
-	rl.CloseWindow()
+	window.CloseWindow()
 }

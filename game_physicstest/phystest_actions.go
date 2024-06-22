@@ -1,9 +1,7 @@
 package game_physicstest
 
 import (
-	"jamesraine/grl/engine"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"jamesraine/grl/engine/io"
 )
 
 const (
@@ -14,66 +12,32 @@ const (
 
 const MoveSpeed = 700
 
-var InputOverworld = []engine.InputActionMapping{
+var InputOverworld = []io.InputActionMapping{
 	{
 		ActionID: MoveH,
-		KeyDown:  rl.KeyA,
-		Const:    float32(-MoveSpeed),
-	},
-	{
-		ActionID: MoveH,
-		KeyDown:  rl.KeyLeft,
-		Const:    float32(-MoveSpeed),
-	},
-	{
-		ActionID: MoveH,
-		KeyDown:  rl.KeyD,
-		Const:    float32(MoveSpeed),
-	},
-	{
-		ActionID: MoveH,
-		KeyDown:  rl.KeyRight,
-		Const:    float32(MoveSpeed),
-	},
-
-	{
-		ActionID: MoveV,
-		KeyDown:  rl.KeyW,
-		Const:    float32(-MoveSpeed),
+		Triggers: []io.InputVector{
+			{KeyDown: io.KeyA, Const: float32(-MoveSpeed)},
+			{KeyDown: io.KeyLeft, Const: float32(-MoveSpeed)},
+			{KeyDown: io.KeyD, Const: float32(MoveSpeed)},
+			{KeyDown: io.KeyRight, Const: float32(MoveSpeed)},
+			{GamePadAxis: io.GamepadAxisLeftX, GamePadAxisScale: MoveSpeed},
+		},
 	},
 	{
 		ActionID: MoveV,
-		KeyDown:  rl.KeyUp,
-		Const:    float32(-MoveSpeed),
+		Triggers: []io.InputVector{
+			{KeyDown: io.KeyS, Const: float32(MoveSpeed)},
+			{KeyDown: io.KeyDown, Const: float32(MoveSpeed)},
+			{KeyDown: io.KeyW, Const: float32(-MoveSpeed)},
+			{KeyDown: io.KeyUp, Const: float32(-MoveSpeed)},
+			{GamePadAxis: io.GamepadAxisLeftY, GamePadAxisScale: MoveSpeed},
+		},
 	},
 	{
-		ActionID: MoveV,
-		KeyDown:  rl.KeyS,
-		Const:    float32(MoveSpeed),
-	},
-	{
-		ActionID: MoveV,
-		KeyDown:  rl.KeyDown,
-		Const:    float32(MoveSpeed),
-	},
-
-	{
-		ActionID:         MoveH,
-		GamePadAxis:      engine.GamepadAxisLeftX,
-		GamePadAxisScale: MoveSpeed,
-	},
-	{
-		ActionID:         MoveV,
-		GamePadAxis:      engine.GamepadAxisLeftY,
-		GamePadAxisScale: MoveSpeed,
-	},
-
-	{
-		ActionID:             Pause,
-		GamePadButtonPressed: rl.GamepadButtonMiddleRight,
-	},
-	{
-		ActionID:    Pause,
-		KeyReleased: rl.KeyEscape,
+		ActionID: Pause,
+		Triggers: []io.InputVector{
+			{GamePadButtonPressed: io.GamepadButtonMiddleRight},
+			{KeyReleased: io.KeyEscape},
+		},
 	},
 }

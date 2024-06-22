@@ -7,7 +7,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func StandardLoop(e *engine.Engine, screenWidth, screenHeight int) {
+func StandardLoop(e *engine.Engine, screenWidth, screenHeight int32) {
 
 	for !rl.WindowShouldClose() {
 		e.Lock()

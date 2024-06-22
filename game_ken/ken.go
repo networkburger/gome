@@ -5,10 +5,11 @@ import (
 	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/engine/render"
+	"jamesraine/grl/engine/sound"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/engine/window"
 	"log/slog"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type kenScene struct{}
@@ -18,7 +19,7 @@ func KenScene(e *engine.Engine) *engine.Scene {
 	assets := parts.NewAssets("ass")
 	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
 		snd := assets.Sound("coin.wav")
-		rl.PlaySound(snd)
+		sound.PlaySound(snd)
 		s.RemoveFromParent()
 	})
 
@@ -92,9 +93,9 @@ func KenScene(e *engine.Engine) *engine.Scene {
 func (k *kenScene) Event(e engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch e {
 	case engine.NodeEventSceneActivate:
-		rl.SetTargetFPS(30)
+		window.SetTargetFPS(30)
 
 	case engine.NodeEventDraw:
-		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		render.ClearBackground(18, 65, 68)
 	}
 }

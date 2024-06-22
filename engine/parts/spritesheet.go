@@ -5,13 +5,11 @@ import (
 	"log/slog"
 	"strconv"
 	"strings"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type SpritesheetFrame struct {
 	SpriteName string
-	Source     rl.Rectangle
+	Source     v.Rect
 	Origin     v.Vec2
 }
 
@@ -116,7 +114,7 @@ func readFrameLine(ss Spritesheet, line string) Spritesheet {
 
 	frame := SpritesheetFrame{
 		SpriteName: args[1],
-		Source:     rl.NewRectangle(float32(x), float32(y), float32(w), float32(h)),
+		Source:     v.R(float32(x), float32(y), float32(w), float32(h)),
 		Origin:     v.V2(float32(ox), float32(oy)),
 	}
 

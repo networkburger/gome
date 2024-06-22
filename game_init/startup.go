@@ -3,12 +3,12 @@ package game_init
 import (
 	"jamesraine/grl/engine"
 	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/ui"
+	"jamesraine/grl/engine/window"
 	"jamesraine/grl/game_dig"
 	"jamesraine/grl/game_ken"
 	"jamesraine/grl/game_physicstest"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type startupScene struct {
@@ -19,9 +19,9 @@ type startupScene struct {
 func (s *startupScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
 	case engine.NodeEventSceneActivate:
-		rl.SetTargetFPS(15)
+		window.SetTargetFPS(15)
 	case engine.NodeEventDraw:
-		rl.ClearBackground(rl.NewColor(18, 65, 68, 255))
+		render.ClearBackground(18, 65, 68)
 	}
 }
 
@@ -34,7 +34,7 @@ func StartupScene(e *engine.Engine) *engine.Scene {
 	menu := ui.Menu{
 		FontRenderer: font,
 		Backout: func() {
-			rl.CloseWindow()
+			window.CloseWindow()
 		},
 		Items: []ui.MenuItem{
 			ui.NewMenuItem("KEN", func() {
@@ -57,7 +57,7 @@ func StartupScene(e *engine.Engine) *engine.Scene {
 				ui.NewMenuItem("OPT3", func() {}),
 			}),
 			ui.NewMenuItem("Quit", func() {
-				rl.CloseWindow()
+				window.CloseWindow()
 			}),
 		},
 	}

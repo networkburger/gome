@@ -1,9 +1,7 @@
 package game_ken
 
 import (
-	"jamesraine/grl/engine"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"jamesraine/grl/engine/io"
 )
 
 const (
@@ -12,51 +10,30 @@ const (
 	Pause
 )
 
-var InputOverworld = []engine.InputActionMapping{
+var InputOverworld = []io.InputActionMapping{
 	{
-		ActionID:    Jump,
-		KeyReleased: rl.KeySpace,
-	},
-	{
-		ActionID:              Jump,
-		GamePadButtonReleased: rl.GamepadButtonRightFaceDown,
-	},
-	{
-		ActionID:    Jump,
-		KeyReleased: rl.KeyUp,
+		ActionID: Jump,
+		Triggers: []io.InputVector{
+			{KeyReleased: io.KeySpace},
+			{KeyReleased: io.KeyUp},
+			{GamePadButtonReleased: io.GamepadButtonRightFaceDown},
+		},
 	},
 	{
 		ActionID: Move,
-		KeyDown:  rl.KeyA,
-		Const:    float32(-1),
+		Triggers: []io.InputVector{
+			{KeyDown: io.KeyA, Const: float32(-1)},
+			{KeyDown: io.KeyLeft, Const: float32(-1)},
+			{KeyDown: io.KeyD, Const: float32(1)},
+			{KeyDown: io.KeyRight, Const: float32(1)},
+			{GamePadAxis: io.GamepadAxisLeftX, GamePadAxisScale: 1},
+		},
 	},
 	{
-		ActionID: Move,
-		KeyDown:  rl.KeyLeft,
-		Const:    float32(-1),
-	},
-	{
-		ActionID: Move,
-		KeyDown:  rl.KeyD,
-		Const:    float32(1),
-	},
-	{
-		ActionID: Move,
-		KeyDown:  rl.KeyRight,
-		Const:    float32(1),
-	},
-	{
-		ActionID:         Move,
-		GamePadAxis:      engine.GamepadAxisLeftX,
-		GamePadAxisScale: 1,
-	},
-
-	{
-		ActionID:             Pause,
-		GamePadButtonPressed: rl.GamepadButtonMiddleRight,
-	},
-	{
-		ActionID:   Pause,
-		KeyPressed: rl.KeyEscape,
+		ActionID: Pause,
+		Triggers: []io.InputVector{
+			{GamePadButtonPressed: io.GamepadButtonMiddleRight},
+			{KeyReleased: io.KeyEscape},
+		},
 	},
 }

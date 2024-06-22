@@ -2,12 +2,11 @@ package game_dig
 
 import (
 	"jamesraine/grl/engine"
+	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/v"
 	"jamesraine/grl/game_shared"
 	"math"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type PlayerStats struct {
@@ -33,7 +32,7 @@ type Player struct {
 
 func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, node *engine.Node) {
 	if event == engine.NodeEventTick {
-		engine.ProcessInputs(InputOverworld, func(action engine.ActionID, power float32) {
+		io.ProcessInputs(InputOverworld, func(action io.ActionID, power float32) {
 			switch action {
 			case Pause:
 				game_shared.ShowPauseMenu(gs)
@@ -61,7 +60,7 @@ func StandardPlayerNode(e *engine.Engine) *engine.Node {
 
 	a45 := math.Pi / 4
 
-	polyNode := NewLineStripComponent(rl.White, []v.Vec2{
+	polyNode := NewLineStripComponent(v.White, []v.Vec2{
 		v.V2(float32(math.Sin(a45*0))*r, float32(math.Cos(a45*0))*r),
 		v.V2(float32(math.Sin(a45*1))*r, float32(math.Cos(a45*1))*r),
 		v.V2(float32(math.Sin(a45*2))*r, float32(math.Cos(a45*2))*r),
