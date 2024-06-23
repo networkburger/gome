@@ -13,14 +13,13 @@ type SurfaceProperties struct {
 type CollisionSurface struct {
 	Normal       v.Vec2
 	ContactPoint v.Vec2
+	Context      interface{}
 	SurfaceProperties
 }
 
+type CollisionBuffferFunc func(CollisionSurface, *engine.Node)
 type CollisionSurfaceProvider interface {
-	// Not in love with this interface - puts a lot of responsibility on the implementor
-	// to know the internal workings of the solver.
-	// Better perhaps to provide a function for the implementor to call with each hit rectangle
-	Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []CollisionSurface, nhits *int)
+	Surfaces(providerNode *engine.Node, pos v.Vec2, radius float32, enqueue CollisionBuffferFunc)
 }
 
 func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle v.Rect) bool {
@@ -46,19 +45,19 @@ func CircleOverlapsRect(circlePos v.Vec2, radius float32, rectangle v.Rect) bool
 	return dist < r2
 }
 
-func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProperties SurfaceProperties, hits []CollisionSurface, nhits *int) {
+func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProperties SurfaceProperties, srcNode *engine.Node, log CollisionBuffferFunc, context interface{}) {
 	if approxSquareCircleOverlap(pos, radius, tileArea) {
 		// TOP EDGE
 		collides, collisionPos := CircleSegmentIntersection(radius, pos,
 			v.V2(tileArea.X, tileArea.Y),
 			v.V2(tileArea.X+tileArea.W, tileArea.Y))
 		if collides {
-			hits[*nhits] = CollisionSurface{
+			log(CollisionSurface{
 				Normal:            v.V2(0, -1),
 				ContactPoint:      collisionPos,
 				SurfaceProperties: surfaceProperties,
-			}
-			*nhits = (*nhits) + 1
+				Context:           context,
+			}, srcNode)
 		}
 
 		// BOTTOM EDGE
@@ -67,12 +66,12 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProper
 			v.V2(tileArea.X, tileArea.Y+tileArea.H),
 		)
 		if collides {
-			hits[*nhits] = CollisionSurface{
+			log(CollisionSurface{
 				Normal:            v.V2(0, 1),
 				ContactPoint:      collisionPos,
 				SurfaceProperties: surfaceProperties,
-			}
-			*nhits = (*nhits) + 1
+				Context:           context,
+			}, srcNode)
 		}
 
 		// LEFT EDGE
@@ -81,12 +80,12 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProper
 			v.V2(tileArea.X, tileArea.Y),
 		)
 		if collides {
-			hits[*nhits] = CollisionSurface{
+			log(CollisionSurface{
 				Normal:            v.V2(-1, 0),
 				ContactPoint:      collisionPos,
 				SurfaceProperties: surfaceProperties,
-			}
-			*nhits = (*nhits) + 1
+				Context:           context,
+			}, srcNode)
 		}
 
 		// RIGHT EDGE
@@ -94,12 +93,12 @@ func GenHitsForSquare(pos v.Vec2, radius float32, tileArea v.Rect, surfaceProper
 			v.V2(tileArea.X+tileArea.W, tileArea.Y),
 			v.V2(tileArea.X+tileArea.W, tileArea.Y+tileArea.H))
 		if collides {
-			hits[*nhits] = CollisionSurface{
+			log(CollisionSurface{
 				Normal:            v.V2(1, 0),
 				ContactPoint:      collisionPos,
 				SurfaceProperties: surfaceProperties,
-			}
-			*nhits = (*nhits) + 1
+				Context:           context,
+			}, srcNode)
 		}
 	}
 }

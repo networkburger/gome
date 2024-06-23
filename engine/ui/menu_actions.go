@@ -13,25 +13,25 @@ var menuActions = []io.InputActionMapping{
 	{
 		ActionID: MenuNext,
 		Triggers: []io.InputVector{
-			{KeyReleased: io.KeyD},
-			{KeyReleased: io.KeyDown},
+			{KeyPressed: io.KeyD},
+			{KeyPressed: io.KeyDown},
 			{GamePadButtonReleased: io.GamepadButtonLeftFaceDown},
 		},
 	},
 	{
 		ActionID: MenuPrev,
 		Triggers: []io.InputVector{
-			{KeyReleased: io.KeyW},
-			{KeyReleased: io.KeyUp},
+			{KeyPressed: io.KeyW},
+			{KeyPressed: io.KeyUp},
 			{GamePadButtonReleased: io.GamepadButtonLeftFaceUp},
 		},
 	},
 	{
 		ActionID: MenuBack,
 		Triggers: []io.InputVector{
-			{KeyReleased: io.KeyA},
-			{KeyReleased: io.KeyEscape},
-			{KeyReleased: io.KeyLeft},
+			{KeyPressed: io.KeyA},
+			{KeyPressed: io.KeyEscape},
+			{KeyPressed: io.KeyLeft},
 			{GamePadButtonReleased: io.GamepadButtonLeftFaceLeft},
 			{GamePadButtonReleased: io.GamepadButtonRightFaceRight},
 		},
@@ -39,9 +39,9 @@ var menuActions = []io.InputActionMapping{
 	{
 		ActionID: MenuSelect,
 		Triggers: []io.InputVector{
-			{KeyReleased: io.KeySpace},
-			{KeyReleased: io.KeyEnter},
-			{KeyReleased: io.KeyRight},
+			{KeyPressed: io.KeySpace},
+			{KeyPressed: io.KeyEnter},
+			{KeyPressed: io.KeyRight},
 			{MouseButtonReleased: io.MouseButtonLeft},
 			{GamePadButtonReleased: io.GamepadButtonRightFaceDown},
 		},

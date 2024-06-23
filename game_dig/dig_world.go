@@ -40,7 +40,7 @@ type PixelObstacleProvider struct {
 	render.PixelBuffer
 }
 
-func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
+func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius float32, log physics.CollisionBuffferFunc) {
 	sc := n.AbsoluteScale()
 	sx := int32(pos.X / sc)
 	sy := int32(pos.Y / sc)
@@ -76,7 +76,7 @@ func (p *PixelObstacleProvider) Surfaces(n *engine.Node, pos v.Vec2, radius floa
 				physics.GenHitsForSquare(pos, radius, blockRect, physics.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,
-				}, hits, nhits)
+				}, n, log, 0)
 			}
 		}
 	}

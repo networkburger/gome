@@ -26,9 +26,7 @@ func (s *digScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Nod
 
 func DigScene(e *engine.Engine) *engine.Scene {
 	k := digScene{}
-	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
-		// something hit something
-	})
+	solver := physics.NewPhysicsSolver()
 
 	rootNode := e.NewNode("RootNode - Dig")
 	rootNode.AddComponent(&k)

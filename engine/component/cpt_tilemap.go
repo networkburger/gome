@@ -72,6 +72,10 @@ type TilemapGeometryComponent struct {
 	layer   int
 }
 
+type TilePath struct {
+	Layer, Chunk, Tile int
+}
+
 func TilemapGeometry(tilemap *parts.Tilemap, layer string) TilemapGeometryComponent {
 	layerIndex := -1
 	for i, l := range tilemap.Layers {
@@ -87,6 +91,14 @@ func TilemapGeometry(tilemap *parts.Tilemap, layer string) TilemapGeometryCompon
 	}
 }
 
+func (g *TilemapGeometryComponent) GetTile(chunkIndex, tileIndex int) int {
+	return g.tilemap.Layers[g.layer].Chunks[chunkIndex].Data[tileIndex]
+}
+
+func (g *TilemapGeometryComponent) SetTile(chunkIndex, tileIndex, value int) {
+	g.tilemap.Layers[g.layer].Chunks[chunkIndex].Data[tileIndex] = value
+}
+
 func (g *TilemapGeometryComponent) Event(e engine.NodeEvent, s *engine.Scene, n *engine.Node) {
 	if e == engine.NodeEventLoad {
 		s.Physics.Register(n)
@@ -95,8 +107,11 @@ func (g *TilemapGeometryComponent) Event(e engine.NodeEvent, s *engine.Scene, n 
 	}
 }
 
-func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
-	xf := n.Transform()
+func (t *TilemapGeometryComponent) Surfaces(providerNode *engine.Node, pos v.Vec2, radius float32, enqueue physics.CollisionBuffferFunc) {
+	xf := providerNode.Transform()
+	ctx := TilePath{
+		Layer: t.layer,
+	}
 
 	layer := t.tilemap.Layers[t.layer]
 	for chunki, chunk := range layer.Chunks {
@@ -107,11 +122,13 @@ func (t *TilemapGeometryComponent) Surfaces(n *engine.Node, pos v.Vec2, radius f
 				if chunk.Data[tilei] == 0 {
 					continue
 				}
+				ctx.Chunk = chunki
+				ctx.Tile = tilei
 				tileArea := t.tilemap.TilePosition(t.layer, chunki, tilei, xf)
 				physics.GenHitsForSquare(pos, radius, tileArea, physics.SurfaceProperties{
 					Friction:    0,
 					Restitution: 0.5,
-				}, hits, nhits)
+				}, providerNode, enqueue, ctx)
 			}
 		}
 	}

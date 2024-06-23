@@ -14,17 +14,19 @@ import (
 
 type kenScene struct{}
 
+var down = v.V2(0, 1)
+
 func KenScene(e *engine.Engine) *engine.Scene {
-	k := kenScene{}
 	assets := parts.NewAssets("ass")
-	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {
+	solver := physics.NewPhysicsSolver()
+	solver.ContactSignalNotifier = func(b *engine.Node, s *engine.Node) {
 		snd := assets.Sound("coin.wav")
 		sound.PlaySound(snd)
 		s.RemoveFromParent()
-	})
+	}
 
 	rootNode := e.NewNode("RootNode - Ken")
-	rootNode.AddComponent(&k)
+	rootNode.AddComponent(&kenScene{})
 
 	worldNodeBG := e.NewNode("WorldBG")
 	worldNodeFG := e.NewNode("WorldFG")
@@ -54,6 +56,18 @@ func KenScene(e *engine.Engine) *engine.Scene {
 
 	playerNode := NewPlayerNode(e, &assets)
 	playerNode.Position = v.V2(100, 100)
+
+	solver.ContactObstacleNotifier = func(src *engine.Node, ci physics.ExtendedContactInfo) physics.ContactResponse {
+		if ci.BodyNode == worldNodeGeometry && src == playerNode && ci.Surface.Normal.Dot(down) > 0.99 {
+			snd := assets.Sound("coin.wav")
+			sound.PlaySound(snd)
+			tile, ok := ci.Surface.Context.(component.TilePath)
+			if ok {
+				terrainComp.SetTile(tile.Chunk, tile.Tile, 0)
+			}
+		}
+		return physics.ContactResponseBounce
+	}
 
 	spawn := tilemap.FindObject("objectgroup", "spawn")
 	if spawn.Type == "spawn" {

@@ -21,23 +21,39 @@ type physicsObstacleInfo struct {
 	*PhysicsObstacleComponent
 }
 
-type PhysicsContactNotifier func(*engine.Node, *engine.Node)
+type ContactResponse int32
+
+const (
+	ContactResponseNone = ContactResponse(iota)
+	ContactResponseBounce
+)
+
+type ExtendedContactInfo struct {
+	Surface        CollisionSurface
+	BodyNode       *engine.Node
+	ResponseNormal v.Vec2
+}
+
+type ContactObstacleNotifier func(*engine.Node, ExtendedContactInfo) ContactResponse
+type ContactSignalNotifier func(*engine.Node, *engine.Node)
 
 type PhysicsSolver struct {
-	PhysicsContactNotifier
+	ContactObstacleNotifier
+	ContactSignalNotifier
+
 	obstacles []physicsObstacleInfo
 	bodies    []physicsBodyInfo
 	signals   []physicsSignalInfo
-	hits      []CollisionSurface
+	hits      []ExtendedContactInfo
+	nhits     int
 }
 
-func NewPhysicsSolver(notifier PhysicsContactNotifier) PhysicsSolver {
+func NewPhysicsSolver() PhysicsSolver {
 	return PhysicsSolver{
-		PhysicsContactNotifier: notifier,
-		bodies:                 make([]physicsBodyInfo, 0),
-		signals:                make([]physicsSignalInfo, 0),
-		obstacles:              make([]physicsObstacleInfo, 0),
-		hits:                   make([]CollisionSurface, 32),
+		bodies:    make([]physicsBodyInfo, 0),
+		signals:   make([]physicsSignalInfo, 0),
+		obstacles: make([]physicsObstacleInfo, 0),
+		hits:      make([]ExtendedContactInfo, 32),
 	}
 }
 
@@ -104,8 +120,18 @@ func velocityCorrection(inputVelocity, contactNormal v.Vec2, restitution float32
 
 var _up = v.V2(0, -1)
 
+func (s *PhysicsSolver) _bufferContact(surf CollisionSurface, n *engine.Node) {
+	if s.nhits >= len(s.hits) {
+		slog.Error("PhysicsSolver: too many hits")
+		return
+	}
+	s.hits[s.nhits].Surface = surf
+	s.hits[s.nhits].BodyNode = n
+	s.nhits++
+}
+
 func (s *PhysicsSolver) Solve(gs *engine.Scene) {
-	nhits := 0
+	s.nhits = 0
 
 	for _, b := range s.bodies {
 		bpos := b.Node.Position
@@ -113,12 +139,12 @@ func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 		bounces := 0
 
 		// check for colliding signals
-		if s.PhysicsContactNotifier != nil {
+		if s.ContactSignalNotifier != nil {
 			for _, sig := range s.signals {
 				sigRadius := sig.Node.AbsoluteScale() * sig.PhysicsSignalComponent.Radius
 				sigPos := sig.Node.AbsolutePosition()
 				if bpos.DistDist(sigPos) < (radius+sigRadius)*(radius+sigRadius) {
-					s.PhysicsContactNotifier(b.Node, sig.Node)
+					s.ContactSignalNotifier(b.Node, sig.Node)
 				}
 			}
 		}
@@ -126,15 +152,15 @@ func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 		colliding := true
 		for colliding {
 			for _, o := range s.obstacles {
-				o.CollisionSurfaceProvider.Surfaces(o.Node, bpos, radius, s.hits, &nhits)
+				o.CollisionSurfaceProvider.Surfaces(o.Node, bpos, radius, s._bufferContact)
 			}
 
 			closest := -1
 			closestDist := float32(999999999)
 
-			for i := 0; i < nhits; i++ {
+			for i := 0; i < s.nhits; i++ {
 				hit := s.hits[i]
-				dist := bpos.DistDist(hit.ContactPoint)
+				dist := bpos.DistDist(hit.Surface.ContactPoint)
 				if dist < closestDist {
 					closest = i
 					closestDist = dist
@@ -142,21 +168,28 @@ func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 			}
 			if closest > -1 {
 				hit := s.hits[closest]
-				responseNormal := bpos.Sub(hit.ContactPoint).Nrm()
-
-				bpos = hit.ContactPoint.Add(responseNormal.Scl(radius))
-				b.Node.Position = bpos
-				restitution := hit.Restitution * b.PhysicsBodyComponent.SurfaceProperties.Restitution
-				correction := velocityCorrection(b.BallisticComponent.Velocity, responseNormal, restitution)
-				b.BallisticComponent.Velocity = b.BallisticComponent.Velocity.Add(correction)
-				nhits = 0
-				bounces++
-
-				if hit.Normal.Dot(_up) > 0.95 && b.BallisticComponent.Velocity.Y < 0.1 {
-					b.PhysicsBodyComponent.OnGround = gs.T
+				hit.ResponseNormal = bpos.Sub(hit.Surface.ContactPoint).Nrm()
+				responseKind := ContactResponseBounce
+				if s.ContactObstacleNotifier != nil {
+					responseKind = s.ContactObstacleNotifier(b.Node, hit)
 				}
+				if responseKind == ContactResponseBounce {
+					bpos = hit.Surface.ContactPoint.Add(hit.ResponseNormal.Scl(radius))
+					b.Node.Position = bpos
+					restitution := hit.Surface.Restitution * b.PhysicsBodyComponent.SurfaceProperties.Restitution
+					correction := velocityCorrection(b.BallisticComponent.Velocity, hit.ResponseNormal, restitution)
+					b.BallisticComponent.Velocity = b.BallisticComponent.Velocity.Add(correction)
+					s.nhits = 0
+					bounces++
 
-				if bounces > 10 {
+					if hit.Surface.Normal.Dot(_up) > 0.95 && b.BallisticComponent.Velocity.Y < 0.1 {
+						b.PhysicsBodyComponent.OnGround = gs.T
+					}
+
+					if bounces > 10 {
+						colliding = false
+					}
+				} else {
 					colliding = false
 				}
 			} else {

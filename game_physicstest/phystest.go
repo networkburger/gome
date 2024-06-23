@@ -41,7 +41,7 @@ func PhysicsTest(e *engine.Engine) *engine.Scene {
 	s := physicsTestScene{}
 	rootNode := e.NewNode("RootNode - PT")
 	rootNode.AddComponent(&s)
-	solver := physics.NewPhysicsSolver(func(b *engine.Node, s *engine.Node) {})
+	solver := physics.NewPhysicsSolver()
 
 	rootNode.AddChild(newLine(e, v.V2(-200, 30), v.V2(200, 30), v.Red))
 	rootNode.AddChild(newLine(e, v.V2(-200, -130), v.V2(-200, 30), v.Green))
@@ -89,18 +89,17 @@ func (p *PhysicsLineSegment) Event(event engine.NodeEvent, gs *engine.Scene, n *
 		render.DrawLine(int32(a.X), int32(a.Y), int32(b.X), int32(b.Y), p.Color)
 	}
 }
-func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32, hits []physics.CollisionSurface, nhits *int) {
+func (p *PhysicsLineSegment) Surfaces(n *engine.Node, pos v.Vec2, radius float32, log physics.CollisionBuffferFunc) {
 	didHit, hitAt := physics.CircleSegmentIntersection(radius, pos, p.A, p.B)
 	if didHit {
-		hits[*nhits] = physics.CollisionSurface{
+		log(physics.CollisionSurface{
 			Normal:       p.N,
 			ContactPoint: hitAt,
 			SurfaceProperties: physics.SurfaceProperties{
 				Friction:    0,
 				Restitution: 0.9,
 			},
-		}
-		*nhits++
+		}, n)
 	}
 }
 

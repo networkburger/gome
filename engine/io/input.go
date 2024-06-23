@@ -55,9 +55,9 @@ func ProcessInputs(mapping []InputActionMapping, process func(ActionID, float32)
 				}
 			} else if iv.KeyDown != rl.KeyNull && rl.IsKeyDown(int32(iv.KeyDown)) {
 				process(m.ActionID, iv.Const)
-			} else if iv.KeyPressed != rl.KeyNull && rl.IsKeyDown(int32(iv.KeyPressed)) {
+			} else if iv.KeyPressed != rl.KeyNull && rl.IsKeyPressed(int32(iv.KeyPressed)) {
 				process(m.ActionID, iv.Const)
-			} else if iv.KeyReleased != rl.KeyNull && rl.IsKeyDown(int32(iv.KeyReleased)) {
+			} else if iv.KeyReleased != rl.KeyNull && rl.IsKeyReleased(int32(iv.KeyReleased)) {
 				process(m.ActionID, iv.Const)
 			} else if iv.MouseAxis == MouseAxisX && v.Absf(mouseDelta.X) > 0.1 {
 				process(m.ActionID, mouseDelta.X)
@@ -65,9 +65,11 @@ func ProcessInputs(mapping []InputActionMapping, process func(ActionID, float32)
 				process(m.ActionID, mouseDelta.Y)
 			} else if iv.MouseButtonDown != MouseButtonNone && rl.IsMouseButtonDown(int32(iv.MouseButtonDown)-1) {
 				process(m.ActionID, iv.Const)
+			} else if iv.MouseButtonPressed != MouseButtonNone && rl.IsMouseButtonPressed(int32(iv.MouseButtonDown)-1) {
+				process(m.ActionID, iv.Const)
+			} else if iv.MouseButtonReleased != MouseButtonNone && rl.IsMouseButtonReleased(int32(iv.MouseButtonDown)-1) {
+				process(m.ActionID, iv.Const)
 			}
 		}
 	}
-
-	gamepad = -1
 }
