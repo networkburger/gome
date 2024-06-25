@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# krita generates working files with a ~ on the end, e.g. myfile.png~
+*~
