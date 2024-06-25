@@ -30,14 +30,14 @@ func Spawn(e *engine.Engine, kind string, assets *parts.Assets) *engine.Node {
 
 func _spawnCoin(e *engine.Engine, assets *parts.Assets) *engine.Node {
 	n := e.NewNode("Coin")
-	sheet := assets.SpriteSheet("coin.spritesheet")
-	tex := assets.Texture(sheet.ImageRef)
+	sheet, _ := assets.SpriteSheet("coin.spritesheet")
+	tex := assets.Texture(sheet.ImagePath)
 
 	ssComp := component.SpritesheetComponent{
 		Spritesheet: sheet,
 		Texture:     tex,
 	}
-	ssComp.SetSprite("idle")
+	ssComp.SetAnimation("idle")
 	ssComp.FrameTimeMilliseconds = 100
 	n.AddComponent(&ssComp)
 

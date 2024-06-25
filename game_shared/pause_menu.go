@@ -9,11 +9,14 @@ import (
 func ShowPauseMenu(gs *engine.Scene) {
 	gs.Paused = true
 
+	window.SetTargetFPS(15)
+
 	font, _ := gs.Engine.Assets.Font("robotoslab48.json")
 	menu := ui.Menu{
 		FontRenderer: font,
 	}
 	resume := func() {
+		window.SetTargetFPS(gs.TargetFramerate)
 		gs.Engine.RemoveComponentFromNode(gs.Node, &menu)
 		gs.Paused = false
 	}
@@ -27,7 +30,7 @@ func ShowPauseMenu(gs *engine.Scene) {
 			MenuLabel: "MAIN MENU",
 			MenuAction: func() {
 				gs.Paused = false
-				gs.Engine.PopScene()
+				gs.Engine.SetScene(StartupScene(gs.Engine))
 			},
 		},
 		{

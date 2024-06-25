@@ -14,8 +14,6 @@ const (
 	NodeEventDraw
 	NodeEventLateTick
 	NodeEventLateDraw
-	NodeEventSceneActivate
-	NodeEventSceneDeativate
 )
 
 type NodeComponent interface {

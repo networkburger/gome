@@ -1,4 +1,4 @@
-package game_init
+package game_shared
 
 import (
 	"jamesraine/grl/engine"
@@ -6,10 +6,17 @@ import (
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/ui"
 	"jamesraine/grl/engine/window"
-	"jamesraine/grl/game_dig"
-	"jamesraine/grl/game_ken"
-	"jamesraine/grl/game_physicstest"
 )
+
+type SceneLauncher func(*engine.Engine) *engine.Scene
+
+var launchKen, launchDig, launchPhys SceneLauncher
+
+func InitSceneLaunchers(ken, dig, phys SceneLauncher) {
+	launchKen = ken
+	launchDig = dig
+	launchPhys = phys
+}
 
 type startupScene struct {
 	parts.Assets
@@ -18,8 +25,6 @@ type startupScene struct {
 
 func (s *startupScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
-	case engine.NodeEventSceneActivate:
-		window.SetTargetFPS(15)
 	case engine.NodeEventDraw:
 		render.ClearBackground(18, 65, 68)
 	}
@@ -38,13 +43,13 @@ func StartupScene(e *engine.Engine) *engine.Scene {
 		},
 		Items: []ui.MenuItem{
 			ui.NewMenuItem("KEN", func() {
-				e.PushScene(game_ken.KenScene(e))
+				e.SetScene(launchKen(e))
 			}),
 			ui.NewMenuItem("DIG", func() {
-				e.PushScene(game_dig.DigScene(e))
+				e.SetScene(launchDig(e))
 			}),
 			ui.NewMenuItem("Physics Test", func() {
-				e.PushScene(game_physicstest.PhysicsTest(e))
+				e.SetScene(launchPhys(e))
 			}),
 			ui.NewSubMenu("Options", []ui.MenuItem{
 				ui.NewMenuItem("OPT1", func() {}),
@@ -67,6 +72,7 @@ func StartupScene(e *engine.Engine) *engine.Scene {
 	rootNode.AddComponent(&menu)
 
 	return &engine.Scene{
-		Node: rootNode,
+		Node:            rootNode,
+		TargetFramerate: 15,
 	}
 }

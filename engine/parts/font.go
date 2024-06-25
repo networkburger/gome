@@ -1,81 +1,31 @@
 package parts
 
 import (
-	"encoding/json"
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
 )
 
-type FontSoftware struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-type FontAtlas struct {
-	ImagePath   string `json:"imagePath"`
-	Width       int    `json:"width"`
-	Height      int    `json:"height"`
-	SpriteCount int    `json:"spriteCount"`
-	IsFont      bool   `json:"isFont"`
-	FontSize    int    `json:"fontSize"`
-}
-type FontSprite struct {
-	NameId     string   `json:"nameId"`
-	Origin     FontXY   `json:"origin"`
-	Position   FontXY   `json:"position"`
-	SourceSize FontWH   `json:"sourceSize"`
-	Padding    int32    `json:"padding"`
-	Trimmed    bool     `json:"trimmed"`
-	TrimRec    FontRect `json:"trimRec"`
-	Char       FontChar `json:"char"`
-}
-
-type FontXY struct {
-	X int32 `json:"x"`
-	Y int32 `json:"y"`
-}
-
-type FontWH struct {
-	Width  int32 `json:"width"`
-	Height int32 `json:"height"`
-}
-
-type FontRect struct {
-	X      int32 `json:"x"`
-	Y      int32 `json:"y"`
-	Width  int32 `json:"width"`
-	Height int32 `json:"height"`
-}
-
-type FontChar struct {
-	Value    int32  `json:"value"`
-	Offset   FontXY `json:"offset"`
-	AdvanceX int32  `json:"advanceX"`
-}
+// Font renderer based on a sprite font generated in rTexPacker
+// using the json export format.
+// https://raylibtech.itch.io/rtexpacker
 
 type Font struct {
-	FontSoftware `json:"software"`
-	FontAtlas    `json:"atlas"`
-	FontSprite   []FontSprite `json:"sprites"`
+	Spritesheet
 	SpriteLookup map[int32]int32
 }
 
-func FontRead(fbytes []byte) (Font, error) {
-	var f Font
-	err := json.Unmarshal(fbytes, &f)
-	if err != nil {
-		return f, err
-	}
-
+func NewFont(ss Spritesheet) (Font, error) {
+	f := Font{Spritesheet: ss}
 	f.SpriteLookup = make(map[int32]int32)
-	for i, s := range f.FontSprite {
+	for i, s := range f.Entries {
 		f.SpriteLookup[s.Char.Value] = int32(i)
 	}
 
 	return f, nil
 }
 
-func (f Font) FontSpriteLookup(c int32) *FontSprite {
-	return &f.FontSprite[f.SpriteLookup[c]]
+func (f Font) FontSpriteLookup(c int32) *SpritesheetSprite {
+	return &f.Entries[f.SpriteLookup[c]]
 }
 
 type FontRenderer struct {
@@ -87,8 +37,8 @@ func (fr FontRenderer) TextAt(x, y int32, color v.Color, text string) {
 	for _, c := range text {
 		s := fr.Font.FontSpriteLookup(c)
 		render.DrawRect(fr.Texture,
-			float32(s.Position.X), float32(s.Position.Y), float32(s.SourceSize.Width), float32(s.SourceSize.Height),
-			float32(x+s.Char.Offset.X), float32(y+s.Char.Offset.Y), float32(s.SourceSize.Width), float32(s.SourceSize.Height),
+			float32(s.Position.X), float32(s.Position.Y), float32(s.SourceSize.W), float32(s.SourceSize.H),
+			float32(x+s.Char.Offset.X), float32(y+s.Char.Offset.Y), float32(s.SourceSize.W), float32(s.SourceSize.H),
 			color,
 		)
 		x += s.Char.AdvanceX
@@ -99,11 +49,11 @@ func (fr FontRenderer) MeasureText(text string) (int32, int32) {
 	w := int32(0)
 	h := int32(0)
 	for _, c := range text {
-		for _, s := range fr.Font.FontSprite {
+		for _, s := range fr.Font.Entries {
 			if s.Char.Value == int32(c) {
 				w += s.Char.AdvanceX
-				if s.SourceSize.Height > h {
-					h = s.SourceSize.Height
+				if s.SourceSize.H > h {
+					h = s.SourceSize.H
 				}
 				break
 			}

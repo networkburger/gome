@@ -31,11 +31,13 @@ const (
 type ExtendedContactInfo struct {
 	Surface        CollisionSurface
 	BodyNode       *engine.Node
+	ObstacleNode   *engine.Node
 	ResponseNormal v.Vec2
+	ImpactForce    float32
 }
 
-type ContactObstacleNotifier func(*engine.Node, ExtendedContactInfo) ContactResponse
-type ContactSignalNotifier func(*engine.Node, *engine.Node)
+type ContactObstacleNotifier func(*engine.Scene, ExtendedContactInfo) ContactResponse
+type ContactSignalNotifier func(*engine.Scene, *engine.Node, *engine.Node)
 
 type PhysicsSolver struct {
 	ContactObstacleNotifier
@@ -126,7 +128,7 @@ func (s *PhysicsSolver) _bufferContact(surf CollisionSurface, n *engine.Node) {
 		return
 	}
 	s.hits[s.nhits].Surface = surf
-	s.hits[s.nhits].BodyNode = n
+	s.hits[s.nhits].ObstacleNode = n
 	s.nhits++
 }
 
@@ -144,7 +146,7 @@ func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 				sigRadius := sig.Node.AbsoluteScale() * sig.PhysicsSignalComponent.Radius
 				sigPos := sig.Node.AbsolutePosition()
 				if bpos.DistDist(sigPos) < (radius+sigRadius)*(radius+sigRadius) {
-					s.ContactSignalNotifier(b.Node, sig.Node)
+					s.ContactSignalNotifier(gs, b.Node, sig.Node)
 				}
 			}
 		}
@@ -168,10 +170,12 @@ func (s *PhysicsSolver) Solve(gs *engine.Scene) {
 			}
 			if closest > -1 {
 				hit := s.hits[closest]
+				hit.BodyNode = b.Node
 				hit.ResponseNormal = bpos.Sub(hit.Surface.ContactPoint).Nrm()
+				hit.ImpactForce = -b.BallisticComponent.Velocity.Dot(hit.Surface.Normal)
 				responseKind := ContactResponseBounce
 				if s.ContactObstacleNotifier != nil {
-					responseKind = s.ContactObstacleNotifier(b.Node, hit)
+					responseKind = s.ContactObstacleNotifier(gs, hit)
 				}
 				if responseKind == ContactResponseBounce {
 					bpos = hit.Surface.ContactPoint.Add(hit.ResponseNormal.Scl(radius))

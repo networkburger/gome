@@ -13,5 +13,11 @@ func UnloadSound(snd Sound) {
 }
 
 func PlaySound(snd Sound) {
-	rl.PlaySound(rl.Sound(snd))
+	PlaySoundAtVolume(snd, 1)
+}
+
+func PlaySoundAtVolume(snd Sound, vol float32) {
+	rls := rl.Sound(snd)
+	rl.SetSoundVolume(rls, vol)
+	rl.PlaySound(rls)
 }

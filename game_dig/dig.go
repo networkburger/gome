@@ -5,7 +5,6 @@ import (
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
-	"jamesraine/grl/engine/window"
 )
 
 type digScene struct {
@@ -14,8 +13,6 @@ type digScene struct {
 
 func (s *digScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
-	case engine.NodeEventSceneActivate:
-		window.SetTargetFPS(90)
 	case engine.NodeEventDraw:
 		render.ClearBackground(18, 65, 68)
 	case engine.NodeEventTick:
@@ -41,7 +38,8 @@ func DigScene(e *engine.Engine) *engine.Scene {
 	rootNode.AddChild(k.player)
 
 	return &engine.Scene{
-		Node:    rootNode,
-		Physics: &solver,
+		Node:            rootNode,
+		Physics:         &solver,
+		TargetFramerate: 30,
 	}
 }

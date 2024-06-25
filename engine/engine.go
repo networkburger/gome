@@ -1,6 +1,9 @@
 package engine
 
-import "jamesraine/grl/engine/parts"
+import (
+	"jamesraine/grl/engine/parts"
+	"jamesraine/grl/engine/window"
+)
 
 type NodeEventFunc func(n *Node)
 type DeferredAction func()
@@ -33,30 +36,17 @@ func NewEngine(screenW, screenH int32) *Engine {
 func (e *Engine) Scene() *Scene {
 	return e.scene
 }
-func (e *Engine) PushScene(scene *Scene) {
+func (e *Engine) SetScene(scene *Scene) {
 	if e.scene != nil {
-		e.fireDeepEvent(e.scene.Node, NodeEventSceneDeativate)
+		e.fireDeepEvent(e.scene.Node, NodeEventUnload)
+	}
+	if scene.TargetFramerate == 0 {
+		scene.TargetFramerate = 30
 	}
 	scene.Engine = e
-	e.sceneStack = append(e.sceneStack, e.scene)
 	e.scene = scene
-
-	e.fireDeepEvent(scene.Node, NodeEventSceneActivate)
+	window.SetTargetFPS(scene.TargetFramerate)
 	e.fireDeepEvent(scene.Node, NodeEventLoad)
-}
-
-func (c *Engine) PopScene() {
-	if c.scene != nil {
-		c.fireDeepEvent(c.scene.Node, NodeEventUnload)
-		c.fireDeepEvent(c.scene.Node, NodeEventSceneDeativate)
-	}
-	if len(c.sceneStack) > 0 {
-		c.scene = c.sceneStack[len(c.sceneStack)-1]
-		c.sceneStack = c.sceneStack[:len(c.sceneStack)-1]
-		c.fireDeepEvent(c.scene.Node, NodeEventSceneActivate)
-	} else {
-		c.scene = nil
-	}
 }
 
 var _nid = 0

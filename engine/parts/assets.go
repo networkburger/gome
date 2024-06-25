@@ -78,15 +78,18 @@ func (a *Assets) Pixels(fname string) render.PixelBuffer {
 	return buf
 }
 
-func (a *Assets) SpriteSheet(fname string) *Spritesheet {
+func (a *Assets) SpriteSheet(fname string) (Spritesheet, error) {
 	existing, ok := a.SpriteSheets[fname]
 	if ok {
-		return &existing
+		return existing, nil
 	}
 	sheetData, _ := a.FileBytes(fname)
-	s := SpritesheetRead(sheetData)
+	s, err := SpritesheetRead(sheetData)
+	if err != nil {
+		return s, err
+	}
 	a.SpriteSheets[fname] = s
-	return &s
+	return s, nil
 }
 
 func (a *Assets) Sound(fname string) sound.Sound {
@@ -120,11 +123,11 @@ func (a *Assets) Font(fname string) (FontRenderer, error) {
 		return s, nil
 	}
 
-	fontData, err := a.FileBytes(fname)
+	spriteSheet, err := a.SpriteSheet(fname)
 	if err != nil {
 		return FontRenderer{}, err
 	}
-	fontSpec, err := FontRead(fontData)
+	fontSpec, err := NewFont(spriteSheet)
 	if err != nil {
 		return FontRenderer{}, err
 	}

@@ -5,6 +5,10 @@ import (
 	"jamesraine/grl/engine/v"
 )
 
+// Tilemap parser and renderer for JSON format
+// export from the "Tiled" map editor
+// https://www.mapeditor.org/
+
 type Tileset struct {
 	Columns      int    `json:"columns"`
 	Image        string `json:"image"`

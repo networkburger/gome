@@ -7,7 +7,6 @@ import (
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
-	"jamesraine/grl/engine/window"
 	"jamesraine/grl/game_shared"
 )
 
@@ -17,8 +16,6 @@ type physicsTestScene struct {
 
 func (s *physicsTestScene) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	switch event {
-	case engine.NodeEventSceneActivate:
-		window.SetTargetFPS(90)
 	case engine.NodeEventDraw:
 		render.ClearBackground(18, 65, 68)
 		gs.Camera.Position.X = float32(gs.Engine.WindowPixelWidth) / -2

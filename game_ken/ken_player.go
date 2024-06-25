@@ -6,29 +6,36 @@ import (
 	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
-	"jamesraine/grl/engine/sound"
 	"jamesraine/grl/engine/v"
 	"jamesraine/grl/game_shared"
 )
 
 type Player struct {
 	Health     int
-	snd        sound.Sound
-	sprite     *component.SpritesheetComponent
+	sounds     *Soundlib
 	ballistics *physics.BallisticComponent
 	body       *physics.PhysicsBodyComponent
+	sprite     *component.SpritesheetComponent
 }
 
-func NewPlayerNode(e *engine.Engine, assets *parts.Assets) *engine.Node {
-	sheet := assets.SpriteSheet("knight.spritesheet")
+func NewPlayerNode(e *engine.Engine, assets *parts.Assets, sounds *Soundlib) *engine.Node {
+	sheet, err := assets.SpriteSheet("knight.json")
+	if err != nil {
+		panic(err)
+	}
+
+	knightTex := assets.Texture(sheet.ImagePath)
+	ss := component.NewSpritesheetComponent(sheet, knightTex, map[string]parts.SpriteAnimation{
+		"idle": parts.NewSpriteAnimation(sheet, "idle"),
+		"run":  parts.NewSpriteAnimation(sheet, "run"),
+		"roll": parts.NewSpriteAnimation(sheet, "roll"),
+		"die":  parts.NewSpriteAnimation(sheet, "die"),
+	})
 
 	player := Player{
 		Health: 100,
-		snd:    assets.Sound("jump.wav"),
-		sprite: &component.SpritesheetComponent{
-			Spritesheet: sheet,
-			Texture:     assets.Texture(sheet.ImageRef),
-		},
+		sounds: sounds,
+		sprite: &ss,
 		ballistics: &physics.BallisticComponent{
 			VelocityDamping: v.V2(0.1, 0.1),
 			AngularDamping:  0.8,
@@ -36,7 +43,7 @@ func NewPlayerNode(e *engine.Engine, assets *parts.Assets) *engine.Node {
 		},
 	}
 
-	player.sprite.SetSprite("idle")
+	player.sprite.SetAnimation("idle")
 	playerNode := e.NewNode("Player")
 	playerNode.AddComponent(player.sprite)
 	playerNode.AddComponent(&player)
@@ -85,10 +92,10 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 					if p.ballistics.Velocity.Y < 0 {
 						p.ballistics.Velocity = v.V2(p.ballistics.Velocity.X, 0)
 					}
-					p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(0, -9000))
+					p.ballistics.Impulse = p.ballistics.Impulse.Add(v.V2(0, -9600))
 					// reset back to zero to avoid triggering multiple jumps
 					p.body.OnGround = 0
-					sound.PlaySound(p.snd)
+					p.sounds.PlaySound(SoundJump)
 				}
 			}
 		})
@@ -101,12 +108,12 @@ func (p *Player) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node)
 
 		moving := p.ballistics.Velocity.LenLen() > 0.1
 		if !p.body.IsOnGround(gs.T) {
-			p.sprite.SetSprite("roll")
+			p.sprite.SetAnimation("roll")
 		} else if moving {
-			p.sprite.SetSprite("run")
+			p.sprite.SetAnimation("run")
 			p.sprite.FlipX = p.ballistics.Velocity.X < 0
 		} else {
-			p.sprite.SetSprite("idle")
+			p.sprite.SetAnimation("idle")
 		}
 
 		gs.Camera.Position.X = n.Position.X - float32(gs.Engine.WindowPixelWidth)/2

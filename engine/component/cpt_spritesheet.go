@@ -6,20 +6,36 @@ import (
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
 	"math"
+
+	"golang.org/x/exp/maps"
 )
 
 type SpritesheetComponent struct {
-	Spritesheet           *parts.Spritesheet
+	Spritesheet           parts.Spritesheet
 	Texture               render.Texture2D
 	FlipX                 bool
-	spritename            string
-	nframes               int
 	FrameTimeMilliseconds int
+	Animations            map[string]parts.SpriteAnimation
+
+	curanim parts.SpriteAnimation
+}
+
+func NewSpritesheetComponent(sheet parts.Spritesheet, tex render.Texture2D, animations map[string]parts.SpriteAnimation) SpritesheetComponent {
+	initialanim := parts.SpriteAnimation{}
+	if len(animations) > 0 {
+		initialanim = maps.Values(animations)[0]
+	}
+	return SpritesheetComponent{
+		Spritesheet: sheet,
+		Texture:     tex,
+		Animations:  animations,
+		curanim:     initialanim,
+	}
 }
 
 func (s *SpritesheetComponent) Event(event engine.NodeEvent, gs *engine.Scene, n *engine.Node) {
 	if event == engine.NodeEventDraw {
-		if len(s.spritename) < 1 {
+		if len(s.curanim.Frames) == 0 {
 			return
 		}
 		pos := gs.Camera.Transform(n.AbsolutePosition())
@@ -29,27 +45,26 @@ func (s *SpritesheetComponent) Event(event engine.NodeEvent, gs *engine.Scene, n
 			frametime = 200
 		}
 		tms := gs.T * 1000
-		framen := int(math.Floor(tms/float64(frametime))) % s.nframes
-		frame := s.Spritesheet.GetFrame(s.spritename, framen)
-
-		srcRect := frame.Source
+		framen := int(math.Floor(tms/float64(frametime))) % len(s.curanim.Frames)
+		frame := s.curanim.Frames[framen]
+		srcX := float32(frame.Position.X)
+		srcY := float32(frame.Position.Y)
+		srcW := float32(frame.SourceSize.W)
+		srcH := float32(frame.SourceSize.H)
+		dstX := pos.X - float32(frame.Origin.X)*scale
+		dstY := pos.Y - float32(frame.Origin.Y)*scale
+		dstW := float32(frame.SourceSize.W) * scale
+		dstH := float32(frame.SourceSize.H) * scale
 		if s.FlipX {
-			srcRect.W *= -1
+			srcW *= -1
 		}
 		render.DrawRect(s.Texture,
-			srcRect.X, srcRect.Y, srcRect.W, srcRect.H,
-			pos.X-frame.Origin.X*scale,
-			pos.Y-frame.Origin.Y*scale,
-			frame.Source.W*scale,
-			frame.Source.H*scale,
+			srcX, srcY, srcW, srcH,
+			dstX, dstY, dstW, dstH,
 			v.White)
 	}
 }
 
-func (s *SpritesheetComponent) SetSprite(spritename string) {
-	nframes := s.Spritesheet.NumberOfFrames(spritename)
-	if nframes > 0 {
-		s.spritename = spritename
-		s.nframes = nframes
-	}
+func (s *SpritesheetComponent) SetAnimation(anim string) {
+	s.curanim = s.Animations[anim]
 }

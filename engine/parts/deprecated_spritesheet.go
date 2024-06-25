@@ -13,16 +13,16 @@ type SpritesheetFrame struct {
 	Origin     v.Vec2
 }
 
-type Spritesheet struct {
+type SpritesheetOld struct {
 	ImageRef string
 	Frames   []SpritesheetFrame
 }
 
-func SpritesheetRead(filedata []byte) Spritesheet {
+func SpritesheetReadOld(filedata []byte) SpritesheetOld {
 	fileDataString := string(filedata)
 	sanitised := strings.ReplaceAll(fileDataString, "\r\n", "\n")
 	lines := strings.Split(sanitised, "\n")
-	var ss Spritesheet
+	var ss SpritesheetOld
 	for _, line := range lines {
 		switch {
 		case len(line) < 1:
@@ -36,7 +36,7 @@ func SpritesheetRead(filedata []byte) Spritesheet {
 	return ss
 }
 
-func (s *Spritesheet) NumberOfFrames(spritename string) int {
+func (s *SpritesheetOld) NumberOfFrames(spritename string) int {
 	n := 0
 	for i := range s.Frames {
 		if strings.Compare(spritename, s.Frames[i].SpriteName) == 0 {
@@ -46,7 +46,7 @@ func (s *Spritesheet) NumberOfFrames(spritename string) int {
 	return n
 }
 
-func (s *Spritesheet) GetFrame(spritename string, index int) SpritesheetFrame {
+func (s *SpritesheetOld) GetFrame(spritename string, index int) SpritesheetFrame {
 	n := -1
 	for i := range s.Frames {
 		if strings.Compare(spritename, s.Frames[i].SpriteName) == 0 {
@@ -63,7 +63,7 @@ func (s *Spritesheet) GetFrame(spritename string, index int) SpritesheetFrame {
 //
 //
 
-func readImageRefLine(ss Spritesheet, line string) Spritesheet {
+func readImageRefLine(ss SpritesheetOld, line string) SpritesheetOld {
 	args := strings.Split(line, " ")
 	if len(args) != 2 {
 		slog.Warn("SpriteSheet.readImageRefLine: expected 2 args", "line", line)
@@ -74,7 +74,7 @@ func readImageRefLine(ss Spritesheet, line string) Spritesheet {
 	return ss
 }
 
-func readFrameLine(ss Spritesheet, line string) Spritesheet {
+func readFrameLine(ss SpritesheetOld, line string) SpritesheetOld {
 	args := strings.Split(line, " ")
 	if len(args) != 8 {
 		slog.Warn("SpriteSheet.readFrameLine: expected 6 args", "line", line)

@@ -12,9 +12,10 @@ type Scene struct {
 	Physics
 	Camera
 
-	Paused      bool
-	DT          float32
-	T           float64
-	WallClockT  float64 // WallClock times update even while "paused"
-	WallClockDT float32
+	Paused          bool
+	DT              float32
+	T               float64
+	WallClockT      float64 // WallClock times update even while "paused"
+	WallClockDT     float32
+	TargetFramerate int32
 }

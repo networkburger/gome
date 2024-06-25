@@ -5,9 +5,9 @@ import (
 	"jamesraine/grl/engine/convenience"
 	"jamesraine/grl/engine/window"
 	"jamesraine/grl/game_dig"
-	"jamesraine/grl/game_init"
 	"jamesraine/grl/game_ken"
 	"jamesraine/grl/game_physicstest"
+	"jamesraine/grl/game_shared"
 	"os"
 )
 
@@ -26,15 +26,21 @@ func main() {
 
 	window.InitWindow(screenWidth, screenHeight, "GOGAMES")
 
+	game_shared.InitSceneLaunchers(
+		game_ken.KenScene,
+		game_dig.DigScene,
+		game_physicstest.PhysicsTest,
+	)
+
 	switch app {
 	case "ken":
-		e.PushScene(game_ken.KenScene(e))
+		e.SetScene(game_ken.KenScene(e))
 	case "phystest":
-		e.PushScene(game_physicstest.PhysicsTest(e))
+		e.SetScene(game_physicstest.PhysicsTest(e))
 	case "dig":
-		e.PushScene(game_dig.DigScene(e))
+		e.SetScene(game_dig.DigScene(e))
 	default:
-		e.PushScene(game_init.StartupScene(e))
+		e.SetScene(game_shared.StartupScene(e))
 	}
 
 	convenience.StandardLoop(e, screenWidth, screenHeight)
