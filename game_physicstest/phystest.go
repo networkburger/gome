@@ -2,7 +2,6 @@ package game_physicstest
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/render"
@@ -58,7 +57,7 @@ func PhysicsTest(e *engine.Engine) *engine.Scene {
 			Restitution: 0.33,
 		},
 	}
-	circleVis := component.CircleComponent{
+	circleVis := game_shared.CircleComponent{
 		Radius: 8,
 		Color:  v.Green,
 	}

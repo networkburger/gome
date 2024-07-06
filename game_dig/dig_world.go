@@ -2,15 +2,15 @@ package game_dig
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/physics"
 	"jamesraine/grl/engine/render"
 	"jamesraine/grl/engine/v"
+	"jamesraine/grl/game_shared"
 )
 
 func NewDigMap(e *engine.Engine) *engine.Node {
-	bgSprite := component.NewBillboard(e.Assets.Texture("bg.png"))
-	mapSprite := component.NewBillboard(e.Assets.Texture("map.png"))
+	bgSprite := game_shared.NewBillboard(e.Assets.Texture("bg.png"))
+	mapSprite := game_shared.NewBillboard(e.Assets.Texture("map.png"))
 	mapPixels := e.Assets.Pixels("map.png")
 
 	baseSize := v.V2(float32(mapSprite.Texture.Width), float32(mapSprite.Texture.Height))

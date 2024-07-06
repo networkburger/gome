@@ -1,4 +1,4 @@
-package component
+package game_shared
 
 import (
 	"jamesraine/grl/engine"
@@ -11,7 +11,7 @@ import (
 )
 
 type SpritesheetComponent struct {
-	Spritesheet           parts.Spritesheet
+	Spritesheet           parts.RTexPacker
 	Texture               render.Texture2D
 	FlipX                 bool
 	FrameTimeMilliseconds int
@@ -20,7 +20,7 @@ type SpritesheetComponent struct {
 	curanim parts.SpriteAnimation
 }
 
-func NewSpritesheetComponent(sheet parts.Spritesheet, tex render.Texture2D, animations map[string]parts.SpriteAnimation) SpritesheetComponent {
+func NewSpritesheetComponent(sheet parts.RTexPacker, tex render.Texture2D, animations map[string]parts.SpriteAnimation) SpritesheetComponent {
 	initialanim := parts.SpriteAnimation{}
 	if len(animations) > 0 {
 		initialanim = maps.Values(animations)[0]

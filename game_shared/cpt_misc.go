@@ -1,4 +1,4 @@
-package component
+package game_shared
 
 import (
 	"jamesraine/grl/engine"

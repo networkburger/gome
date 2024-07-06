@@ -2,7 +2,6 @@ package game_ken
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/io"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
@@ -15,7 +14,7 @@ type Player struct {
 	sounds     *Soundlib
 	ballistics *physics.BallisticComponent
 	body       *physics.PhysicsBodyComponent
-	sprite     *component.SpritesheetComponent
+	sprite     *game_shared.SpritesheetComponent
 }
 
 func NewPlayerNode(e *engine.Engine, assets *parts.Assets, sounds *Soundlib) *engine.Node {
@@ -25,7 +24,7 @@ func NewPlayerNode(e *engine.Engine, assets *parts.Assets, sounds *Soundlib) *en
 	}
 
 	knightTex := assets.Texture(sheet.ImagePath)
-	ss := component.NewSpritesheetComponent(sheet, knightTex, map[string]parts.SpriteAnimation{
+	ss := game_shared.NewSpritesheetComponent(sheet, knightTex, map[string]parts.SpriteAnimation{
 		"idle": parts.NewSpriteAnimation(sheet, "idle"),
 		"run":  parts.NewSpriteAnimation(sheet, "run"),
 		"roll": parts.NewSpriteAnimation(sheet, "roll"),
@@ -41,28 +40,20 @@ func NewPlayerNode(e *engine.Engine, assets *parts.Assets, sounds *Soundlib) *en
 			AngularDamping:  0.8,
 			Gravity:         v.V2(0, 300),
 		},
+		body: &physics.PhysicsBodyComponent{
+			Radius: 8,
+			SurfaceProperties: physics.SurfaceProperties{
+				Friction:    0,
+				Restitution: 0,
+			},
+		},
 	}
 
-	player.sprite.SetAnimation("idle")
 	playerNode := e.NewNode("Player")
 	playerNode.AddComponent(player.sprite)
 	playerNode.AddComponent(&player)
 	playerNode.AddComponent(player.ballistics)
-
-	player.body = &physics.PhysicsBodyComponent{
-		Radius: 8,
-		SurfaceProperties: physics.SurfaceProperties{
-			Friction:    0,
-			Restitution: 0,
-		},
-	}
 	playerNode.AddComponent(player.body)
-
-	// engine.G.AddComponent(playerNode, &component.CircleComponent{
-	// 	Radius: 8,
-	// 	Color:  rl.Green,
-	// })
-
 	playerNode.Scale = 2
 	return playerNode
 }

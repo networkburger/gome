@@ -43,7 +43,7 @@ func main() {
 		e.SetScene(game_shared.StartupScene(e))
 	}
 
-	convenience.StandardLoop(e, screenWidth, screenHeight)
+	convenience.StandardLoop2D(e, screenWidth, screenHeight)
 
 	window.CloseWindow()
 }

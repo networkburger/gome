@@ -2,9 +2,9 @@ package game_ken
 
 import (
 	"jamesraine/grl/engine"
-	"jamesraine/grl/engine/component"
 	"jamesraine/grl/engine/parts"
 	"jamesraine/grl/engine/physics"
+	"jamesraine/grl/game_shared"
 )
 
 const (
@@ -24,19 +24,18 @@ func Spawn(e *engine.Engine, kind string, assets *parts.Assets) *engine.Node {
 	if ok {
 		return spawner(e, assets)
 	} else {
-		return e.NewNode(kind)
+		return nil
 	}
 }
 
 func _spawnCoin(e *engine.Engine, assets *parts.Assets) *engine.Node {
 	n := e.NewNode("Coin")
-	sheet, _ := assets.SpriteSheet("coin.spritesheet")
+	sheet, _ := assets.SpriteSheet("coin.json")
 	tex := assets.Texture(sheet.ImagePath)
 
-	ssComp := component.SpritesheetComponent{
-		Spritesheet: sheet,
-		Texture:     tex,
-	}
+	ssComp := game_shared.NewSpritesheetComponent(sheet, tex, map[string]parts.SpriteAnimation{
+		"idle": parts.NewSpriteAnimation(sheet, "coin"),
+	})
 	ssComp.SetAnimation("idle")
 	ssComp.FrameTimeMilliseconds = 100
 	n.AddComponent(&ssComp)

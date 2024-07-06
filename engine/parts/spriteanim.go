@@ -3,12 +3,12 @@ package parts
 import "strings"
 
 type SpriteAnimation struct {
-	Spritesheet
-	Frames []SpritesheetSprite
+	RTexPacker
+	Frames []RTexPackerSprite
 }
 
-func NewSpriteAnimation(sheet Spritesheet, animationName string) SpriteAnimation {
-	frames := []SpritesheetSprite{}
+func NewSpriteAnimation(sheet RTexPacker, animationName string) SpriteAnimation {
+	frames := []RTexPackerSprite{}
 
 	for _, sprite := range sheet.Entries {
 		if strings.Index(sprite.NameId, animationName) == 0 {
@@ -17,7 +17,7 @@ func NewSpriteAnimation(sheet Spritesheet, animationName string) SpriteAnimation
 	}
 
 	return SpriteAnimation{
-		Spritesheet: sheet,
-		Frames:      frames,
+		RTexPacker: sheet,
+		Frames:     frames,
 	}
 }

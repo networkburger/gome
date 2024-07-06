@@ -10,12 +10,12 @@ import (
 // https://raylibtech.itch.io/rtexpacker
 
 type Font struct {
-	Spritesheet
+	RTexPacker
 	SpriteLookup map[int32]int32
 }
 
-func NewFont(ss Spritesheet) (Font, error) {
-	f := Font{Spritesheet: ss}
+func NewFont(ss RTexPacker) (Font, error) {
+	f := Font{RTexPacker: ss}
 	f.SpriteLookup = make(map[int32]int32)
 	for i, s := range f.Entries {
 		f.SpriteLookup[s.Char.Value] = int32(i)
@@ -24,7 +24,7 @@ func NewFont(ss Spritesheet) (Font, error) {
 	return f, nil
 }
 
-func (f Font) FontSpriteLookup(c int32) *SpritesheetSprite {
+func (f Font) FontSpriteLookup(c int32) *RTexPackerSprite {
 	return &f.Entries[f.SpriteLookup[c]]
 }
 

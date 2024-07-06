@@ -10,7 +10,7 @@ import (
 type Assets struct {
 	Folder       string
 	Textures     map[string]render.Texture2D
-	SpriteSheets map[string]Spritesheet
+	SpriteSheets map[string]RTexPacker
 	Sounds       map[string]sound.Sound
 	Images       map[string]render.PixelBuffer
 	Fonts        map[string]FontRenderer
@@ -23,7 +23,7 @@ func NewAssets(folder string) Assets {
 	return Assets{
 		Folder:       folder,
 		Textures:     make(map[string]render.Texture2D),
-		SpriteSheets: make(map[string]Spritesheet),
+		SpriteSheets: make(map[string]RTexPacker),
 		Sounds:       make(map[string]sound.Sound),
 		Images:       make(map[string]render.PixelBuffer),
 		Fonts:        make(map[string]FontRenderer),
@@ -40,7 +40,7 @@ func (a *Assets) Close() {
 	a.Textures = make(map[string]render.Texture2D)
 	a.Sounds = make(map[string]sound.Sound)
 	a.Images = make(map[string]render.PixelBuffer)
-	a.SpriteSheets = make(map[string]Spritesheet)
+	a.SpriteSheets = make(map[string]RTexPacker)
 	a.Fonts = make(map[string]FontRenderer)
 }
 
@@ -78,13 +78,13 @@ func (a *Assets) Pixels(fname string) render.PixelBuffer {
 	return buf
 }
 
-func (a *Assets) SpriteSheet(fname string) (Spritesheet, error) {
+func (a *Assets) SpriteSheet(fname string) (RTexPacker, error) {
 	existing, ok := a.SpriteSheets[fname]
 	if ok {
 		return existing, nil
 	}
 	sheetData, _ := a.FileBytes(fname)
-	s, err := SpritesheetRead(sheetData)
+	s, err := RTexPackerRead(sheetData)
 	if err != nil {
 		return s, err
 	}

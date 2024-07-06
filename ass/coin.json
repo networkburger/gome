@@ -1,0 +1,124 @@
+{
+  "software": {
+    "name": "rTexPacker v3.0",
+    "url": "https://raylibtech.itch.io/rtexpacker"
+  },
+  "atlas": {
+    "imagePath": "coin.png",
+    "width": 512,
+    "height": 512,
+    "spriteCount": 12,
+    "isFont": false,
+    "fontSize": 32
+  },
+  "sprites": [
+    {
+      "nameId": "coin_0_0",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 0, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 3, "y": 3, "width": 10, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_1",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 16, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 4, "y": 3, "width": 8, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_2",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 32, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 5, "y": 3, "width": 6, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_3",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 48, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 6, "y": 3, "width": 4, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_4",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 64, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 5, "y": 3, "width": 6, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_5",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 80, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 4, "y": 3, "width": 8, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_6",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 96, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 3, "y": 3, "width": 10, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_7",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 112, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 4, "y": 3, "width": 8, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_8",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 128, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 5, "y": 3, "width": 6, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_9",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 144, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 6, "y": 3, "width": 4, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_10",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 160, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 5, "y": 3, "width": 6, "height": 10 }
+    },
+    {
+      "nameId": "coin_0_11",
+      "origin": { "x": 8, "y": 8 },
+      "position": { "x": 176, "y": 0 },
+      "sourceSize": { "width": 16, "height": 16 },
+      "padding": 0,
+      "trimmed": false,
+      "trimRec": { "x": 4, "y": 3, "width": 8, "height": 10 }
+    }
+  ]
+}

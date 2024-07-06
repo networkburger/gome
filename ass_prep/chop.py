@@ -28,8 +28,8 @@ def chop_tiles(image_path, tile_size=(32, 32)):
       tile.save(tile_filename)
 
 # Edit this path to your PNG file
-image_path = "knight.png"
+image_path = "coin.png"
 
-chop_tiles(image_path)
+chop_tiles(image_path, (16,16))
 
 print("Image successfully chopped into tiles!")
